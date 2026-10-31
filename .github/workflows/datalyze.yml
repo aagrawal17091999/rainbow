@@ -86,7 +86,7 @@ jobs:
           path: .datalyze/cache
           key: datalyze-method-${{ github.run_id }}
           restore-keys: datalyze-method-
-      - uses: joindatalyze/tracking-agent@v1
+      - uses: joindatalyze/tracking-agent@v1.3.0-rc.1
         with:
           job: rules
         env:
@@ -139,7 +139,7 @@ jobs:
             datalyze-audit-
 
       # Model access: Anthropic, with the key in ANTHROPIC_API_KEY. Nothing goes through Datalyze.
-      - uses: joindatalyze/tracking-agent@v1
+      - uses: joindatalyze/tracking-agent@v1.3.0-rc.1
         with:
           job: ${{ (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'audit' || inputs.job == 'fix' || inputs.job == 'refresh-map')) && inputs.job || 'tracking' }}
         env:
@@ -158,7 +158,7 @@ jobs:
       # A run cancelled or timed out mid-way would leave "Analysing" or "Implementing" pending: this
       # turns it into an error with a Retry note. It does nothing when the run finished.
       - if: (cancelled() || failure()) && (github.event_name != 'workflow_dispatch' || inputs.job == 'tracking')
-        uses: joindatalyze/tracking-agent@v1
+        uses: joindatalyze/tracking-agent@v1.3.0-rc.1
         with:
           job: cleanup
         env:
@@ -183,7 +183,7 @@ jobs:
           path: .datalyze/cache
           key: datalyze-method-${{ github.run_id }}
           restore-keys: datalyze-method-
-      - uses: joindatalyze/tracking-agent@v1
+      - uses: joindatalyze/tracking-agent@v1.3.0-rc.1
         with:
           job: fork
         env:
@@ -204,12 +204,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: joindatalyze/tracking-agent@v1
+      - uses: joindatalyze/tracking-agent@v1.3.0-rc.1
         with:
           job: sync-sheet
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # The Sheet connected on Datalyze's Setup page (none connected: the job just says so).
           DATALYZE_KEY: ${{ secrets.DATALYZE_KEY }}
-          DATALYZE_SHEET_URL: ${{ secrets.DATALYZE_SHEET_URL }}
-          DATALYZE_SHEET_TOKEN: ${{ secrets.DATALYZE_SHEET_TOKEN }}
