@@ -86,7 +86,7 @@ jobs:
           path: .datalyze/cache
           key: datalyze-method-${{ github.run_id }}
           restore-keys: datalyze-method-
-      - uses: joindatalyze/tracking-agent@v1.4.0-rc.3
+      - uses: joindatalyze/tracking-agent@v1.4.0-rc.4
         with:
           job: rules
         env:
@@ -148,7 +148,7 @@ jobs:
             datalyze-pr-${{ github.event.pull_request.number || inputs.pr }}-
 
       # Model access: Anthropic, with the key in ANTHROPIC_API_KEY. Nothing goes through Datalyze.
-      - uses: joindatalyze/tracking-agent@v1.4.0-rc.3
+      - uses: joindatalyze/tracking-agent@v1.4.0-rc.4
         with:
           job: ${{ (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'audit' || inputs.job == 'fix' || inputs.job == 'refresh-map' || inputs.job == 'plan-proposal')) && inputs.job || 'tracking' }}
         env:
@@ -172,7 +172,7 @@ jobs:
       # A run cancelled or timed out mid-way would leave "Analysing" or "Implementing" pending: this
       # turns it into an error with a Retry note. It does nothing when the run finished.
       - if: (cancelled() || failure()) && (github.event_name != 'workflow_dispatch' || inputs.job == 'tracking')
-        uses: joindatalyze/tracking-agent@v1.4.0-rc.3
+        uses: joindatalyze/tracking-agent@v1.4.0-rc.4
         with:
           job: cleanup
         env:
@@ -197,7 +197,7 @@ jobs:
           path: .datalyze/cache
           key: datalyze-method-${{ github.run_id }}
           restore-keys: datalyze-method-
-      - uses: joindatalyze/tracking-agent@v1.4.0-rc.3
+      - uses: joindatalyze/tracking-agent@v1.4.0-rc.4
         with:
           job: fork
         env:
@@ -218,7 +218,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: joindatalyze/tracking-agent@v1.4.0-rc.3
+      - uses: joindatalyze/tracking-agent@v1.4.0-rc.4
         with:
           job: sync-sheet
         env:
