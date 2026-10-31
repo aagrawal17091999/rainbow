@@ -46,9 +46,9 @@ on:
   workflow_dispatch:
     inputs:
       job:
-        description: "What to run: initial-audit (your first tracking plan, as a PR), tracking (the PR check on one PR again: Retry), audit (the default branch against your analytics data), fix (fix PRs for audit findings) or sync-sheet (rebuild the Sheet)"
+        description: "What to run: initial-audit (your first tracking plan, as a PR), tracking (the PR check on one PR again: Retry), audit (the default branch against your analytics data), fix (fix PRs for audit findings), refresh-map (the tracking map checked against the code, as a PR) or sync-sheet (rebuild the Sheet)"
         type: choice
-        options: [initial-audit, tracking, audit, fix, sync-sheet]
+        options: [initial-audit, tracking, audit, fix, refresh-map, sync-sheet]
         default: tracking
       pr:
         description: Pull request number (for tracking)
@@ -60,7 +60,7 @@ on:
         description: The generated_at of the audit the findings were picked from (for fix; optional)
         required: false
       continue_usd:
-        description: "For initial-audit after it paused at its cost cap: how much more it may spend (USD) to finish"
+        description: "For initial-audit or refresh-map after it paused at its cost cap: how much more it may spend (USD) to finish"
         required: false
 
 permissions:
@@ -99,11 +99,11 @@ jobs:
     if: >-
       (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && (github.event.action != 'labeled' || github.event.label.name == 'datalyze:approve')) ||
       (github.event_name == 'pull_request_review' && github.event.pull_request.head.repo.full_name == github.repository && github.event.review.state == 'approved') ||
-      (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'audit' || inputs.job == 'fix' || (inputs.job == 'tracking' && inputs.pr != '')))
+      (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'audit' || inputs.job == 'fix' || inputs.job == 'refresh-map' || (inputs.job == 'tracking' && inputs.pr != '')))
     runs-on: ubuntu-latest
-    # The first audit of a large codebase can take hours; it checkpoints after every batch, so a
+    # The first audit (and Refresh the map) of a large codebase can take hours; it checkpoints after every batch, so a
     # run that hits the limit resumes on Re-run. Everything else stops at an hour.
-    timeout-minutes: ${{ (github.event_name == 'workflow_dispatch' && inputs.job == 'initial-audit') && 360 || 60 }}
+    timeout-minutes: ${{ (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'refresh-map')) && 360 || 60 }}
     # One run per PR at a time; runs are idempotent, so a queued run picks up where the last one left
     # off. The first audit, the audit and fix runs have a group each.
     concurrency:
@@ -127,9 +127,9 @@ jobs:
           key: datalyze-method-${{ github.run_id }}
           restore-keys: datalyze-method-
 
-      # The first audit's checkpoint: one file per finished batch. Re-run, Retry and Continue pick up
+      # The first audit's (and a map refresh's) checkpoint: one file per finished batch. Re-run, Retry and Continue pick up
       # where the last run stopped (a checkpoint for another commit is ignored).
-      - if: github.event_name == 'workflow_dispatch' && inputs.job == 'initial-audit'
+      - if: github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'refresh-map')
         uses: actions/cache/restore@v4
         with:
           path: .datalyze/cache/runs
@@ -141,7 +141,7 @@ jobs:
       # Model access: Anthropic, with the key in ANTHROPIC_API_KEY. Nothing goes through Datalyze.
       - uses: joindatalyze/tracking-agent@v1
         with:
-          job: ${{ (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'audit' || inputs.job == 'fix')) && inputs.job || 'tracking' }}
+          job: ${{ (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'audit' || inputs.job == 'fix' || inputs.job == 'refresh-map')) && inputs.job || 'tracking' }}
         env:
           DATALYZE_ITEMS: ${{ inputs.items }}
           DATALYZE_AUDIT_AT: ${{ inputs.audit }}
@@ -150,7 +150,7 @@ jobs:
           DATALYZE_KEY: ${{ secrets.DATALYZE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       # Saved however the run ended (a timeout, a cancel, the cost cap), so the next one resumes.
-      - if: always() && github.event_name == 'workflow_dispatch' && inputs.job == 'initial-audit'
+      - if: always() && github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'refresh-map')
         uses: actions/cache/save@v4
         with:
           path: .datalyze/cache/runs
@@ -211,3 +211,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # The Sheet connected on Datalyze's Setup page (none connected: the job just says so).
           DATALYZE_KEY: ${{ secrets.DATALYZE_KEY }}
+          DATALYZE_SHEET_URL: ${{ secrets.DATALYZE_SHEET_URL }}
+          DATALYZE_SHEET_TOKEN: ${{ secrets.DATALYZE_SHEET_TOKEN }}
