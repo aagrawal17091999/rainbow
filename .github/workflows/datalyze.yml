@@ -149,8 +149,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATALYZE_KEY: ${{ secrets.DATALYZE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          MIXPANEL_SA_USERNAME: ${{ secrets.MIXPANEL_SA_USERNAME }}
-          MIXPANEL_SA_SECRET: ${{ secrets.MIXPANEL_SA_SECRET }}
       # Saved however the run ended (a timeout, a cancel, the cost cap), so the next one resumes.
       - if: always() && github.event_name == 'workflow_dispatch' && inputs.job == 'initial-audit'
         uses: actions/cache/save@v4
