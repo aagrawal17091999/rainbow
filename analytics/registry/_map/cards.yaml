@@ -1,0 +1,94 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: cards
+surfaces:
+  - id: routes-airdrops-sheet
+    kind: screen
+    anchor: src/screens/Airdrops/AirdropsSheet.tsx#AirdropsSheet
+    path: Routes.AIRDROPS_SHEET
+    actions:
+      - name: Open an airdrop to claim
+        importance: core
+        events: []
+      - name: Close the airdrops sheet
+        importance: incidental
+        events: []
+  - id: routes-perps-about-sheet
+    kind: screen
+    anchor: src/features/perps/screens/perps-about-sheet/PerpsAboutSheet.tsx#PerpsAboutSheet
+    path: Routes.PERPS_ABOUT_SHEET
+    actions: []
+  - id: routes-rnbw-membership-tiers-sheet
+    kind: screen
+    anchor: src/features/rnbw-membership/screens/rnbw-membership-tiers-sheet/RnbwMembershipTiersSheet.tsx#RnbwMembershipTiersSheet
+    path: Routes.RNBW_MEMBERSHIP_TIERS_SHEET
+    actions:
+      - name: Browse membership tiers
+        importance: secondary
+        events: []
+  - id: routes-spot-pnl-excluded-tokens-sheet
+    kind: screen
+    anchor: src/features/spot-pnl/ui/SpotPnlExcludedTokensSheet.tsx#SpotPnlExcludedTokensSheet
+    path: Routes.SPOT_PNL_EXCLUDED_TOKENS_SHEET
+    actions: []
+  - id: routes-pin-authentication-screen
+    kind: screen
+    anchor: src/features/local-auth/screens/PinAuthenticationScreen.js#PinAuthenticationScreen
+    path: Routes.PIN_AUTHENTICATION_SCREEN
+    actions:
+      - name: Create and confirm a PIN
+        importance: core
+        events: []
+      - name: Enter PIN to authenticate
+        importance: core
+        events: []
+      - name: Get locked out after too many wrong PIN attempts
+        importance: incidental
+        events: []
+events:
+  buy_button.pressed:
+    fires_in:
+      - src/components/cards/EthCard.tsx#EthCard
+      - src/components/sheet/sheet-action-buttons/BuyActionButton.tsx#BuyActionButton
+    trigger: The person presses the Buy / Add Cash button on the ETH card, or the Buy action button in a sheet.
+    moment: before the request
+    conditions:
+      - The wallet is not read-only. Otherwise a watching alert shows and nothing is sent, unless actions on read-only wallets are enabled.
+      - The wallet is not damaged. Otherwise the wallet error sheet opens and nothing is sent.
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/cards/EthCard.tsx#EthCard.handlePressBuy
+    certainty: sure
+  card.pressed:
+    fires_in:
+      - src/components/cards/EthCard.tsx#EthCard
+      - src/components/cards/LearnCard.tsx#LearnCard
+      - src/features/ens/components/ENSCreateProfileCard.tsx#ENSCreateProfileCard
+      - src/features/ens/components/ENSSearchCard.tsx#ENSSearchCard
+    trigger: "The person taps a card on a home or wallet screen: the ETH card, the Learn card, or an ENS card."
+    moment: before the request
+    conditions:
+      - "ETH card: the ETH asset has loaded its native price data (ethAsset.native is not null)."
+      - "ENS create-profile and ENS search cards: the wallet is not read-only, or actions on read-only wallets are enabled."
+      - "Learn card: none."
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/cards/EthCard.tsx#EthCard.handlePressBuy
+    certainty: sure
+  qr_code.viewed:
+    fires_in: src/components/cards/ReceiveAssetsCard.tsx#ReceiveAssetsCard
+    trigger: The person taps the QR code control on the Receive Assets card.
+    moment: before the request
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/cards/ReceiveAssetsCard.tsx#ReceiveAssetsCard.onPressQRCode
+    certainty: sure

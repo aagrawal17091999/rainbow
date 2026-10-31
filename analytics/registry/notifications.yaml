@@ -1,0 +1,89 @@
+events:
+  - name: Changed Global Notification Settings
+    section: Notifications
+    description: Fires on the device after the user flips a global (app-wide, not per-wallet) notification topic in Settings
+      > Notifications and the new setting has been published and saved successfully (`toggleGlobalNotificationTopic` gets
+      a true result from `publishAndSaveNotificationSettings`). It does not fire when the publish fails, when the device
+      is offline (the offline alert returns early), or for per-wallet topic or group toggles (those go through other
+      functions). `action` says whether the topic was turned on (`subscribe`) or off (`unsubscribe`). In the current code
+      `GlobalNotificationTopic` is an empty object, so no global topic exists and the Settings screen has nothing to
+      toggle. The event may never fire in practice.
+    question: How many users turn app-wide notification topics on or off, and which topics do they unsubscribe from?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: subscribe | unsubscribe
+        description: "Direction of the change: `subscribe` if the topic was enabled, `unsubscribe` if it was disabled."
+      - name: campaign
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: The draft lists this property, but no call path for this event sends it. The scanner attributed the
+          push-tap call to this event too. See migration.
+      - name: topic
+        type: string
+        example: UNCONFIRMED
+        description: The global notification topic that was toggled. The allowed values are the entries of
+          `GlobalNotificationTopic`, which is currently empty.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address. The analytics wrapper adds it from the wallet context, and it is
+          undefined before a wallet exists.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet. The analytics wrapper adds it from the wallet context, and it can be undefined
+          right after wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped Push Notification
+    section: Notifications
+    description: "Fires on the device each time the user opens a push notification, before the app routes them anywhere.
+      Opening paths: tapping a system notification while the app is in the background (`onNotificationOpenedApp`),
+      launching the app from a notification when it was killed (`getInitialNotification`), and pressing a notification
+      shown while the app is in the foreground (notifee `EventType.PRESS`). It fires only when a notification payload is
+      present. It fires even if the wallet isn't ready yet and the notification is deferred, and even if the follow-up
+      navigation does nothing, e.g. a transaction payload with missing fields. It does not fire when the notification is
+      received or displayed. `campaign` is the notification's `data.type`, or `default` when the payload has no type."
+    question: How many push notifications do users open, by notification type (transaction, WalletConnect, marketing)?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: The draft lists this property, but this event never sends it. The scanner attributed the settings call to
+          this event too. See migration.
+      - name: campaign
+        type: string
+        example: transaction | wc | marketing | default
+        description: The notification's `data.type` from the push payload, or `default` if none. It is the notification type,
+          not a marketing campaign id.
+      - name: topic
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: The draft lists this property, but this event never sends it. The scanner attributed the settings call to
+          this event too. See migration.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address. The analytics wrapper adds it from the wallet context, and it is
+          undefined before a wallet exists.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet. The analytics wrapper adds it from the wallet context, and it can be undefined
+          right after wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

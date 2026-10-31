@@ -1,0 +1,101 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: expanded_state
+surfaces:
+  - id: routes-modal-screen
+    kind: screen
+    anchor: src/screens/ModalScreen.js#ModalScreen
+    path: Routes.MODAL_SCREEN
+    actions:
+      - name: Name and create a new wallet group
+        importance: core
+        events:
+          - add_new_wallet_group.name
+          - wallet_create.succeeded
+          - wallet_create.failed
+      - name: Submit wallet profile (name and color)
+        importance: secondary
+        events:
+          - Tapped "Submit" on Wallet Profile modal
+      - name: Cancel wallet profile edit
+        importance: incidental
+        events:
+          - Tapped "Cancel" on Wallet Profile modal
+      - name: Save or edit a contact profile
+        importance: secondary
+        events: []
+      - name: Test backup and restore (dev tool)
+        importance: incidental
+        events:
+          - backup.error
+          - Saved backup password on iCloud
+          - Didn't save backup password on iCloud
+      - name: Dismiss modal by tapping backdrop
+        importance: incidental
+        events: []
+  - id: routes-expanded-asset-sheet
+    kind: screen
+    anchor: src/screens/ExpandedAssetSheet.tsx#ExpandedAssetSheet
+    path: Routes.EXPANDED_ASSET_SHEET
+    actions:
+      - name: View NFT token details
+        importance: secondary
+        events:
+          - token_details.nft
+      - name: Hide or unhide an NFT
+        importance: secondary
+        events:
+          - Toggled an NFT as Hidden
+      - name: Tap buy from the asset sheet
+        importance: secondary
+        events:
+          - buy_button.pressed
+      - name: Dismiss sheet by tapping backdrop
+        importance: incidental
+        events: []
+  - id: routes-custom-gas-sheet
+    kind: screen
+    anchor: src/screens/ExpandedAssetSheet.tsx#ExpandedAssetSheet
+    path: Routes.CUSTOM_GAS_SHEET
+    actions:
+      - name: Choose a gas price option
+        importance: secondary
+        events:
+          - Updated Gas Price
+      - name: Enter custom gas fees
+        importance: secondary
+        events: []
+      - name: Dismiss sheet by tapping backdrop
+        importance: incidental
+        events: []
+events:
+  add_new_wallet_group.name:
+    fires_in: src/components/expanded-state/NewWalletGroupState.tsx#NewWalletGroupState
+    trigger: The person presses 'Create wallet group' in the New Wallet Group modal.
+    moment: before the request
+    path:
+      - src/components/expanded-state/NewWalletGroupState.tsx#NewWalletGroupState.handleSubmit
+    certainty: unsure
+  Tapped "Cancel" on Wallet Profile modal:
+    fires_in: src/components/expanded-state/WalletProfileState.js#WalletProfileState
+    trigger: The person presses Cancel in the Wallet Profile modal.
+    moment: before the request
+    path:
+      - src/components/expanded-state/WalletProfileState.js#WalletProfileState.handleCancel
+    certainty: unsure
+  Tapped "Submit" on Wallet Profile modal:
+    fires_in: src/components/expanded-state/WalletProfileState.js#WalletProfileState
+    trigger: The person presses Submit in the Wallet Profile modal, before the profile is saved and before the keychain callback runs.
+    moment: before the request
+    path:
+      - src/components/expanded-state/WalletProfileState.js#WalletProfileState.handleCancel
+    certainty: unsure
+  token_details.nft:
+    fires_in: src/components/expanded-state/UniqueTokenExpandedState.tsx#UniqueTokenExpandedState
+    trigger: The NFT expanded state sheet stays open for 5 seconds, or is closed sooner. In both cases the event fires once.
+    moment: on mount
+    conditions:
+      - It fires 5 seconds after the sheet mounts, or earlier when the sheet unmounts before the 5 seconds are up.
+    path:
+      - src/components/expanded-state/UniqueTokenExpandedState.tsx#UniqueTokenExpandedState
+    certainty: unsure

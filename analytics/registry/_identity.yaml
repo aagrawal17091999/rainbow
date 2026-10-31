@@ -1,0 +1,32 @@
+# When the product links events to a known user, and when it forgets them.
+# The install audit fills this in from the code; `datalyze scan` checks it against the code.
+# Write `null` for something the product deliberately doesn't do (`reset: null` when there is no logout).
+#
+# identify:
+#   when: Sign-up completes and every login
+#   id_source: users.id          # never an email or phone number
+# reset:
+#   when: Logout
+# Written by the install audit from the calls in the code.
+identify:
+  when: On every app launch right after the device id is read or created (src/App.tsx:173), and again, with no traits,
+    each time a wallet is initialized or switched, to attach walletAddressHash and walletType
+    (src/state/wallets/initializeWallet.ts:135). Traits are then sent from many places as state changes.
+  id_source: Device id from getOrCreateDeviceId(), kept in the keychain. It is not a user id, email or wallet address.
+    Wallet identity goes in as a hashed address trait (walletAddressHash), not as the id.
+  code_refs:
+    - src/App.tsx
+    - src/analytics/index.test.ts
+    - src/components/value-chart/Chart.tsx
+    - src/features/network/stores/networkSwitcherStore.ts
+    - src/features/positions/stores/positionsStore.ts
+    - src/features/rnbw-membership/stores/rnbwMembershipAnalyticsStore.ts
+    - src/hooks/useIdentifyAppIcon.ts
+    - src/hooks/useWalletCohort.ts
+    - src/notifications/analytics.ts
+    - src/redux/settings.ts
+    - src/resources/addys/claimables/query.ts
+    - src/state/wallets/initializeWallet.ts
+    - src/utils/branch.ts
+reset: null
+alias: null

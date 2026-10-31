@@ -1,0 +1,75 @@
+events:
+  - name: debug.identify_probe
+    section: Site
+    description: "Temporary diagnostic event sent from the client right after an analytics identify call, to compare track
+      delivery with user-property delivery (FEPLAT-67). It fires in two places: once during app startup in
+      initializeApplication, right after identify({ installSource }), with probe = installSource; and once in
+      settingsLoadState after the native currency and testnet settings load and identify({ currency, enabledTestnets }) is
+      called, with probe = currency. It does not fire if loading the settings throws before the identify call, and it does
+      not fire when analytics is disabled (tests or do-not-track). The code comment says to remove it once FEPLAT-67 is
+      done."
+    question: Are identify traits (installSource, currency) reaching the analytics tool, or being dropped by the pipeline?
+      Temporary, for FEPLAT-67.
+    track_via: client
+    properties:
+      - name: probe
+        type: string
+        example: installSource | currency
+        description: Which identify trait this probe accompanies. Sent on every call; the draft's required:false comes from the
+          scanner reading the other call shape.
+      - name: value
+        type: string
+        example: dev | store | internal | UNCONFIRMED
+        description: The value of the trait named by probe. For installSource it is dev, store or internal; for currency it is
+          String(nativeCurrency), whose possible values I couldn't observe (UNCONFIRMED).
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by analytics.track on every event, not by the call. Hash of the current wallet address. It is empty
+          when no wallet context has been set yet, which is likely at startup.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track on every event. Type of the current wallet. It is empty when no wallet context has
+          been set, which is likely at startup.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: First App Open
+    section: Site
+    description: Fires once on the client during initializeApplication, on the very first launch of the app on a device. The
+      condition is that a device ID was just created in this launch and the local flag isReturningUser is not yet set. It
+      fires right after the screen dimensions are set as user properties. It does not fire on later launches, because
+      isReturningUser is set to true at the end of initialization. It also does not fire when the device ID was only
+      migrated, or when analytics is disabled. A reinstall that loses the stored device ID counts as a first open again.
+      The call passes no properties of its own.
+    question: How many new installs open the app for the first time each week, by platform and install source?
+    track_via: client
+    properties:
+      - name: probe
+        type: string
+        example: installSource | currency
+        required: false
+        description: Not sent by this call. The scanner merged it in from the neighbouring probe call.
+      - name: value
+        type: string
+        example: dev | store | internal
+        required: false
+        description: Not sent by this call. The scanner merged it in from the neighbouring probe call.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added automatically by analytics.track. It is empty on first open because no wallet exists yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added automatically by analytics.track. It is empty on first open because no wallet exists yet.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

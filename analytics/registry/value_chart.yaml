@@ -1,0 +1,71 @@
+events:
+  - name: Changed Candle Resolution
+    section: Charts
+    description: Fires on the client each time the persisted charts store's `candleResolution` value changes to a different
+      resolution, after the change is made, from the `ChartsTelemetry` listener in Chart.tsx. The call is deferred with
+      requestIdleCallback. Pressing the already-selected resolution only bumps `snapSignal` in the store and does not fire
+      it. The same listener also writes `candleResolution` to the user profile via identify.
+    question: Which candle resolutions do users pick, and do they stay on the default 1-hour view?
+    track_via: client
+    properties:
+      - name: candleResolution
+        type: string
+        example: RESOLUTION_1_MIN | RESOLUTION_5_MIN | RESOLUTION_15_MIN | RESOLUTION_60_MIN | RESOLUTION_4_HR |
+          RESOLUTION_12_HR | RESOLUTION_1_DAY | RESOLUTION_7_DAY
+        description: The new candle resolution after the change (CandleResolution enum in src/features/charts/types.ts); the
+          default is RESOLUTION_60_MIN
+      - name: chartType
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added automatically to every event by analytics.track. Missing when no
+          address is selected yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added automatically to every event by analytics.track. Can be undefined, e.g.
+          right after wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Changed Chart Type
+    section: Charts
+    description: "Fires on the client each time the persisted charts store's `chartType` value changes (candlestick <->
+      line), after the change is made, from the `ChartsTelemetry` listener in Chart.tsx. The call is deferred with
+      requestIdleCallback. The store ignores a set to the same value, so re-selecting the current type does not fire it.
+      It is not an explicit click handler: any code path that changes the store (toggle, setChartType) fires it. A forced
+      candlestick view for Hyperliquid tokens does not change the stored value, so it does not fire. The same listener
+      also writes `chartType` to the user profile via identify."
+    question: Do users prefer candlestick or line charts, and how often do they switch between them?
+    track_via: client
+    properties:
+      - name: candleResolution
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: chartType
+        type: string
+        example: candlestick | line
+        description: The new chart type after the change (ChartType enum in src/features/charts/types.ts)
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added automatically to every event by analytics.track. Missing when no
+          address is selected yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added automatically to every event by analytics.track. Can be undefined, e.g.
+          right after wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

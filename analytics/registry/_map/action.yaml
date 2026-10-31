@@ -1,0 +1,13 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: action
+surfaces:
+  - id: action-view-controller
+    kind: screen
+    anchor: ios/OpenInRainbow/ActionViewController.swift#ActionViewController
+    path: ActionViewController
+    actions:
+      - name: Open a shared link or text in Rainbow's dapp browser
+        importance: secondary
+        events: []
+events: {}

@@ -1,0 +1,884 @@
+events:
+  - name: Error during Google Drive Backup
+    section: Backup
+    description: Fires on Android when backing up a wallet to Google Drive throws, either creating a new backup file or
+      adding the wallet to the current one. It fires from the catch block, after the error has been turned into a
+      user-facing message and passed to onError. It does not fire when Google sign-in or account lookup fails, when the
+      wallet is damaged, when PIN entry fails, or when the backup succeeds but saving the local backed-up state fails.
+      That last case is Error updating Backup status.
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: backup
+        description: Constant 'backup'
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        description: User-facing message from getBackupErrorMessage(e), not the raw exception
+      - name: label
+        type: string
+        example: Google Drive
+        description: Cloud platform name; always 'Google Drive' for this event
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Error during iCloud Backup
+    section: Backup
+    description: Fires on iOS when backing up a wallet to iCloud throws, either creating a new backup or adding the wallet
+      to the current one. It fires from the catch block, after onError has received the user-facing message. It does not
+      fire when iCloud is unavailable (that is iCloud not enabled), when the wallet is damaged, or when the backup
+      succeeds but saving the local backed-up flag fails (that is Error updating Backup status).
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: backup
+        description: Constant 'backup'
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        description: User-facing message from getBackupErrorMessage(e), not the raw exception
+      - name: label
+        type: string
+        example: iCloud (UNCONFIRMED)
+        description: Cloud platform name; the 'Google Drive' branch is the other event, so this should be the iOS platform name
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Error updating Backup status
+    section: Backup
+    description: Fires when the cloud upload itself succeeded but marking the wallet as backed up locally
+      (setWalletBackedUp) threw. onError is called with a user-facing message and the backup function returns false. It
+      does not fire for failures during the upload, which go to the Google Drive or iCloud error events.
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: backup
+        description: Constant 'backup'
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; the draft merged properties from other calls in the same file
+      - name: label
+        type: string
+        example: Google Drive | iCloud (UNCONFIRMED)
+        description: Cloud platform the backup went to
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: iCloud not enabled
+    section: Backup
+    description: Fires on iOS when the person starts a cloud backup and isCloudBackupAvailable() returns false. It fires
+      just before the 'iCloud is not enabled' alert is shown, and the backup stops there. It does not fire on Android.
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: backup
+        description: Constant 'backup'
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; the draft merged properties from other calls in the same file
+      - name: label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; the draft merged properties from other calls in the same file
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Ignore how to enable iCloud
+    section: Backup
+    description: Fires on iOS when the person presses the cancel button ('No thanks') on the 'iCloud is not enabled' alert.
+      It does not fire when the person presses 'Show me', which opens the Apple support page and sends 'View how to Enable
+      iCloud'. It also does not fire if the alert is dismissed another way.
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: backup
+        description: Constant 'backup'
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; the draft merged properties from other calls in the same file
+      - name: label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; the draft merged properties from other calls in the same file
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Imported seed phrase
+    section: Wallet import
+    description: Fires after initializeWallet succeeds in the import flow and the app has navigated to the wallet screen. It
+      is called inside InteractionManager.runAfterInteractions, after the optional cloud-backup prompt is navigated to. It
+      does not fire when the import fails or is cancelled. The same success path also runs for imports that are not seed
+      phrases (private key, address, ENS or hardware device id), so the name is broader than what it records. It sends no
+      properties of its own. Its intent event is 'tappedImportButton'.
+    question: How many wallets do people import successfully, compared with how many tap Import?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to the watch and profile-modal events
+      - name: addressOrEnsName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to the watchWallet event
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to the read-only profile modal event
+      - name: input
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to the profile-modal events, where it holds raw user input
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to the imported-wallet profile modal event
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; may be the previous wallet's hash if the
+          new account is not yet active
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: mined_transaction.assets_resolved
+    section: Transactions
+    description: Fires from watchAssetUpdates when polling shows that at least one watched transaction's expected asset
+      changes have appeared and at least one of those transactions has a minedAt timestamp. It fires once per polling
+      pass, not once per transaction. timeToResolve is measured from the oldest mined transaction in that pass, so it can
+      overstate the time for the others. It does not fire for timed-out transactions (see
+      mined_transaction.assets_timed_out) or for transactions without minedAt.
+    question: How long after a transaction is mined do the new balances appear in the app?
+    track_via: client
+    properties:
+      - name: chainId
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; the draft merged it from the timed-out call
+      - name: timeToResolve
+        type: numeric
+        example: "12000"
+        description: Milliseconds from the oldest resolved transaction's minedAt to now. The type in event.ts is optional, but
+          this call always passes a number.
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; the draft merged it from the timed-out call
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: mined_transaction.assets_timed_out
+    section: Transactions
+    description: Fires from watchAssetUpdates once for each watched transaction that has a minedAt timestamp and whose
+      polling time has reached ASSET_DETECTION_TIMEOUT without its asset changes being seen. The transaction is then
+      dropped from the watch list. Transactions without minedAt do not fire it. The event is not sent when assets resolve
+      in time (see mined_transaction.assets_resolved).
+    question: How often do balances fail to update after a transaction is mined?
+    track_via: client
+    properties:
+      - name: chainId
+        type: numeric
+        example: "1 (UNCONFIRMED: other chain ids not observed)"
+        description: Chain id of the timed-out transaction
+      - name: timeToResolve
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; the draft merged it from the resolved call
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        description: Transaction type of the timed-out transaction
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: network_status.offline
+    section: Network
+    description: Fires when NetInfo reports the device has gone from online to offline (not connected, or internet not
+      reachable). With a debounceMs above 0 it fires only after the device has stayed offline for that long, and not if it
+      reconnects first. It does not fire for the first reading after the hook mounts or the app returns to the foreground,
+      because the earlier state is unknown. It also does not fire again while the state stays offline.
+    question: How often and for how many people does the app lose connectivity?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: network_status.reconnected
+    section: Network
+    description: Fires when NetInfo reports a change from offline back to online. It does not fire if the device returns
+      online within the debounce window, before network_status.offline was sent, because the pending offline timer is
+      cancelled instead. It does not fire for the initial reading after mount.
+    question: After going offline, how often does the app get back online?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: pending_transaction.resolved
+    section: Transactions
+    description: Fires from the pending-transaction watcher when a tracked transaction settles with status confirmed. It is
+      sent after the resolution is applied and the transaction is queued for asset-update watching. It does not fire for
+      failed, dropped or otherwise non-confirmed outcomes, or if polling was aborted or the transaction is no longer
+      pending.
+    question: How long do transactions take to confirm, by chain and type?
+    track_via: client
+    properties:
+      - name: chainId
+        type: numeric
+        example: "1 (UNCONFIRMED: other chain ids not observed)"
+        description: Chain the transaction was on
+      - name: timeToResolve
+        type: numeric
+        example: "15000"
+        required: false
+        description: Milliseconds since the transaction's minedAt, to second precision. Undefined when minedAt is not a number.
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        description: Transaction type, for example swap or send
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: refresh_account_data
+    section: Account
+    description: Fires after a user-triggered refresh (the useRefreshAccountData hook's refresh) completes without throwing.
+      duration includes the 1.25 s minimum animation delay, so it is not pure system latency. It does not fire if a
+      refresh is already running, or if refreshAccountData throws.
+    question: How long does a pull-to-refresh take for users, and how often do they refresh?
+    track_via: client
+    properties:
+      - name: duration
+        type: numeric
+        example: "1450.5"
+        description: Milliseconds from start of refresh to completion, via performance.now(), including the 1250 ms minimum
+          refresh animation
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Scanned address QR code
+    section: QR scanner
+    description: "Fires at the start of handleScanAddress, once the scanner has read a QR code that is a plain Ethereum
+      address (starting with 0x and valid, with no ethereum: prefix). It fires right after the success haptic and before
+      the ENS lookup and navigation to the profile sheet. It sends no properties of its own. It does not fire for
+      ethereum: URLs, Rainbow profile URLs, WalletConnect codes or unrecognised codes."
+    question: How many scans are plain wallet addresses, versus WalletConnect, profile or invalid codes?
+    track_via: client
+    properties:
+      - name: qrCodeData
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to the invalid-QR event
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Scanned broken or unsupported QR code
+    section: QR scanner
+    description: Fires in handleScanInvalid when the scanner read a QR code that matches no supported format. It fires right
+      after the error haptic and before the 'could not be recognised' alert, whose OK button re-enables scanning. It does
+      not fire for supported codes. A client-side refusal like this would normally go on error_occurred.
+    question: How often do people scan QR codes the app can't use?
+    track_via: client
+    properties:
+      - name: qrCodeData
+        type: string
+        example: UNCONFIRMED
+        description: Raw decoded content of the scanned QR code. It is arbitrary third-party content and may contain addresses,
+          URLs or text.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is selected
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Scanned Rainbow profile url
+    section: QR Scanner
+    description: "The in-app QR scanner decoded a code that was classified as a Rainbow profile URL
+      (handleScanRainbowProfile). Fires once, right after the success haptic and before the URL is parsed or the
+      address/ENS is validated, so it also fires when the profile address turns out to be invalid and no navigation
+      follows. Not fired for plain addresses, ethereum: URLs, WalletConnect or unrecognised codes."
+    question: How many scans of a QR code end up as a Rainbow profile link, compared with other kinds of QR code?
+    track_via: client
+    properties:
+      - name: qrCodeData
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context; undefined until a wallet is active or if hashing fails
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context; undefined right after wallet creation
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Scanned WalletConnect QR code
+    section: QR Scanner
+    description: The in-app QR scanner decoded a code classified as a WalletConnect URI (handleScanWalletConnect). Fires
+      once on detection, before push-permission check and before pairing is attempted, so it does not tell you whether the
+      pairing succeeded (v1 URIs are never paired).
+    question: How many scans are WalletConnect connection attempts, and how many scans of other kinds?
+    track_via: client
+    properties:
+      - name: qrCodeData
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Show wallet profile modal for ENS address
+    section: Wallet import
+    description: During the import/watch flow, the typed or scanned input is an ENS name (isENSAddressFormat) and it
+      resolved to an address through the mainnet provider. Fires after name resolution succeeds and startImportProfile has
+      been called (wallet profile modal opened, or the import started directly when the modal is disabled). Not fired when
+      resolution returns nothing or throws.
+    question: How many wallet imports or watches start from an ENS name rather than an address or seed phrase?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: 0x-prefixed 42-character address resolved from the ENS name
+        description: Address the ENS name resolved to
+      - name: addressOrEnsName
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: input
+        type: string
+        example: UNCONFIRMED
+        description: The ENS name the user entered (e.g. a name ending in .eth); this is user-entered text
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context; hash of the currently active wallet, not the one
+          being imported
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Show wallet profile modal for imported wallet
+    section: Wallet import
+    description: In the import flow, the input was neither an ENS name, an Unstoppable domain, a valid address nor an
+      address-lookalike, so it was treated as a seed phrase or private key and an account was derived from it
+      (deriveAccountFromWalletInput). Fires after the derived address and reverse ENS lookup succeed and
+      startImportProfile has been called. Not fired if derivation has no address or an error is thrown.
+    question: How many wallet imports with a secret (seed phrase or private key) reach the profile step?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: 0x-prefixed 42-character address derived from the input
+        description: Address derived from the seed phrase or key
+      - name: addressOrEnsName
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: input
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        description: walletResult.type of the derived wallet; the possible values come from deriveAccountFromWalletInput and
+          were not in the code provided
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Show wallet profile modal for read only wallet
+    section: Wallet import
+    description: In the import/watch flow, the input is a valid 0x address (isValidAddress). Fires right after the reverse
+      ENS lookup (fetchReverseRecord) succeeds, before startImportProfile; not fired if that lookup throws. The name says
+      read only, but it fires for any plain address, including when type is 'import', and it fires before the watch_wallet
+      event.
+    question: How many wallet additions begin from a plain address (a watch or read-only wallet)?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: addressOrEnsName
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        description: Reverse-resolved ENS name for the address; equals the input address when no name exists
+      - name: input
+        type: string
+        example: 0x-prefixed 42-character address
+        description: The address the user entered, sanitized
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Show wallet profile modal for Unstoppable address
+    section: Wallet import
+    description: In the import/watch flow, the input is an Unstoppable domain (isUnstoppableAddressFormat) and
+      resolveUnstoppableDomain returned an address. Fires after resolution and startImportProfile have run. Not fired when
+      resolution returns nothing or throws.
+    question: How many wallet imports or watches start from an Unstoppable domain?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: 0x-prefixed 42-character address resolved from the domain
+        description: Address the Unstoppable domain resolved to
+      - name: addressOrEnsName
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: input
+        type: string
+        example: UNCONFIRMED
+        description: The Unstoppable domain the user entered; user-entered text
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Import" button
+    section: Wallet import
+    description: The user pressed the Import (or Watch) button on the import screen, or a caller invoked
+      handlePressImportButton with forceAddress. Fires first thing in the handler, before validation, so it also fires
+      when the input is invalid and the handler returns without doing anything. It is the intent side of the import flow;
+      the outcome is 'Imported seed phrase' (successful imports only).
+    question: How many people press Import, and how many of those reach a successful import?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: addressOrEnsName
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: input
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Toggled an NFT as Hidden
+    section: NFTs
+    description: The user hid or unhid an NFT. Fires inside the mutation after the hidden preference has been saved (init or
+      update through setPreference), once per toggle, with isHidden true when hiding and false when unhiding. Not fired
+      for read-only wallets (the mutation returns early), and not fired if saving the preference throws.
+    question: How many NFTs do people hide or unhide, and from which collections?
+    track_via: client
+    properties:
+      - name: collectionContractAddress
+        type: string
+        example: 0x-prefixed contract address
+        required: false
+        description: Contract address of the NFT's collection; may be null
+      - name: collectionName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Collection name from asset metadata; may be null
+      - name: isHidden
+        type: boolean
+        example: true | false
+        description: true when the NFT was hidden, false when it was unhidden
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: View how to Enable iCloud
+    section: Backup
+    description: On iOS, during a cloud backup, iCloud was found unavailable and an alert was shown; this fires when the
+      user taps the 'show me' button in that alert, just as the Apple support page opens in the browser. Not fired for 'no
+      thanks' (a separate event) or on Android. It is the follow-up to 'iCloud not enabled'.
+    question: Of the people who can't back up because iCloud is off, how many ask how to turn it on?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: backup
+        description: Always the literal 'backup' at this call
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: label
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Viewed ENS profile
+    section: Profiles
+    description: The user picked 'view profile' on their own avatar (onAvatarViewProfile in useOnAvatarPress). Fires on that
+      tap, before navigation to the profile sheet. It covers only the user's own ENS profile from that avatar action, not
+      other ways to open the profile sheet.
+    question: How many people open their own ENS profile from the avatar menu?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: profiles
+        description: Always the literal 'profiles' at this call
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        description: The account's ENS name; empty string if none
+      - name: from
+        type: string
+        example: Transaction list
+        description: Hard-coded to 'Transaction list' at this call, although the hook is shared by other avatar screens
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the active wallet address)
+        required: false
+        description: Added by analytics.track from the current wallet context
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by analytics.track from the current wallet context
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: watch_wallet
+    section: Wallet import
+    description: "Fires on the client when a person adds a read-only (watched) wallet through the import flow, i.e.
+      `handlePressImportButton` is called with `type === 'watch'`. It fires once the typed or passed-in input has resolved
+      to an address: an ENS name via the provider, an Unstoppable domain, a valid 0x address (after the reverse-ENS
+      lookup), or a value that `deriveAccountFromWalletInput` accepts. It fires before `startImportProfile` opens the
+      profile sheet or imports, so it records the intent to watch, not a completed import. It does not fire for `type ===
+      'import'`, for an ENS or Unstoppable name that fails to resolve, for a malformed address, or when the ENS lookup
+      throws. Nothing in this event reports whether the wallet was added afterwards."
+    question: How many watch-only wallets do people try to add, and how do they enter them (ENS name, Unstoppable domain,
+      raw address)?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: 0x… 42-character hex address (the resolved address for ENS and Unstoppable input, the raw input otherwise)
+        description: Wallet address being watched. Sent in plain text on every call path.
+      - name: addressOrEnsName
+        type: string
+        example: vitalik.eth | 0x… hex address | name.crypto
+        description: The ENS or Unstoppable name typed when the input was a name. For raw addresses it is the reverse-ENS
+          record, which can be empty or null when none exists, or the address itself if the lookup failed.
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: input
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: type
+        type: string
+        example: UNCONFIRMED
+        required: false
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet's address. The analytics client adds it from the stored wallet context, not the
+          call site. It is the active wallet, not the one being watched, and is undefined if the context isn't set.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics client from the wallet context. It can be undefined, for
+          example right after the first wallet is created.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
