@@ -60,7 +60,7 @@ on:
         description: The generated_at of the audit the findings were picked from (for fix; optional)
         required: false
       continue_usd:
-        description: "For initial-audit or refresh-map after it paused at its cost cap: how much more it may spend (USD) to finish"
+        description: "For initial-audit, refresh-map or tracking after it paused at its cost cap: how much more it may spend (USD) to finish"
         required: false
 
 permissions:
@@ -86,7 +86,7 @@ jobs:
           path: .datalyze/cache
           key: datalyze-method-${{ github.run_id }}
           restore-keys: datalyze-method-
-      - uses: joindatalyze/tracking-agent@v1.3.0-rc.1
+      - uses: joindatalyze/tracking-agent@v1.4.0-rc.1
         with:
           job: rules
         env:
@@ -101,9 +101,9 @@ jobs:
       (github.event_name == 'pull_request_review' && github.event.pull_request.head.repo.full_name == github.repository && github.event.review.state == 'approved') ||
       (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'audit' || inputs.job == 'fix' || inputs.job == 'refresh-map' || (inputs.job == 'tracking' && inputs.pr != '')))
     runs-on: ubuntu-latest
-    # The first audit (and Refresh the map) of a large codebase can take hours; it checkpoints after every batch, so a
-    # run that hits the limit resumes on Re-run. Everything else stops at an hour.
-    timeout-minutes: ${{ (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'refresh-map')) && 360 || 60 }}
+    # The first audit, Refresh the map and implementing a first plan can take hours on a large codebase; each
+    # checkpoints after every batch, so a run that hits the limit resumes on Re-run. Everything else stops at an hour.
+    timeout-minutes: ${{ ((github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'refresh-map' || inputs.job == 'tracking')) || github.event.pull_request.head.ref == 'datalyze/initial-plan') && 360 || 60 }}
     # One run per PR at a time; runs are idempotent, so a queued run picks up where the last one left
     # off. The first audit, the audit and fix runs have a group each.
     concurrency:
@@ -138,8 +138,17 @@ jobs:
             datalyze-audit-${{ github.run_id }}-
             datalyze-audit-
 
+      # A PR's checkpoint while it's implemented area by area: Re-run, Retry and Continue replay the areas done.
+      - if: github.event_name != 'workflow_dispatch' || inputs.job == 'tracking'
+        uses: actions/cache/restore@v4
+        with:
+          path: .datalyze/cache/runs
+          key: datalyze-pr-${{ github.event.pull_request.number || inputs.pr }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            datalyze-pr-${{ github.event.pull_request.number || inputs.pr }}-
+
       # Model access: Anthropic, with the key in ANTHROPIC_API_KEY. Nothing goes through Datalyze.
-      - uses: joindatalyze/tracking-agent@v1.3.0-rc.1
+      - uses: joindatalyze/tracking-agent@v1.4.0-rc.1
         with:
           job: ${{ (github.event_name == 'workflow_dispatch' && (inputs.job == 'initial-audit' || inputs.job == 'audit' || inputs.job == 'fix' || inputs.job == 'refresh-map')) && inputs.job || 'tracking' }}
         env:
@@ -155,10 +164,15 @@ jobs:
         with:
           path: .datalyze/cache/runs
           key: datalyze-audit-${{ github.run_id }}-${{ github.run_attempt }}
+      - if: always() && (github.event_name != 'workflow_dispatch' || inputs.job == 'tracking')
+        uses: actions/cache/save@v4
+        with:
+          path: .datalyze/cache/runs
+          key: datalyze-pr-${{ github.event.pull_request.number || inputs.pr }}-${{ github.run_id }}-${{ github.run_attempt }}
       # A run cancelled or timed out mid-way would leave "Analysing" or "Implementing" pending: this
       # turns it into an error with a Retry note. It does nothing when the run finished.
       - if: (cancelled() || failure()) && (github.event_name != 'workflow_dispatch' || inputs.job == 'tracking')
-        uses: joindatalyze/tracking-agent@v1.3.0-rc.1
+        uses: joindatalyze/tracking-agent@v1.4.0-rc.1
         with:
           job: cleanup
         env:
@@ -183,7 +197,7 @@ jobs:
           path: .datalyze/cache
           key: datalyze-method-${{ github.run_id }}
           restore-keys: datalyze-method-
-      - uses: joindatalyze/tracking-agent@v1.3.0-rc.1
+      - uses: joindatalyze/tracking-agent@v1.4.0-rc.1
         with:
           job: fork
         env:
@@ -204,7 +218,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: joindatalyze/tracking-agent@v1.3.0-rc.1
+      - uses: joindatalyze/tracking-agent@v1.4.0-rc.1
         with:
           job: sync-sheet
         env:
