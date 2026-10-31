@@ -1,0 +1,81 @@
+events:
+  - name: error_boundary.reset
+    section: Error handling
+    description: Fires on the client when the Sentry error boundary is reset (Sentry.ErrorBoundary onReset). In the code,
+      the only caller of resetError is the 'Restart Rainbow' button on the crash fallback (Fallback.tsx handleRestart), so
+      it fires when the person taps that button, right after a RainbowError is logged. It does not fire when the fallback
+      is shown (that is error_boundary.viewed), nor when the person just closes or leaves the app. A viewed with no
+      matching reset means the person abandoned the crash screen. Not sent when IS_TEST is true or doNotTrack is set. The
+      carried error, componentStack and eventId are the values of the error being reset; eventId may be '' here because
+      Sentry can pass null.
+    question: Of the people who see the crash screen, how many tap Restart?
+    track_via: client
+    properties:
+      - name: componentStack
+        type: string
+        example: UNCONFIRMED
+        description: React component stack of the error being reset; empty string '' when none
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        description: The error that triggered the boundary, passed as received (typed unknown)
+      - name: eventId
+        type: string
+        example: UNCONFIRMED
+        description: Sentry event ID of the original error; empty string '' when none (Sentry can pass null on reset)
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hashed active wallet address, added by analytics.track from the stored wallet context, not by this call;
+          absent when no wallet context is set
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track from the stored wallet context, not by this call;
+          absent when no wallet context is set or the wallet type is unknown
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: error_boundary.viewed
+    section: Error handling
+    description: Fires on the client when a render error in the app reaches the top-level Sentry error boundary
+      (Sentry.ErrorBoundary onError in src/app/error-boundary/ErrorBoundary.tsx), at the moment the crash fallback screen
+      replaces the UI. It fires once per caught error, before the person does anything on the fallback; it is not the
+      restart tap (that is error_boundary.reset). It is not sent when IS_TEST is true (the boundary is replaced by a
+      pass-through) or when the user has doNotTrack set. Errors thrown outside React rendering (async code, event
+      handlers) don't reach the boundary and don't fire it.
+    question: How often do people hit the crash screen, and how many distinct errors or screens account for it?
+    track_via: client
+    properties:
+      - name: componentStack
+        type: string
+        example: UNCONFIRMED
+        description: React component stack at the point of the error; empty string '' when React gives none
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        description: The caught error value, passed as received (typed unknown, normally an Error object); not converted to a
+          string in the call
+      - name: eventId
+        type: string
+        example: UNCONFIRMED
+        description: Sentry event ID of the captured error; empty string '' when none is available
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hashed active wallet address, added by analytics.track from the stored wallet context, not by this call;
+          absent when no wallet context is set
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track from the stored wallet context, not by this call;
+          absent when no wallet context is set or the wallet type is unknown
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

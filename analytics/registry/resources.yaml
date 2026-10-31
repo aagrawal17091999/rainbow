@@ -1,0 +1,46 @@
+events:
+  - name: add_favorite_token
+    section: Favorites
+    description: Fires on the client when a token that is not yet in the user's favorites is starred, as called from
+      `toggleFavorite` (src/resources/favorites.ts:169), which the swap token list's CoinRow calls
+      (src/__swaps__/screens/Swap/components/CoinRow.tsx:101). It fires after `fetchMetadata` for the token has resolved,
+      and just before the favorites store is updated with that metadata. It does not fire when an already-favorited token
+      is un-favorited (that branch only removes it from the store, with no event). It also does not fire if the metadata
+      fetch throws or returns no entry for the token, because `metadata[uniqueId]` is read first. The token address is
+      lowercased and the chain defaults to mainnet when none is passed. Nothing is sent when analytics is disabled
+      (do-not-track or test).
+    question: How many tokens do users favorite per week, on which networks, and which tokens are favorited most?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: 0x6b175474e89094c44da98b954eedeac495271d0f (a lowercased token contract address, or the ETH placeholder address)
+        description: Contract address of the favorited token, lowercased. It is the token's address, not the user's wallet.
+      - name: chainId
+        type: numeric
+        example: 1 | 10 | 8453 | 42161 (values of the ChainId enum, i.e. EVM chain ids)
+        description: Numeric chain id of the network the token is on. Defaults to mainnet (1).
+      - name: name
+        type: string
+        example: Dai Stablecoin | Wrapped Ether
+        description: Token name from the fetched metadata, not a user-entered value.
+      - name: symbol
+        type: string
+        example: DAI | WETH | USDC
+        description: Token ticker symbol from the fetched metadata.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the current wallet address. The analytics client adds it to every event, and the call site does not
+          pass it. It is left out when no wallet address is set.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the current wallet. The analytics client adds it to every event, and the call site does not pass
+          it. It is left out when the wallet type is unknown, for example right after a wallet is created.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

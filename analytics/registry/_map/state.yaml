@@ -1,0 +1,339 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: state
+surfaces:
+  - id: routes-pair-hardware-wallet-error-sheet
+    kind: screen
+    anchor: src/features/hardware-wallet/screens/PairHardwareWalletErrorSheet.tsx#PairHardwareWalletErrorSheet
+    path: Routes.PAIR_HARDWARE_WALLET_ERROR_SHEET
+    actions:
+      - name: Reconnect Ledger after unlock or open Ethereum app prompt
+        importance: secondary
+        events: []
+  - id: routes-pair-hardware-wallet-intro-sheet
+    kind: screen
+    anchor: src/features/hardware-wallet/screens/PairHardwareWalletIntroSheet.tsx#PairHardwareWalletIntroSheet
+    path: Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET
+    actions:
+      - name: Start pairing a new Ledger
+        importance: core
+        events: []
+      - name: Open Ledger website to learn more
+        importance: incidental
+        events: []
+  - id: routes-pair-hardware-wallet-search-sheet
+    kind: screen
+    anchor: src/features/hardware-wallet/screens/PairHardwareWalletSearchSheet.tsx#PairHardwareWalletSearchSheet
+    path: Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET
+    actions:
+      - name: Find and connect a Ledger device over Bluetooth
+        importance: core
+        events: []
+      - name: Continue to signing step after device connected
+        importance: core
+        events: []
+      - name: Cancel Ledger pairing
+        importance: incidental
+        events: []
+  - id: routes-portal
+    kind: screen
+    anchor: src/screens/Portal/index.tsx#Portal
+    path: Routes.PORTAL
+    actions: []
+  - id: routes-wallet-connect-redirect-sheet
+    kind: screen
+    anchor: src/screens/WalletConnectRedirectSheet.tsx#WalletConnectRedirectSheet
+    path: Routes.WALLET_CONNECT_REDIRECT_SHEET
+    actions: []
+  - id: routes-hardware-wallet-tx-navigator
+    kind: screen
+    anchor: src/features/hardware-wallet/navigation/HardwareWalletTxNavigator.tsx#HardwareWalletTxNavigator
+    path: Routes.HARDWARE_WALLET_TX_NAVIGATOR
+    actions:
+      - name: Submit transaction signed with Ledger once device is connected
+        importance: core
+        events: []
+  - id: routes-profile-screen
+    kind: screen
+    anchor: src/screens/ActivitySheetScreen.tsx#ActivitySheetScreen
+    path: Routes.PROFILE_SCREEN
+    actions:
+      - name: Switch wallet from activity screen
+        importance: secondary
+        events: []
+  - id: routes-ens-additional-records-sheet
+    kind: screen
+    anchor: src/features/ens/screens/ENSAdditionalRecordsSheet.tsx#ENSAdditionalRecordsSheet
+    path: Routes.ENS_ADDITIONAL_RECORDS_SHEET
+    actions:
+      - name: Add or remove an ENS profile record field
+        importance: secondary
+        events: []
+  - id: routes-select-ens-sheet
+    kind: screen
+    anchor: src/features/ens/screens/SelectENSSheet.tsx#SelectENSSheet
+    path: Routes.SELECT_ENS_SHEET
+    actions:
+      - name: Select an ENS name
+        importance: secondary
+        events: []
+  - id: routes-explain-sheet
+    kind: screen
+    anchor: src/screens/ExplainSheet.tsx#ExplainSheet
+    path: Routes.EXPLAIN_SHEET
+    actions:
+      - name: Dismiss explainer
+        importance: incidental
+        events: []
+      - name: Read more about a topic
+        importance: incidental
+        events: []
+  - id: routes-external-link-warning-sheet
+    kind: screen
+    anchor: src/screens/ExternalLinkWarningSheet.tsx#ExternalLinkWarningSheet
+    path: Routes.EXTERNAL_LINK_WARNING_SHEET
+    actions:
+      - name: Visit external link
+        importance: incidental
+        events: []
+      - name: Go back from external link warning
+        importance: incidental
+        events: []
+  - id: routes-send-confirmation-sheet
+    kind: screen
+    anchor: src/features/transfer/screens/SendConfirmationSheet.tsx#SendConfirmationSheet
+    path: Routes.SEND_CONFIRMATION_SHEET
+    actions:
+      - name: Confirm and send assets
+        importance: core
+        events: []
+      - name: Choose ENS transfer options
+        importance: secondary
+        events: []
+  - id: routes-network-selector
+    kind: screen
+    anchor: src/features/network/screens/NetworkSelector.tsx#NetworkSelector
+    path: Routes.NETWORK_SELECTOR
+    actions:
+      - name: Select a network
+        importance: secondary
+        events: []
+      - name: Customize pinned networks
+        importance: secondary
+        events: []
+      - name: Search networks
+        importance: incidental
+        events: []
+  - id: routes-log-sheet
+    kind: screen
+    anchor: src/features/debug/screens/LogSheet.tsx#LogSheet
+    path: Routes.LOG_SHEET
+    actions: []
+  - id: routes-perps-trade-history-screen
+    kind: screen
+    anchor: src/features/perps/screens/perps-trade-history/PerpsTradeHistoryScreen.tsx#PerpsTradeHistoryScreen
+    path: Routes.PERPS_TRADE_HISTORY_SCREEN
+    actions:
+      - name: View perps trade history
+        importance: secondary
+        events: []
+  - id: routes-perps-explain-sheet
+    kind: screen
+    anchor: src/features/perps/screens/perps-explain-sheet/PerpsExplainSheet.tsx#PerpsExplainSheet
+    path: Routes.PERPS_EXPLAIN_SHEET
+    actions:
+      - name: Step through perps explainer
+        importance: incidental
+        events: []
+      - name: Dismiss perps explainer
+        importance: incidental
+        events: []
+  - id: routes-polymarket-event-screen
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-event-screen/PolymarketEventScreen.tsx#PolymarketEventScreen
+    path: Routes.POLYMARKET_EVENT_SCREEN
+    actions:
+      - name: Open a market from an event
+        importance: secondary
+        events: []
+      - name: View event details and outcomes
+        importance: incidental
+        events: []
+  - id: routes-polymarket-market-sheet
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-market-sheet/PolymarketMarketSheet.tsx#PolymarketMarketSheet
+    path: Routes.POLYMARKET_MARKET_SHEET
+    actions:
+      - name: Start buying a market outcome
+        importance: core
+        events: []
+      - name: Change chart timeframe
+        importance: incidental
+        events: []
+  - id: routes-polymarket-market-description-sheet
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-market-description-sheet/PolymarketMarketDescriptionSheet.tsx#PolymarketMarketDescriptionSheet
+    path: Routes.POLYMARKET_MARKET_DESCRIPTION_SHEET
+    actions:
+      - name: Read market rules
+        importance: incidental
+        events: []
+      - name: Open a link in the rules
+        importance: incidental
+        events: []
+  - id: routes-polymarket-account-screen
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-account-screen/PolymarketAccountScreen.tsx#PolymarketAccountScreen
+    path: Routes.POLYMARKET_ACCOUNT_SCREEN
+    actions:
+      - name: Refresh account balance and positions
+        importance: incidental
+        events: []
+      - name: View open positions
+        importance: secondary
+        events: []
+  - id: routes-polymarket-navigator
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-navigator/PolymarketNavigator.tsx#PolymarketNavigator
+    path: Routes.POLYMARKET_NAVIGATOR
+    actions: []
+  - id: routes-polymarket-explain-sheet
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-learn-sheet/PolymarketExplainSheet.tsx#PolymarketExplainSheet
+    path: Routes.POLYMARKET_EXPLAIN_SHEET
+    actions:
+      - name: Step through the Polymarket explainer
+        importance: incidental
+        events: []
+      - name: Finish the explainer (Get started)
+        importance: secondary
+        events: []
+  - id: routes-rnbw-rewards-estimate-sheet
+    kind: screen
+    anchor: src/features/rnbw-rewards/screens/rnbw-rewards-estimate-sheet/RnbwRewardsEstimateSheet.tsx#RnbwRewardsEstimateSheet
+    path: Routes.RNBW_REWARDS_ESTIMATE_SHEET
+    actions:
+      - name: View estimated rewards for a transaction
+        importance: incidental
+        events: []
+  - id: routes-rnbw-staking-learn-screen
+    kind: screen
+    anchor: src/features/rnbw-staking/screens/rnbw-staking-learn-screen/RnbwStakingLearnScreen.tsx#RnbwStakingLearnScreen
+    path: Routes.RNBW_STAKING_LEARN_SCREEN
+    actions:
+      - name: Enable staking (continue to staking screen)
+        importance: core
+        events: []
+      - name: Read how staking works
+        importance: incidental
+        events: []
+  - id: routes-wallet-error-sheet
+    kind: screen
+    anchor: src/components/wallet-error/WalletErrorSheet.tsx#WalletErrorSheet
+    path: Routes.WALLET_ERROR_SHEET
+    actions:
+      - name: Restore wallet from backup after wallet error
+        importance: core
+        events: []
+      - name: Dismiss wallet error sheet
+        importance: incidental
+        events: []
+  - id: routes-sports-screen
+    kind: screen
+    anchor: src/features/sports/ui/SportsScreen.tsx#SportsScreen
+    path: Routes.SPORTS_SCREEN
+    actions:
+      - name: Open a sports game
+        importance: secondary
+        events: []
+  - id: routes-profile-screen-2
+    kind: screen
+    anchor: src/screens/ProfileScreen.tsx#ProfileScreen
+    path: Routes.PROFILE_SCREEN
+    actions:
+      - name: Switch wallet
+        importance: secondary
+        events: []
+      - name: Browse activity list
+        importance: incidental
+        events: []
+  - id: routes-rnbw-membership-screen
+    kind: screen
+    anchor: src/features/rnbw-membership/screens/rnbw-membership-screen/RnbwMembershipScreen.tsx#RnbwMembershipScreen
+    path: Routes.RNBW_MEMBERSHIP_SCREEN
+    actions:
+      - name: Stake RNBW
+        importance: core
+        events: []
+      - name: Claim RNBW rewards
+        importance: core
+        events: []
+      - name: Claim RNBW airdrop
+        importance: core
+        events: []
+      - name: View membership tier and staking earnings
+        importance: incidental
+        events: []
+  - id: routes-view-cloud-backups
+    kind: screen
+    anchor: src/screens/SettingsSheet/components/Backups/ViewCloudBackups.tsx#ViewCloudBackups
+    path: Routes.VIEW_CLOUD_BACKUPS
+    actions:
+      - name: Select a cloud backup to restore
+        importance: core
+        events: []
+      - name: Refresh cloud backups list
+        importance: incidental
+        events: []
+  - id: routes-view-wallet-delegations
+    kind: screen
+    anchor: src/features/delegation/screens/ViewWalletDelegations.tsx#ViewWalletDelegations
+    path: Routes.VIEW_WALLET_DELEGATIONS
+    actions:
+      - name: Revoke a network delegation
+        importance: core
+        events: []
+      - name: Enable or disable smart wallet
+        importance: secondary
+        events: []
+      - name: View delegated address on block explorer
+        importance: incidental
+        events: []
+events:
+  performance.time_to_sign:
+    fires_in: src/state/performance/performance.ts#logPerformance
+    trigger: The last timed step of a signing flow finishes (swap, send, deposit, or the dapp-request sheet closing). It also fires when the
+      person cancels.
+    moment: after success
+    conditions:
+      - "the wrapped function was created with isEndOfFlow: true"
+      - the wrapped function returned, resolved, or threw synchronously
+      - the active wallet is not a hardware wallet
+    path:
+      - src/features/dapp-request/screens/SignTransactionSheet.tsx#SignTransactionSheet
+      - src/state/performance/performance.ts#executeFn
+      - src/state/performance/performance.ts#logPerformance
+    certainty: sure
+  performance.time_to_sign.operation:
+    fires_in: src/state/performance/performance.ts#logPerformance
+    trigger: Any timed step of a signing flow finishes, such as keychain read, authentication, nonce, sign or broadcast.
+    moment: after success
+    conditions:
+      - the function wrapped by executeFn returned, resolved, or threw synchronously
+      - the active wallet is not a hardware wallet
+    path:
+      - src/features/dapp-request/screens/SignTransactionSheet.tsx#SignTransactionSheet
+      - src/state/performance/performance.ts#executeFn
+      - src/state/performance/performance.ts#logPerformance
+    certainty: sure
+  wallet_initialization.failed:
+    fires_in: src/state/wallets/initializeWallet.ts#initializeWallet
+    trigger: Setting up or switching to a wallet throws an error, other than the wallet already being imported.
+    moment: after failure
+    conditions:
+      - initializeWallet threw
+      - the error is not WalletAlreadyExistsError
+    path:
+      - src/screens/WelcomeScreen/WelcomeScreen.tsx#WelcomeScreen
+      - src/state/wallets/initializeWallet.ts#initializeWallet
+    certainty: sure

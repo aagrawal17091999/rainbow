@@ -1,0 +1,47 @@
+events:
+  - name: f2c.provider.flow_completed
+    section: Fiat on-ramp
+    description: Fires on the client when the app is opened through the `/f2c` deeplink
+      (https://rnbw.app/f2c?provider=…&sessionId=…) that a fiat on-ramp provider redirects to after its flow in an
+      external browser. Fires once per received deeplink that has both `provider` and `sessionId`. Deeplinks missing
+      either are logged and ignored, with no event. For `ramp`, the only way back to the app is after a successful
+      purchase, so `success` is sent as true. For other providers `success` is omitted, meaning unknown, not failed. It
+      does not mean a transaction exists. That arrives later as `f2c.transaction_received`. Providers with SDK callbacks
+      (e.g. Ratio) are documented in the code as firing this event from the SDK callback instead, but no such call was
+      found in the code read. Closes the intent `f2c.provider.flow_opened`. Because the return arrives through an external
+      callback, a flow opened and never completed is abandonment, not a `success` value.
+    question: Of the people who open a fiat on-ramp provider, how many come back to the app, per provider?
+    track_via: client
+    properties:
+      - name: provider
+        type: string
+        example: ramp | coinbase | moonpay | stripe
+        description: Provider id read from the deeplink query string and cast to FiatProviderName without validation. A value
+          outside the enum is possible if the link is malformed.
+      - name: sessionId
+        type: string
+        example: nanoid string, e.g. V1StGXR8_Z5jdHi6B-myT (UNCONFIRMED exact length)
+        description: Locally generated id (nanoid) created when the provider flow was opened and passed back through the
+          redirect URI. Matches `sessionId` on `f2c.provider.flow_opened`.
+      - name: success
+        type: boolean
+        example: "true"
+        required: false
+        description: true only for the ramp deeplink. Omitted for every other provider (outcome unknown). Never sent as false.
+          The draft listed this as string, but the code sends a boolean.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics client to every event, not by this call. It is a hash of the active wallet address.
+          It is undefined when no wallet is active.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics client to every event, not by this call. It is the type of the active wallet. It can
+          be undefined, for example right after wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

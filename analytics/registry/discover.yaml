@@ -1,0 +1,89 @@
+events:
+  - name: Search Query
+    section: Discover
+    description: Fires on the client when the user clears the Discover search input (taps the clear button) and the text
+      currently typed is longer than 1 character, and only when the input is the Discover one (isDiscover). It is not
+      fired per keystroke, on submit, or when the user cancels search or navigates away without pressing clear. Carries
+      the raw typed text, so one event per cleared search, not per search performed.
+    question: How long are the searches people abandon or clear in Discover, and how often do they search?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: discover
+        description: Literal 'discover' at the only call site
+      - name: length
+        type: numeric
+        example: "5"
+        description: Character count of the search text at the moment of clearing (always > 1)
+      - name: query
+        type: string
+        example: UNCONFIRMED
+        description: Raw text the user typed into Discover search. User free text, must not be sent; replace with length only.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is set yet
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined right after wallet creation
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped Search
+    section: Discover
+    description: "Fires on the client when the user opens Discover search: onTapSearch runs while search is not already
+      active and sets isSearching to true. It does not fire when search is already active (that case only scrolls to top
+      and focuses the input)."
+    question: How many Discover visits turn into a search?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: discover
+        description: Literal 'discover' at the only call site
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is set yet
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined right after wallet creation
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Time spent on the Discover screen
+    section: Discover
+    description: "Fires on the client when the user leaves the Discover screen after having been on it: a timer starts when
+      the Discover route becomes active and the event is sent when it stops being active. It is skipped if the route
+      changed to the network selector (the timer keeps running across it). Measures elapsed wall-clock time on screen,
+      including time the app is backgrounded while on that screen; not sent if the app is killed on the screen."
+    question: How long do people spend in Discover per visit?
+    track_via: client
+    properties:
+      - name: durationInMs
+        type: numeric
+        example: UNCONFIRMED
+        description: Milliseconds from Discover becoming active to leaving it (performance.now difference, may be fractional)
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper; absent when no address is set yet
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper; may be undefined right after wallet creation
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

@@ -1,0 +1,40 @@
+events:
+  - name: app_store_review.prompted
+    section: App Store Review
+    description: The app asked the OS to show the store review dialog. Fires on the client in promptForReview
+      (src/utils/reviewAlert.ts:108), right after `StoreReview.requestReview()` resolves and the prompt timestamp is
+      saved. It means the request was issued, not that the user saw the dialog or left a rating (the OS decides). It does
+      not fire if requestReview throws; that is only logged. Automatic prompts need the action's dispatch count to reach
+      its threshold, at least 1 week since the last prompt, and fewer than 3 prompts in the last 52 weeks. A manual
+      `UserPrompt` (the review row in Settings) skips those checks. Nothing is sent in test builds. In dev builds only
+      `UserPrompt` runs. On iOS only `UserPrompt` runs, because automatic prompts are disabled (APP-3885).
+    question: How often is the store review prompt requested, and which in-app action triggers it?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UserPrompt | AddingContact | EnsNameSearch | EnsNameRegistration | ViewedWalletScreen
+        description: The ReviewPromptAction that triggered the prompt. UserPrompt means the user tapped the review row in
+          Settings. Values come from the ReviewPromptAction enum in src/storage/schema.ts.
+      - name: promptCount
+        type: numeric
+        example: 1 | 2 | 3
+        description: Number of review prompts this device has made, including this one (stored prompt timestamps + 1). It is a
+          number in the event schema (src/analytics/event.ts:1159), not a string. Manual UserPrompt calls are also stored,
+          so the count can pass 3.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the selected wallet address. The analytics client adds it to every event as default metadata. It is
+          missing when no wallet address is set yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the selected wallet. The analytics client adds it to every event as default metadata. It can be
+          undefined, for example right after wallet creation or before an address exists.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

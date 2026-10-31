@@ -1,0 +1,119 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: asset_list
+surfaces:
+  - id: routes-select-unique-token-sheet
+    kind: screen
+    anchor: src/screens/SelectUniqueTokenSheet.tsx#SelectUniqueTokenSheet
+    path: Routes.SELECT_UNIQUE_TOKEN_SHEET
+    actions:
+      - name: Select an NFT from the list
+        importance: secondary
+        events: []
+  - id: routes-wallet-screen
+    kind: screen
+    anchor: src/screens/WalletScreen/WalletScreen.tsx#WalletScreen
+    path: Routes.WALLET_SCREEN
+    actions:
+      - name: View wallet token list
+        importance: core
+        events:
+          - token_list
+      - name: Open My QR Code (receive)
+        importance: secondary
+        events:
+          - Tapped "My QR Code"
+      - name: Load more NFT collections
+        importance: incidental
+        events: []
+events:
+  claimable_panel.opened:
+    fires_in: src/components/asset-list/RecyclerAssetList2/Claimable.tsx#Claimable
+    trigger: The person presses a claimable row in the wallet home asset list.
+    moment: before the request
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/asset-list/RecyclerAssetList2/Claimable.tsx#Claimable.onPress
+    certainty: sure
+  Pressed Button:
+    fires_in:
+      - src/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton.tsx#DiscoverMoreButton
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    trigger: The person presses the Discover more button on the wallet screen, or presses Add another wallet in the wallet switcher sheet.
+    moment: before the request
+    conditions:
+      - "For DiscoverMoreButton: the discover_enabled remote config is on. The handler returns early if it is off."
+      - "For AddAnotherWalletButton: no condition. It fires before the sheet closes and the add-wallet flow opens."
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton.tsx#DiscoverMoreButton.handlePressDiscover
+    certainty: sure
+  Tapped "Add Cash":
+    fires_in:
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#BuyButton
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#SendButton
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#SwapButton
+    trigger: The person presses the Buy / Add Cash button in the home-screen action row.
+    moment: before the request
+    conditions:
+      - The wallet is not read-only, or enableActionsOnReadOnlyWallet is on. Otherwise navigateToAddCash shows a watching alert and never
+        runs the callback.
+      - The wallet is not damaged. A damaged wallet opens the wallet error sheet instead.
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#ProfileActionButtonsRow
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#BuyButton.handlePress
+    certainty: sure
+  Tapped "My QR Code":
+    fires_in: src/components/asset-list/RecyclerAssetList2/index.tsx#handlePressMenuItem
+    trigger: The person picks the menu item that opens the receive modal (My QR Code) in the home-screen navbar menu.
+    moment: before the request
+    conditions:
+      - The chosen menu route is Routes.RECEIVE_MODAL.
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#handlePressMenuItem
+    certainty: sure
+  Tapped "Send":
+    fires_in:
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#BuyButton
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#SendButton
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#SwapButton
+    trigger: The person presses Send in the home-screen action row.
+    moment: before the request
+    conditions:
+      - The wallet is not read-only, or enableActionsOnReadOnlyWallet is on. Otherwise a watching alert shows instead.
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#ProfileActionButtonsRow
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#BuyButton.handlePress
+    certainty: sure
+  Tapped "Swap":
+    fires_in:
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#BuyButton
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#SendButton
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#SwapButton
+    trigger: The person presses Swap in the home-screen action row.
+    moment: before the request
+    conditions:
+      - The wallet is not read-only, or enableActionsOnReadOnlyWallet is on. Otherwise a watching alert shows instead.
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#ProfileActionButtonsRow
+      - src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx#BuyButton.handlePress
+    certainty: sure

@@ -1,0 +1,22 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: resources
+surfaces: []
+events:
+  add_favorite_token:
+    fires_in: src/resources/favorites.ts#toggleFavorite
+    trigger: The person stars a token that isn't in their favorites yet, in the swap token list or the exchange/discover token list.
+    moment: after success
+    conditions:
+      - the token is not already in the favorites store
+      - the metadata fetch for the token resolved and has an entry for it
+      - analytics is enabled (not do-not-track or test)
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/components/SwapInputAsset.tsx#SwapInputAsset
+      - src/__swaps__/screens/Swap/components/TokenList/TokenList.tsx#TokenList
+      - src/__swaps__/screens/Swap/components/TokenList/TokenToBuyList.tsx#TokenToBuyList
+      - src/__swaps__/screens/Swap/components/TokenList/TokenToBuyList.tsx#MemoizedCoinRow
+      - src/__swaps__/screens/Swap/components/CoinRow.tsx#CoinRow
+      - src/resources/favorites.ts#toggleFavorite
+    certainty: sure

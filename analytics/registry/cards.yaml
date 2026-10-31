@@ -1,0 +1,115 @@
+events:
+  - name: buy_button.pressed
+    section: Cards
+    description: Fires on the client when a person presses a Buy / Add Cash entry point (the ETH card's buy button in
+      EthCard, or BuyActionButton in sheets), once navigateToAddCash has resolved the target route and the app has called
+      navigate(route). It does not fire when the wallet is damaged (the app opens the wallet error sheet and returns
+      first, in both EthCard and BuyActionButton). It records the press, not a completed purchase or deposit. Nothing in
+      this code tells you whether the person finished buying.
+    question: How many people press Buy / Add Cash, from which entry point and screen, and how does that vary by wallet type?
+    track_via: client
+    properties:
+      - name: cardName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Listed in the draft, but no buy_button.pressed call sends it. See migration.
+      - name: cardType
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Listed in the draft, but no buy_button.pressed call sends it. See migration.
+      - name: componentName
+        type: string
+        example: EthCard | BuyActionButton
+        description: Component that holds the pressed button. Sent from both call sites (EthCard.tsx:74,
+          BuyActionButton.tsx:32). Plays the role of entry_point.
+      - name: routeName
+        type: string
+        example: UNCONFIRMED
+        description: Name of the current React Navigation route, from useRoute().
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address. Added by the analytics wrapper (getWalletContext), not by the call site.
+          Missing when the account address is empty.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Kind of the active wallet. Added by the analytics wrapper. Can be undefined, for example just after wallet
+          creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: card.pressed
+    section: Cards
+    description: "Fires on the client when a person taps a card on a home or wallet screen. It fires inside the press
+      handler, before or alongside navigation to the card's destination. Call sites: the ETH card, which opens the asset
+      sheet and only fires when ethAsset.native is not null; LearnCard, which fires first and then opens the learn web
+      view; ENSCreateProfileCard and ENSSearchCard, which only fire when the wallet is not read-only (or actions on
+      read-only wallets are enabled). A watched wallet pressing an ENS card gets an alert and no event. It records the
+      tap, not whatever the card leads to."
+    question: Which home cards do people tap, on which screen, and how does that differ by wallet type?
+    track_via: client
+    properties:
+      - name: cardName
+        type: string
+        example: EthCard | LearnCard | ENSCreateProfileCard | ENSSearchCard
+        description: Component name of the tapped card, a hard-coded string at each call site.
+      - name: cardType
+        type: string
+        example: stretch | square
+        description: Card layout. EthCard and ENSCreateProfileCard send 'stretch', ENSSearchCard sends 'square'. LearnCard
+          passes its CardType prop, whose full set of values is UNCONFIRMED.
+      - name: componentName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Listed in the draft, but no card.pressed call sends it. See migration.
+      - name: routeName
+        type: string
+        example: UNCONFIRMED
+        description: Name of the current React Navigation route, from useRoute().
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address. Added by the analytics wrapper, missing when the account address is empty.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Kind of the active wallet. Added by the analytics wrapper. Can be undefined.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: qr_code.viewed
+    section: Cards
+    description: Fires on the client when a person taps the QR code control on the Receive Assets card, just before
+      navigate(Routes.RECEIVE_MODAL). It fires on the tap, not when the receive modal has rendered, so it counts attempts
+      to open the QR code. Copying the address from the same card does not fire it.
+    question: How many people open the QR code to receive assets, and from which wallet types?
+    track_via: client
+    properties:
+      - name: component
+        type: string
+        example: ReceiveAssetsCard
+        description: Component the tap came from. It is a literal in the only call site (ReceiveAssetsCard.tsx:47).
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address. Added by the analytics wrapper, missing when the account address is empty.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Kind of the active wallet. Added by the analytics wrapper. Can be undefined.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

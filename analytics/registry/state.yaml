@@ -1,0 +1,189 @@
+events:
+  - name: performance.time_to_sign
+    section: Performance
+    description: "Fires once on the client at the end of a signing flow, right after the last timed step finishes (an
+      executeFn-wrapped function called with isEndOfFlow: true, whether it returned, resolved or threw). It reports the
+      summed time of the timed steps (elapsedTime) and the wall-clock time since the flow started (totalElapsedTime), then
+      resets the counters. It does not fire for intermediate steps (those send performance.time_to_sign.operation) and
+      does not fire at all when the active wallet is a hardware wallet, because performance tracking is disabled for
+      those. Callers marking the end of a flow are the swap provider, the send submit hook, the deposit handler and the
+      dapp-request sign sheet. The same flow is sent whether it succeeded or failed; `error` is set only when the final
+      step threw."
+    question: How long does it take a user to get from opening a swap, send, deposit or dapp-signing screen to a signed
+      transaction, and which screens are slowest?
+    track_via: client
+    properties:
+      - name: completedAt
+        type: numeric
+        example: "1761900000000"
+        description: Unix epoch in milliseconds (Date.now()) when the flow ended
+      - name: elapsedTime
+        type: numeric
+        example: UNCONFIRMED
+        description: Sum in ms of the timed operations in the flow (system latency, not time the person spent)
+      - name: endTime
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign.operation
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Message of the error thrown by the final step; absent when the flow succeeded. Raw exception text.
+      - name: metadata
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign.operation
+      - name: operation
+        type: string
+        example: KeychainRead | Authentication | CreateRap | GetNonce | SignTransaction | CreateSignableTransaction |
+          BroadcastTransaction | SheetDismissal
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign.operation
+      - name: resultWasNullish
+        type: boolean
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign.operation
+      - name: screen
+        type: string
+        example: DappBrowser | Swaps | Send | SendENS | WalletConnect | MobileWalletProtocol | FundingDeposit
+        description: Screen whose signing flow was timed (Screens enum in operations.ts)
+      - name: startTime
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign.operation
+      - name: timeToCompletion
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign.operation
+      - name: totalElapsedTime
+        type: numeric
+        example: UNCONFIRMED
+        description: Milliseconds from the flow start (startTimeToSignTracking or first timed step) to the end of the flow
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics client; omitted when there is no address
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics client from the wallet store; may be undefined right after wallet creation. In
+          practice never hardware, since tracking is off for hardware wallets.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: performance.time_to_sign.operation
+    section: Performance
+    description: Fires once on the client after each timed step of a signing flow completes, i.e. each time a function
+      wrapped by executeFn returns, resolves or throws (for example KeychainRead, Authentication, CreateRap, GetNonce,
+      SignTransaction, BroadcastTransaction). It carries that single step's duration (timeToCompletion). It fires for
+      every step, including the last one of the flow, which also triggers performance.time_to_sign. It does not fire when
+      the active wallet is a hardware wallet. A thrown step still fires it (with resultWasNullish true); the error itself
+      is not sent on this event.
+    question: Which step of the signing flow (keychain read, authentication, nonce, signing, broadcast) takes the most time
+      on each screen?
+    track_via: client
+    properties:
+      - name: completedAt
+        type: numeric
+        example: "1761900000000"
+        description: Unix epoch in ms (Date.now()) when the step was logged
+      - name: elapsedTime
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign
+      - name: endTime
+        type: numeric
+        example: UNCONFIRMED
+        description: performance.now() reading in ms when the step finished (relative to app time origin, not an epoch)
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign
+      - name: metadata
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: Optional free-form key/value pairs (string, number or boolean values) the caller passes to executeFn;
+          absent when the caller passes none
+      - name: operation
+        type: string
+        example: KeychainRead | Authentication | CreateRap | GetNonce | SignTransaction | CreateSignableTransaction |
+          BroadcastTransaction | SheetDismissal
+        description: Step being timed (TimeToSignOperation enum in operations.ts)
+      - name: resultWasNullish
+        type: boolean
+        example: true | false
+        description: Whether the step's result was null or undefined (also true when the step threw)
+      - name: screen
+        type: string
+        example: DappBrowser | Swaps | Send | SendENS | WalletConnect | MobileWalletProtocol | FundingDeposit
+        description: Screen whose flow the step belongs to
+      - name: startTime
+        type: numeric
+        example: UNCONFIRMED
+        description: performance.now() reading in ms when the step started
+      - name: timeToCompletion
+        type: numeric
+        example: UNCONFIRMED
+        description: Step duration in ms (endTime minus startTime); system latency
+      - name: totalElapsedTime
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; belongs to performance.time_to_sign
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics client; omitted when there is no address
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics client; may be undefined right after wallet creation
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: wallet_initialization.failed
+    section: Wallet
+    description: Fires once on the client from the catch branch of initializeWallet, when initializing the wallet throws
+      (anything other than WalletAlreadyExistsError, which shows an alert and returns without tracking). It fires before
+      the keychain integrity checks and the 'something went wrong' alert. It does not fire when initialization succeeds,
+      and it fires at most once per failed initialization attempt.
+    question: How often does wallet initialization fail at app start, import or wallet switch, and with what error?
+    track_via: client
+    properties:
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        description: error.message of the thrown error; raw exception text, values not observed
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the wallet address, added by the analytics client; may be missing if no account address is set yet
+      - name: walletStatus
+        type: string
+        example: unknown | new | imported | old
+        description: Kind of initialization being attempted; 'unknown' if the failure happened before it was determined
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics client; often undefined right after wallet creation or when the failure happens early
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

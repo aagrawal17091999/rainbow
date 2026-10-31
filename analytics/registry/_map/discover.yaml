@@ -1,0 +1,157 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: discover
+surfaces:
+  - id: routes-swipe-layout
+    kind: screen
+    anchor: src/navigation/SwipeNavigator.tsx#SwipeNavigator
+    path: Routes.SWIPE_LAYOUT
+    actions:
+      - name: Switch between app tabs
+        importance: secondary
+        events: []
+      - name: View wallet token list
+        importance: secondary
+        events:
+          - token_list
+      - name: Open My QR Code
+        importance: secondary
+        events:
+          - Tapped "My QR Code"
+      - name: Open Discover search
+        importance: secondary
+        events:
+          - Tapped Search
+      - name: Switch Discover tab
+        importance: incidental
+        events:
+          - discover.tab_pressed
+      - name: Open a favorite dapp from the browser homepage
+        importance: secondary
+        events:
+          - browser.tap_favorite
+      - name: Open a trending dapp
+        importance: secondary
+        events:
+          - browser.trending_dapp_pressed
+      - name: Claim RNBW airdrop
+        importance: core
+        events:
+          - rnbw_airdrop.claim
+          - rnbw_airdrop.claim.failed
+      - name: Claim RNBW rewards
+        importance: core
+        events:
+          - rnbw_rewards.claim
+          - rnbw_rewards.claim.failed
+      - name: Resolve a pending transaction (watcher)
+        importance: secondary
+        events:
+          - pending_transaction.resolved
+      - name: Resolve assets for a mined transaction (watcher)
+        importance: secondary
+        events:
+          - mined_transaction.assets_resolved
+          - mined_transaction.assets_timed_out
+      - name: Initialize wallet on launch
+        importance: core
+        events:
+          - wallet_initialization.failed
+  - id: routes-discover-screen
+    kind: screen
+    anchor: src/screens/DiscoverScreen.tsx#DiscoverScreen
+    path: Routes.DISCOVER_SCREEN
+    actions:
+      - name: Switch Discover tab
+        importance: incidental
+        events:
+          - discover.tab_pressed
+      - name: Open Discover search
+        importance: secondary
+        events:
+          - Tapped Search
+      - name: Search for tokens
+        importance: secondary
+        events:
+          - Search Query
+          - token_list
+      - name: Open a Discover section
+        importance: incidental
+        events:
+          - discover.section_pressed
+      - name: Open a Discover card
+        importance: secondary
+        events:
+          - discover.card_pressed
+          - surface.interaction
+      - name: Scroll a Discover carousel
+        importance: incidental
+        events:
+          - discover.carousel_scrolled
+      - name: Place a prediction market order
+        importance: core
+        events:
+          - discover.prediction_order_pressed
+      - name: Add a favorite dapp
+        importance: secondary
+        events:
+          - browser.add_favorite
+      - name: Add a favorite token
+        importance: secondary
+        events:
+          - add_favorite_token
+      - name: Sign in to Cash
+        importance: core
+        events:
+          - cash.sign_in_submitted
+          - cash.sign_in_succeeded
+          - cash.sign_in_failed
+          - cash.sign_in_cancelled
+      - name: Create a token with the token launcher
+        importance: core
+        events:
+          - token_launcher.step_changed
+          - token_launcher.token_created
+          - token_launcher.creation_failed
+      - name: Spend time on Discover
+        importance: incidental
+        events:
+          - Time spent on the Discover screen
+events:
+  Search Query:
+    fires_in: src/components/Discover/DiscoverSearchInput.tsx#DiscoverSearchInput
+    trigger: The person taps the clear button in the Discover search box after typing more than one character.
+    moment: before the request
+    conditions:
+      - The input is the Discover one (isDiscover)
+      - The typed text is longer than 1 character
+    path:
+      - src/screens/DiscoverScreen.tsx#DiscoverScreen
+      - src/screens/DiscoverScreen.tsx#Content
+      - src/components/Discover/DiscoverSearchBar.tsx#DiscoverSearchBar
+      - src/components/Discover/DiscoverSearchInput.tsx#DiscoverSearchInput.handleClearInput
+    certainty: sure
+  Tapped Search:
+    fires_in: src/components/Discover/DiscoverScreenContext.tsx#DiscoverScreenProvider
+    trigger: The person opens Discover search by tapping the search icon, the market search entry or the search bar, or by using the
+      swipe-navigator shortcut, while search is not yet active.
+    moment: before the request
+    conditions:
+      - Search is not already active (isSearching is false)
+    path:
+      - src/screens/DiscoverScreen.tsx#DiscoverScreen
+      - src/components/Discover/DiscoverScreenContext.tsx#DiscoverScreenProvider.onTapSearch
+    certainty: sure
+  Time spent on the Discover screen:
+    fires_in: src/components/Discover/useTrackDiscoverScreenTime.ts#useTrackDiscoverScreenTime
+    trigger: The person leaves the Discover screen after having been on it.
+    moment: on view
+    conditions:
+      - The Discover route was active before and no longer is
+      - A start time was recorded
+      - The new active route is not the network selector
+    path:
+      - src/screens/DiscoverScreen.tsx#DiscoverScreen
+      - src/components/Discover/DiscoverScreenContext.tsx#DiscoverScreenProvider
+      - src/components/Discover/useTrackDiscoverScreenTime.ts#useTrackDiscoverScreenTime
+    certainty: sure

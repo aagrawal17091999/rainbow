@@ -1,0 +1,39 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: error_boundary
+surfaces: []
+events:
+  error_boundary.reset:
+    fires_in:
+      - src/app/error-boundary/ErrorBoundary.tsx#onError
+      - src/app/error-boundary/ErrorBoundary.tsx#onReset
+    trigger: The person taps 'Restart Rainbow' on the crash screen, which calls resetError and makes Sentry run onReset.
+    moment: before the request
+    conditions:
+      - A render error was caught and the crash fallback is showing
+      - Not sent when IS_TEST is true, because the boundary is replaced by a pass-through
+      - Not sent when doNotTrack is set (per the plan)
+    path:
+      - src/App.tsx#RootWithSentry
+      - src/App.tsx#Root
+      - src/app/error-boundary/ErrorBoundary.tsx#ErrorBoundary
+      - src/app/error-boundary/ErrorBoundary.tsx#ErrorBoundaryWithSentry
+      - src/app/error-boundary/ErrorBoundary.tsx#onReset
+    certainty: sure
+  error_boundary.viewed:
+    fires_in:
+      - src/app/error-boundary/ErrorBoundary.tsx#onError
+      - src/app/error-boundary/ErrorBoundary.tsx#onReset
+    trigger: A render error reaches the top-level Sentry error boundary and the crash fallback screen replaces the UI.
+    moment: on view
+    conditions:
+      - A React render error was caught by the boundary
+      - Not sent when IS_TEST is true, because the boundary is replaced by a pass-through
+      - Not sent when doNotTrack is set (per the plan)
+    path:
+      - src/App.tsx#RootWithSentry
+      - src/App.tsx#Root
+      - src/app/error-boundary/ErrorBoundary.tsx#ErrorBoundary
+      - src/app/error-boundary/ErrorBoundary.tsx#ErrorBoundaryWithSentry
+      - src/app/error-boundary/ErrorBoundary.tsx#onReset
+    certainty: sure

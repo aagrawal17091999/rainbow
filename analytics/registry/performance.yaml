@@ -1,0 +1,73 @@
+events:
+  - name: Performance Wallet Initialize Time
+    section: Performance
+    description: "Fires on the client once per successful run of initializeWallet, after the wallet is set up: the account
+      address is set and setWalletReady() has been called. durationInMs is the time from the start of initializeWallet to
+      that point, and it includes wallet creation, migrations, wallet loading and settings load. It also runs when the
+      user switches wallets. It does not fire when initializeWallet throws, because the timer is cleared and
+      walletInitializationFailed is tracked instead. It does not fire on the 'WalletAlreadyExistsError' path. It does not
+      fire when an early `shouldCancel()` return happens. It is only sent to analytics when IS_PROD is true. In other
+      builds it is dropped, and logged only if the tracker's debug flag is on."
+    question: How long does wallet setup take for new, imported and existing wallets, and is it getting slower between app
+      versions?
+    track_via: client
+    properties:
+      - name: durationInMs
+        type: numeric
+        example: UNCONFIRMED
+        description: System latency in milliseconds from the start of initializeWallet to wallet ready. It is not time the user spent.
+      - name: performanceTrackingVersion
+        type: numeric
+        example: "3"
+        description: Version of the performance tracking scheme (TRACKING_VERSION constant), so measurements stay comparable
+          when the way of measuring changes.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the wallet address, added to every event by the analytics default metadata from setWalletContext.
+          It is undefined until a wallet context has been set, and the call never passes it itself.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Kind of wallet, added by the analytics default metadata. It can be undefined right after the first wallet
+          is created.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: performance.report
+    section: Performance
+    description: "Fires on the client once per app launch, when PerformanceTracking.finishReport('app_startup') runs from
+      onReportPrepared in App.tsx. At that point the first screen is interactive: the tti segment has been logged and the
+      initial_screen_interactive_render segment finished. durationInMs is the time from the report start (Date.now() at
+      startReport) to that moment. It carries the per-segment timings and the data the app added along the way (such as
+      the initial route). The report is deleted after it is sent, so it fires at most once per report name per process. It
+      does nothing if the report was never started. It is only sent to analytics when IS_PROD is true."
+    question: How long does the app take to become interactive after launch, and which startup segment is the slowest?
+    track_via: client
+    properties:
+      - name: durationInMs
+        type: numeric
+        example: UNCONFIRMED
+        description: System latency in milliseconds, equal to the report's total duration from start to the finish call.
+      - name: performanceTrackingVersion
+        type: numeric
+        example: "3"
+        description: Version of the performance tracking scheme (TRACKING_VERSION constant).
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the wallet address, added by the analytics default metadata. It is undefined at app start if no
+          wallet context has been set yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Kind of wallet, added by the analytics default metadata. It can be undefined at app start.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

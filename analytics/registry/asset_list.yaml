@@ -1,0 +1,197 @@
+events:
+  - name: claimable_panel.opened
+    section: Wallet home
+    description: Fires on the client when the user presses a claimable row in the wallet home asset list (Claimable
+      component onPress). It fires before navigation to the claim panel (Routes.CLAIM_CLAIMABLE_PANEL), so it records
+      intent to claim, not a claim. It does not fire when the claim is submitted or succeeds, and it fires again each time
+      the same row is pressed.
+    question: How many users open a claimable, which claimable types and how much value are they looking at, and how many of
+      those go on to claim?
+    track_via: client
+    properties:
+      - name: assets
+        type: array
+        example: '[{symbol: "RNBW", address: "0x…", amount: "12.5"}] (UNCONFIRMED values)'
+        description: Tokens in the claimable. One object per asset with symbol, address (token contract) and amount. The draft
+          typed this as string; the code sends an array of objects.
+      - name: chainId
+        type: numeric
+        example: UNCONFIRMED
+        description: Chain the claimable lives on, a numeric ChainId (the event schema types it as ChainId). Not a string, as
+          the draft has it.
+      - name: claimableId
+        type: string
+        example: UNCONFIRMED
+        description: The claimable's `type` field (e.g. which program it comes from). Despite the name it is a type identifier,
+          not a unique ID.
+      - name: claimableType
+        type: string
+        example: transaction | multi_transaction | sponsored | rainbowCoin
+        description: "The claimable's actionType: how it is claimed. Values from the event schema in src/analytics/event.ts:859."
+      - name: usdValue
+        type: string
+        example: UNCONFIRMED
+        description: claimable.totalCurrencyValue.amount, the total value of the claimable in the user's currency (the name says
+          USD, not confirmed).
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED (hash of the wallet address)
+        required: false
+        description: Added to every event by analytics.track. Hash of the active wallet address. Empty when no address is set yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track. Can be missing after initial wallet creation (getWalletContext.ts).
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Pressed Button
+    section: Wallet home
+    description: Generic client event fired when the user presses a button that the code explicitly instruments. In this
+      area it has two real call sites. DiscoverMoreButton fires it with buttonName 'DiscoverMoreButton' when the user
+      presses the button on the wallet screen, after navigation to Discover starts. It does not fire if the
+      discover_enabled remote config is off, because the handler returns early. ChangeWalletSheet.onPressAddAnotherWallet
+      fires it with buttonName 'AddAnotherWalletButton', before the sheet closes and the add-wallet flow opens. It records
+      a press, not the outcome of the navigation.
+    question: Which instrumented buttons do users press, from which screen and wallet type?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: Navigates from WalletScreen to DiscoverHome | Navigates from WalletList to AddWalletSheet
+        description: Hard-coded sentence in the code describing the navigation. Both call sites send it, so it is required, not
+          optional as drafted.
+      - name: buttonName
+        type: string
+        example: DiscoverMoreButton | AddAnotherWalletButton
+        description: Hard-coded component name of the pressed button. Both call sites send it, so it is required, not optional
+          as drafted.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED (hash of the wallet address)
+        required: false
+        description: Added to every event by analytics.track. Empty when no address is set yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track. Can be missing after initial wallet creation.
+      - name: wallet_label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: The scanner attributed this to Pressed Button (ChangeWalletSheet.tsx:264), but that call sends
+          tappedDoneEditingWallet, not this event. Pressed Button does not send it; see migration.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Add Cash"
+    section: Wallet home
+    description: Fires on the client when the user presses the Buy / Add Cash button in the home-screen action row
+      (BuyButton in ProfileActionButtonsRow). It fires inside the navigateToAddCash callback, just before navigating to
+      the add-cash route. It does not fire when the wallet is damaged (the wallet error sheet opens instead), and it
+      records the tap, not a purchase.
+    question: How many people start adding cash from the home screen, by wallet type, and how many of those complete a purchase?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: home screen
+        description: Where the tap came from. Always the literal 'home screen' in the code seen.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED (hash of the wallet address)
+        required: false
+        description: Added to every event by analytics.track. Empty when no address is set yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track. Can be missing after initial wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "My QR Code"
+    section: Wallet home
+    description: Fires on the client when the user picks the menu item that routes to Routes.RECEIVE_MODAL in the
+      home-screen navbar menu (handlePressMenuItem in RecyclerAssetList2/index.tsx). It fires before navigation. Other
+      menu items do not fire it.
+    question: How many users open their receive QR code from the home screen?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: home screen
+        description: Where the tap came from. Always the literal 'home screen' in the code seen.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED (hash of the wallet address)
+        required: false
+        description: Added to every event by analytics.track. Empty when no address is set yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track. Can be missing after initial wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Send"
+    section: Wallet home
+    description: Fires on the client when the user presses Send in the home-screen action row (SendButton in
+      ProfileActionButtonsRow), just before opening Routes.SEND_FLOW. It does not fire for a read-only (watched) wallet,
+      where a watching alert is shown instead, unless enableActionsOnReadOnlyWallet is on. It records the tap, not a sent
+      transaction.
+    question: How many people start a send from the home screen, by wallet type, and how many complete it?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: home screen
+        description: Where the tap came from. Always the literal 'home screen' in the code seen.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED (hash of the wallet address)
+        required: false
+        description: Added to every event by analytics.track. Empty when no address is set yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track. Can be missing after initial wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Swap"
+    section: Wallet home
+    description: Fires on the client when the user presses Swap in the home-screen action row (SwapButton in
+      ProfileActionButtonsRow), just before navigateToSwaps(). It does not fire for a read-only (watched) wallet, where a
+      watching alert is shown instead, unless enableActionsOnReadOnlyWallet is on. It records the tap, not a submitted
+      swap (swapsSubmitted / swapsFailed cover the outcome).
+    question: How many people start a swap from the home screen, by wallet type, and how many submit it?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: home screen
+        description: Where the tap came from. Always the literal 'home screen' in the code seen.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED (hash of the wallet address)
+        required: false
+        description: Added to every event by analytics.track. Empty when no address is set yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track. Can be missing after initial wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
