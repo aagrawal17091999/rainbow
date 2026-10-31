@@ -1,0 +1,13 @@
+# Datalyze Tracking Agent: how the check runs in this repo. Written by setup; yours to edit.
+# Every option: https://www.joindatalyze.com/tracking-agent/docs/reference
+model:
+  provider: anthropic
+reviewers: []
+allow_author_approval: true
+registry: analytics/registry
+install: yarn install --frozen-lockfile
+checks: []
+analytics:
+  tool: mixpanel
+  project_id: "2317312"
+  region: us
