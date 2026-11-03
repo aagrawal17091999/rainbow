@@ -1,0 +1,63 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: utils
+surfaces:
+  - id: routes-ens-confirm-register-sheet
+    kind: screen
+    anchor: src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+    path: Routes.ENS_CONFIRM_REGISTER_SHEET
+    actions:
+      - name: Begin ENS registration (commit step)
+        importance: core
+        events:
+          - Initiated ENS registration
+          - Rap started
+          - Rap completed
+          - Rap failed
+      - name: Complete ENS registration
+        importance: core
+        events:
+          - Completed ENS registration
+          - Rap started
+          - Rap completed
+          - Rap failed
+          - app_store_review.prompted
+      - name: Extend ENS registration
+        importance: core
+        events:
+          - Extended ENS
+          - Rap started
+          - Rap completed
+          - Rap failed
+      - name: Confirm ENS profile record updates
+        importance: secondary
+        events:
+          - Edited ENS records
+          - Rap started
+          - Rap completed
+          - Rap failed
+      - name: Set ENS name as primary (reverse record)
+        importance: secondary
+        events: []
+      - name: Choose registration duration
+        importance: secondary
+        events: []
+events:
+  app_store_review.prompted:
+    fires_in: src/utils/reviewAlert.ts#promptForReview
+    trigger: The app asks the OS to show the store review dialog. This happens when the person taps the review row in Settings, or when an
+      automatic prompt action (such as an ENS registration) reaches its threshold.
+    moment: after success
+    conditions:
+      - The call to StoreReview.requestReview() returns without throwing. If it throws, the error is only logged and nothing is sent.
+      - Not a test build.
+      - In dev builds, only the manual UserPrompt action runs.
+      - On iOS, only the manual UserPrompt action runs. Automatic prompts are disabled (APP-3885).
+      - "For automatic prompts: the action's dispatch count has reached its threshold, at least 1 week has passed since the last prompt, and
+        there have been fewer than 3 prompts in the last 52 weeks."
+      - A manual UserPrompt skips the threshold, time and limit checks.
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/utils/reviewAlert.ts#handleReviewPromptAction
+      - src/utils/reviewAlert.ts#promptForReview
+    certainty: sure

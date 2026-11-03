@@ -1,0 +1,367 @@
+# User (profile) properties. Each one stays on the profile until changed, so a property
+# that stops being written goes stale: deprecate it rather than just removing the call.
+properties:
+  - name: appIcon
+    description: The app icon the user has selected. 'og' is the default.
+    type: string
+    example: og | UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Written on mount of the useAppIconIdentify hook and again whenever the appIcon value in account settings
+      changes (src/hooks/useIdentifyAppIcon.ts:10). The setting is loaded at startup in settingsLoadState
+      (src/redux/settings.ts:109).
+    question: Which app icons do users choose, and does icon choice relate to retention?
+    pii: false
+  - name: branchCampaign
+    description: Branch campaign (`~campaign`) from the install's first referring link.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Once per device. The branch listener sets it the first time getFirstReferringParams returns data, then stores
+      the flag branchFirstReferringParamsSet (src/utils/branch.ts:127). Not written if Branch returns nothing.
+    question: Which campaigns bring in users that stay active?
+    pii: false
+  - name: branchReferrer
+    description: Branch referrer (`+referrer`) from the install's first referring link.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Once per device, at the same call as branchCampaign (src/utils/branch.ts:127).
+    question: Which referrers bring in users that stay active?
+    pii: false
+  - name: branchReferringLink
+    description: The Branch referring link (`~referring_link`) that first led to the install.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Once per device, at the same call as branchCampaign (src/utils/branch.ts:127).
+    question: Which referring links lead to installs?
+    pii: false
+  - name: candleResolution
+    description: The candle resolution currently selected on the price chart.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Whenever the charts store's candleResolution changes, in an idle callback
+      (src/components/value-chart/Chart.tsx:282). It is paired with the candle_resolution_changed event.
+    question: Which chart resolutions do users prefer?
+    pii: false
+  - name: chartType
+    description: The chart type currently selected on the price chart.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Whenever the charts store's chartType changes, in an idle callback (src/components/value-chart/Chart.tsx:271).
+      It is paired with the chart_type_changed event.
+    question: Do users prefer line or candlestick charts?
+    pii: false
+  - name: claimablesAmount
+    description: Number of claimables found across the wallet's supported chains on the last sync.
+    type: numeric
+    example: 0 | 3
+    operation: set
+    set_via: client
+    set_when: After a successful claimables fetch in getClaimables, throttled to at most once an hour with the leading call
+      only (src/resources/addys/claimables/query.ts:83).
+    question: How many users have something to claim, and how many items?
+    pii: false
+  - name: claimablesUSDValue
+    description: Total value of all claimables, summed from each claimable's totalCurrencyValue.amount. The code sums
+      amounts in the request currency but labels the result USD.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Same throttled call as claimablesAmount (src/resources/addys/claimables/query.ts:83). It is sent as a string
+      built by add().
+    question: How much claimable value sits unclaimed across users?
+    pii: false
+  - name: currency
+    description: The user's native (display) currency.
+    type: string
+    example: USD | UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: At startup in settingsLoadState (src/redux/settings.ts:115) and whenever the user changes the native currency
+      (src/redux/settings.ts:238).
+    question: Which display currencies do users choose?
+    pii: false
+  - name: enabledTestnets
+    description: Whether the user has turned testnets on.
+    type: boolean
+    example: true | false
+    operation: set
+    set_via: client
+    set_when: At startup in settingsLoadState (src/redux/settings.ts:115). It is not written when the toggle changes
+      (settingsChangeTestnetsEnabled sends nothing), so it is stale until the next launch.
+    question: What share of users enable testnets?
+    pii: false
+  - name: hardwareAccounts
+    description: Number of addresses in hardware (bluetooth) wallets.
+    type: numeric
+    example: 0 | 2
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load, in an idle callback (src/hooks/useWalletCohort.ts:64). It is
+      not updated when wallets change during the session.
+    question: How many users use hardware wallets?
+    pii: false
+  - name: hasImported
+    description: Whether any mnemonic or private-key wallet was imported (not created in the app).
+    type: boolean
+    example: true | false
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:74).
+    question: What share of users import an existing wallet versus creating one?
+    pii: false
+  - name: importedPrivateKeys
+    description: Number of private-key wallets that were imported.
+    type: numeric
+    example: 0 | 1
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:71).
+    question: How many users bring in private-key wallets?
+    pii: false
+  - name: importedRecoveryPhrases
+    description: Number of recovery-phrase (mnemonic) wallets that were imported.
+    type: numeric
+    example: 0 | 1
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:69).
+    question: How many users bring in recovery-phrase wallets?
+    pii: false
+  - name: installSource
+    description: "How the app was installed: development build, store install or internal build."
+    type: string
+    example: dev | store | internal
+    operation: set
+    set_via: client
+    set_when: On every app launch in initializeApplication, right after analytics.init (src/App.tsx:173).
+    question: How do store users differ from internal and dev builds, so internal traffic can be filtered out?
+    pii: false
+  - name: language
+    description: The app's language setting.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: At startup in settingsLoadLanguage (src/redux/settings.ts:153) and whenever the user changes language
+      (src/redux/settings.ts:223).
+    question: Which languages do users run the app in?
+    pii: false
+  - name: ledgerDevices
+    description: Number of Ledger (bluetooth) wallets.
+    type: numeric
+    example: 0 | 1
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:72).
+    question: How many users use Ledger devices?
+    pii: false
+  - name: mostUsedNetworks
+    description: Chain ids of up to five networks the user's wallets have sent the most transactions on, ranked by summed
+      nonces. Falls back to the default pinned networks when there are no nonces.
+    type: array
+    example: "[1, 8453, 10]"
+    operation: set
+    set_via: client
+    set_when: Only when the network switcher store rehydrates with no pinned networks
+      (src/features/network/stores/networkSwitcherStore.ts:49). It is rare and not refreshed afterwards.
+    question: Which networks do users transact on most?
+    pii: false
+  - name: notificationsPermissionStatus
+    description: State of the OS push-notification permission. Limited counts as enabled; blocked or unavailable count as disabled.
+    type: string
+    example: enabled | disabled | never asked
+    operation: set
+    set_via: client
+    set_when: When the app resolves the OS notification permission status (src/notifications/analytics.ts:24, called from
+      resolveAndTrackPushNotificationPermissionStatus at line 39).
+    question: What share of users have push notifications enabled?
+    pii: false
+  - name: numberOfImportedWalletsWithNotificationsTurnedOn
+    description: Number of owned (imported) wallets with notifications enabled.
+    type: numeric
+    example: 0 | 2
+    operation: set
+    set_via: client
+    set_when: Whenever the wallet notification topics state changes (src/notifications/analytics.ts:95-121).
+    question: How many of a user's own wallets have notifications on?
+    pii: false
+  - name: numberOfWatchedWalletsWithNotificationsTurnedOn
+    description: Number of watched (non-owner) wallets with notifications enabled.
+    type: numeric
+    example: 0 | 2
+    operation: set
+    set_via: client
+    set_when: Same call as the imported count, whenever the notification topics state changes (src/notifications/analytics.ts:118).
+    question: How many watched wallets do users follow with notifications on?
+    pii: false
+  - name: ownedAccounts
+    description: Number of addresses in wallets the user owns (recovery-phrase and private-key wallets; not hardware or read-only).
+    type: numeric
+    example: 1 | 4
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:65).
+    question: How many accounts does a typical user hold?
+    pii: false
+  - name: positionsAmount
+    description: Number of DeFi position entries (deposits, pools, stakes, borrows, rewards) across all dapps.
+    type: numeric
+    example: 0 | 5
+    operation: set
+    set_via: client
+    set_when: After positions data loads, throttled to at most once a day with the leading call only
+      (src/features/positions/stores/positionsStore.ts:167).
+    question: How many users hold DeFi positions?
+    pii: false
+  - name: positionsAssetsAmount
+    description: Number of underlying assets across all positions.
+    type: numeric
+    example: 0 | 8
+    operation: set
+    set_via: client
+    set_when: Same daily throttled call as positionsAmount (src/features/positions/stores/positionsStore.ts:170).
+    question: How many assets do users hold in DeFi positions?
+    pii: false
+  - name: positionsDappsAmount
+    description: Number of dapps the user has positions in.
+    type: numeric
+    example: 0 | 2
+    operation: set
+    set_via: client
+    set_when: Same daily throttled call as positionsAmount (src/features/positions/stores/positionsStore.ts:171).
+    question: How many dapps do users have positions in?
+    pii: false
+  - name: positionsRewardsAmount
+    description: Number of reward entries across positions.
+    type: numeric
+    example: 0 | 1
+    operation: set
+    set_via: client
+    set_when: Same daily throttled call as positionsAmount (src/features/positions/stores/positionsStore.ts:172).
+    question: How many users have unclaimed position rewards?
+    pii: false
+  - name: positionsRewardsUSDValue
+    description: Total value of position rewards, from positions.totals.totalRewards.amount.
+    type: numeric
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Same daily throttled call as positionsAmount (src/features/positions/stores/positionsStore.ts:173).
+    question: How much reward value is unclaimed in positions?
+    pii: false
+  - name: positionsUSDValue
+    description: Total value of all positions, from positions.totals.total.amount.
+    type: numeric
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Same daily throttled call as positionsAmount (src/features/positions/stores/positionsStore.ts:169).
+    question: How much value do users hold in DeFi positions?
+    pii: false
+  - name: privateKeys
+    description: Number of private-key wallets, imported or not.
+    type: numeric
+    example: 0 | 1
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:70). It is a count only; no key
+      material is sent.
+    question: How many users use private-key wallets?
+    pii: false
+  - name: recoveryPhrases
+    description: Number of recovery-phrase (mnemonic) wallets, imported or not.
+    type: numeric
+    example: 0 | 1
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:68). It is a count only; no
+      phrase is sent.
+    question: How many recovery-phrase wallets does a user hold?
+    pii: false
+  - name: rnbwMembershipTier
+    description: Highest RNBW membership tier across the user's owned wallets, ranked by tier order and then by staked amount.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Each time a membership position is recorded for an owned wallet
+      (src/features/rnbw-membership/stores/rnbwMembershipAnalyticsStore.ts:41).
+    question: How many users reach each membership tier?
+    pii: false
+  - name: screenHeight
+    description: Screen height in points at first app open.
+    type: numeric
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Once, on the very first app open when the device id was just created and isReturningUser is unset (src/App.tsx:197).
+    question: Which screen sizes do new users have?
+    pii: false
+  - name: screenScale
+    description: Screen pixel density scale at first app open.
+    type: numeric
+    example: 2 | 3
+    operation: set
+    set_via: client
+    set_when: Same first-open block as screenHeight (src/App.tsx:197).
+    question: Which screen densities do new users have?
+    pii: false
+  - name: screenWidth
+    description: Screen width in points at first app open.
+    type: numeric
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Same first-open block as screenHeight (src/App.tsx:197).
+    question: Which screen sizes do new users have?
+    pii: false
+  - name: stakedRnbw
+    description: RNBW staked in the user's highest-ranked owned wallet position, as a decimal amount.
+    type: string
+    example: UNCONFIRMED
+    operation: set
+    set_via: client
+    set_when: Each time a membership position is recorded for an owned wallet, together with rnbwMembershipTier
+      (src/features/rnbw-membership/stores/rnbwMembershipAnalyticsStore.ts:42). It is a decimal string from
+      convertRawAmountToDecimalFormat.
+    question: How much RNBW do users stake?
+    pii: false
+  - name: trezorDevices
+    description: Intended number of Trezor devices. The code starts at 0 and never increments it, so it is always 0.
+    type: numeric
+    example: "0"
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:73). The value is always 0 today.
+    question: How many users use Trezor devices?
+    pii: false
+  - name: watchedAccounts
+    description: Number of addresses in read-only (watched) wallets.
+    type: numeric
+    example: 0 | 3
+    operation: set
+    set_via: client
+    set_when: Once per app session, after wallets first load (src/hooks/useWalletCohort.ts:67).
+    question: How many users watch wallets instead of owning them?
+    pii: false
+
+#  - name: plan_tier
+#    type: string
+#    example: free | pro | team
+#    operation: set            # set | set_once | increment | append | unset
+#    set_via: server
+#    set_when: Plan purchase or change succeeds, and on login
+#    source: accounts.plan_tier
+#    question: Which plan are active users on, and how does usage differ by plan?
+#    status: planned

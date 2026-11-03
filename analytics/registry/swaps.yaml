@@ -1,0 +1,642 @@
+events:
+  - name: insufficient_native_asset_for_action
+    section: Swaps
+    description: "The user's balance of the chain's native (gas) asset is too low to pay the gas for the action on screen.
+      Fires from two places: (1) useTrackInsufficientGas in useGas.ts, in an effect, once per chain when gas is valid
+      (isValidGas) and not sufficient (!isSufficientGas); it is re-armed only when chainId changes, so a chain that goes
+      sufficient and then insufficient again does not fire a second time; (2) reportInsufficientFunds in the Swap screen's
+      SyncSwapStateAndSharedValues, which sends type 'Swap'. Not a failed transaction: nothing was submitted, the user is
+      only warned."
+    question: On which chains and screens do users run out of native gas asset before they can act?
+    track_via: client
+    properties:
+      - name: nativeAssetSymbol
+        type: string
+        example: ETH | UNCONFIRMED
+        required: false
+        description: Symbol of the chain's native asset; undefined if the native asset isn't found for the chain (useGas.ts:94).
+      - name: type
+        type: string
+        example: Swap | UNCONFIRMED
+        description: Navigation route name the user is on (useRoute().name in useGas.ts), or the literal Routes.SWAP ('Swap')
+          from the swap screen.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper to every event; undefined until the
+          wallet context is set.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event; undefined right after wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.changed_chain_id
+    section: Swaps
+    description: The user picks a chain in the network selector of the swap token list (handleSelectChain in
+      ChainSelection.tsx). Fires right after the selection is applied, once per pick, for both the input list filter and
+      the output chain. type says which side. Choosing 'all networks' on the input side sends chainId undefined. Fires
+      whether or not the chain actually differs from the current one.
+    question: Which chains do users filter or swap to, and how often do they switch chains while building a swap?
+    track_via: client
+    properties:
+      - name: chainId
+        type: numeric
+        example: 1 | 8453 | UNCONFIRMED
+        description: Selected chain id (ChainId enum); key is always sent but the value is undefined for 'all networks' on the
+          input side.
+      - name: inputAsset
+        type: object
+        example: UNCONFIRMED
+        description: The whole input asset object from the swaps store at that moment (null if none). Large object; not a flat value.
+      - name: type
+        type: string
+        example: input | output
+        description: Which side's chain was changed.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.failed
+    section: Swaps
+    description: The swap execution step returned an error (errorMessage set) after the user confirmed the swap; fires from
+      trackSwapEvent in swap-provider.tsx getNonceAndPerformSwap right after the rap returns, before the error alert.
+      errorMessage can be the sentinel 'handled' (error already shown elsewhere). It does not fire for quote failures (see
+      swaps.quote_failed) or for exceptions thrown in the surrounding try/catch (those are only logged). It is the failure
+      counterpart of swaps.submitted, which fires on the success path.
+    question: How many swaps fail at execution, on which chains and assets, and with what error?
+    track_via: client
+    properties:
+      - name: asset
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call; belongs to swaps.selected_asset (draft cross-contamination).
+      - name: degenMode
+        type: boolean
+        example: true | false
+        description: Whether degen mode was on in the swaps store.
+      - name: errorMessage
+        type: string
+        example: handled | UNCONFIRMED
+        description: "Error text returned by the swap execution; always a string on this event. Free text from the error: check
+          it can't contain user data."
+      - name: inputAssetAddress
+        type: string
+        example: UNCONFIRMED
+        description: Token contract address of the sold asset; '' if no input asset in the store.
+      - name: inputAssetAmount
+        type: numeric
+        example: UNCONFIRMED
+        description: "Number(quote.sellAmount): the raw sell amount in the token's smallest unit, converted to a JS number."
+      - name: inputAssetChainId
+        type: numeric
+        example: 1 | 8453 | UNCONFIRMED
+        description: Chain id of the sold asset; defaults to mainnet (1) when missing.
+      - name: inputAssetName
+        type: string
+        example: UNCONFIRMED
+        description: Name of the sold token; '' if missing.
+      - name: inputAssetSymbol
+        type: string
+        example: ETH | USDC | UNCONFIRMED
+        description: Symbol of the sold token; '' if missing.
+      - name: inputAssetType
+        type: string
+        example: UNCONFIRMED
+        description: Token type field from the asset; '' if missing.
+      - name: isBridge
+        type: boolean
+        example: true | false
+        description: True when the output asset is the same token on another chain as the input asset.
+      - name: isHardwareWallet
+        type: boolean
+        example: true | false
+        description: True when the signer is a Ledger.
+      - name: isSwappingToPopularAsset
+        type: boolean
+        example: true | false
+        description: True when the output asset came from the 'popular' section of the token list.
+      - name: mainnetAddress
+        type: string
+        example: UNCONFIRMED
+        description: "Mainnet address of the token: the bought asset's address if it is on mainnet, otherwise the sold asset's
+          mainnetAddress."
+      - name: otherAsset
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call; belongs to swaps.selected_asset (draft cross-contamination).
+      - name: outputAssetAddress
+        type: string
+        example: UNCONFIRMED
+        description: Token contract address of the bought asset; '' if missing.
+      - name: outputAssetAmount
+        type: numeric
+        example: UNCONFIRMED
+        description: "Number(quote.buyAmount): raw buy amount in the token's smallest unit."
+      - name: outputAssetChainId
+        type: numeric
+        example: 1 | 8453 | UNCONFIRMED
+        description: Chain id of the bought asset; defaults to mainnet (1).
+      - name: outputAssetName
+        type: string
+        example: UNCONFIRMED
+        description: Name of the bought token; '' if missing.
+      - name: outputAssetSymbol
+        type: string
+        example: UNCONFIRMED
+        description: Symbol of the bought token; '' if missing.
+      - name: outputAssetType
+        type: string
+        example: UNCONFIRMED
+        description: Token type field of the bought asset; '' if missing.
+      - name: parameters
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: "Not sent: trackSwapEvent receives it only to read quote and asset fields (draft artifact)."
+      - name: tradeAmountUSD
+        type: numeric
+        example: UNCONFIRMED
+        description: "quote.tradeAmountUSD: USD value of the trade."
+      - name: type
+        type: string
+        example: swap | crosschainSwap
+        description: Same-chain swap or cross-chain swap.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.flipped_assets
+    section: Swaps
+    description: The user presses the flip button on the Swap screen to exchange input and output assets (flipWithTracking
+      in FlipButton.tsx, run on JS thread from the worklet). Fires after the assets and selected output chain have been
+      set, once per press, only when an input or output asset is already selected.
+    question: How often do users flip a swap pair, and which pairs?
+    track_via: client
+    properties:
+      - name: inputAmount
+        type: numeric
+        example: UNCONFIRMED
+        description: Input amount typed before the flip (string or number in the code).
+      - name: previousInputAsset
+        type: object
+        example: UNCONFIRMED
+        description: "{ address, chainId, symbol } of the input asset before the flip; null if none."
+      - name: previousOutputAsset
+        type: object
+        example: UNCONFIRMED
+        description: "{ address, chainId, symbol } of the output asset before the flip; null if none."
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.quote_failed
+    section: Swaps
+    description: The quote fetch returned a QuoteError (e.g. insufficient funds, out of gas, no routes found, no quotes
+      found) and an input asset, output asset and non-zero input amount are set (analyticsTrackQuoteFailed, called from
+      useSwapInputsController when the quote is set). Skipped when the same error_code, amounts and asset addresses as the
+      previous failure repeat, so quote polling does not re-fire it. Fires on the JS thread via runOnJS from a worklet.
+    question: Why do users fail to get a quote (no route, insufficient funds, out of gas), and for which pairs?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.received_quote
+    section: Swaps
+    description: A quote request (getQuote or getCrosschainQuote) came back while the Swap screen is still mounted, in
+      useSwapInputsController. Fires for every response, including error quotes and null, before the response is checked,
+      so it is not a success signal. Quotes are re-fetched on an interval, so one swap attempt can produce many of these.
+    question: How many quotes are requested per swap attempt, and what share come back as errors?
+    track_via: client
+    properties:
+      - name: inputAsset
+        type: object
+        example: UNCONFIRMED
+        description: The whole selected input asset object (null if none). Large object.
+      - name: outputAsset
+        type: object
+        example: UNCONFIRMED
+        description: The whole selected output asset object (null if none). Large object.
+      - name: quote
+        type: object
+        example: UNCONFIRMED
+        description: "Entire quote response: Quote, CrosschainQuote, QuoteError or null."
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.searched_for_token
+    section: Swaps
+    description: "The user selects a token from the swap list while a search query was typed. Fires on selection, not while
+      typing, and only if the trimmed query is non-empty. Output side (TokenToBuyList): immediately after setAsset. Input
+      side (TokenToSellList): 200 ms later, after interactions. Does not fire for searches that end without a selection."
+    question: What share of token selections come after a search, on which side?
+    track_via: client
+    properties:
+      - name: query
+        type: string
+        example: UNCONFIRMED
+        description: The raw search text typed by the user. Free text, see privacy migration.
+      - name: type
+        type: string
+        example: input | output
+        description: Which token list the search was in.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.selected_asset
+    section: Swaps
+    description: The setAsset function in swap-provider.tsx runs for an input or output asset of the swap (token picked in a
+      list, or via the flip). The call sits outside the didSelectedAssetChange check, so it fires on every setAsset call,
+      even when the selection did not change, and asset can be null.
+    question: Which assets do users pick as input and output of a swap?
+    track_via: client
+    properties:
+      - name: asset
+        type: object
+        example: UNCONFIRMED
+        description: The asset set (ParsedSearchAsset or animated asset), null when clearing. Whole object.
+      - name: degenMode
+        type: boolean
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call; belongs to swaps.submitted/failed (draft cross-contamination).
+      - name: errorMessage
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: inputAssetAddress
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: inputAssetAmount
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: inputAssetChainId
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: inputAssetName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: inputAssetSymbol
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: inputAssetType
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: isBridge
+        type: boolean
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: isHardwareWallet
+        type: boolean
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: isSwappingToPopularAsset
+        type: boolean
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: mainnetAddress
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: otherAsset
+        type: object
+        example: UNCONFIRMED
+        description: The asset on the other side of the swap (null if none). Whole object.
+      - name: outputAssetAddress
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: outputAssetAmount
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: outputAssetChainId
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: outputAssetName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: outputAssetSymbol
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: outputAssetType
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: parameters
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: tradeAmountUSD
+        type: numeric
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: type
+        type: string
+        example: inputAsset | outputAsset
+        description: "SwapAssetType: which side of the swap was set."
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.submitted
+    section: Swaps
+    description: "The swap was handed off by the rap without an error and the sheet dismissal has been scheduled; fires from
+      trackSwapEvent at the end of the try block in getNonceAndPerformSwap (swap-provider.tsx). Means submitted to the
+      network/relayer, not confirmed on-chain (that is swaps.succeeded). Note: the error branch only alerts and returns in
+      some cases ('handled' falls through), so a 'handled' error can also reach this call after swaps.failed; confirm with
+      the team."
+    question: How many swaps do users submit, for which pairs and chains, and with what share going through degen mode,
+      bridges or hardware wallets?
+    track_via: client
+    properties:
+      - name: asset
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination from swaps.selected_asset).
+      - name: degenMode
+        type: boolean
+        example: true | false
+        description: Whether degen mode was on in the swaps store.
+      - name: errorMessage
+        type: string
+        example: "null"
+        description: Always sent, always null on this event (errorMessage ?? null).
+      - name: inputAssetAddress
+        type: string
+        example: UNCONFIRMED
+        description: Token contract address of the sold asset; '' if missing.
+      - name: inputAssetAmount
+        type: numeric
+        example: UNCONFIRMED
+        description: "Number(quote.sellAmount): raw sell amount in the token's smallest unit."
+      - name: inputAssetChainId
+        type: numeric
+        example: 1 | 8453 | UNCONFIRMED
+        description: Chain id of the sold asset; defaults to mainnet.
+      - name: inputAssetName
+        type: string
+        example: UNCONFIRMED
+        description: Name of the sold token; '' if missing.
+      - name: inputAssetSymbol
+        type: string
+        example: ETH | USDC | UNCONFIRMED
+        description: Symbol of the sold token; '' if missing.
+      - name: inputAssetType
+        type: string
+        example: UNCONFIRMED
+        description: Token type field of the sold asset; '' if missing.
+      - name: isBridge
+        type: boolean
+        example: true | false
+        description: True when the output asset is the same token on another chain.
+      - name: isHardwareWallet
+        type: boolean
+        example: true | false
+        description: True when the signer is a Ledger.
+      - name: isSwappingToPopularAsset
+        type: boolean
+        example: true | false
+        description: True when the output asset came from the 'popular' section.
+      - name: mainnetAddress
+        type: string
+        example: UNCONFIRMED
+        description: Mainnet address of the token (bought asset if on mainnet, else sold asset's mainnetAddress).
+      - name: otherAsset
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event's call (draft cross-contamination).
+      - name: outputAssetAddress
+        type: string
+        example: UNCONFIRMED
+        description: Token contract address of the bought asset; '' if missing.
+      - name: outputAssetAmount
+        type: numeric
+        example: UNCONFIRMED
+        description: "Number(quote.buyAmount): raw buy amount in the token's smallest unit."
+      - name: outputAssetChainId
+        type: numeric
+        example: 1 | 8453 | UNCONFIRMED
+        description: Chain id of the bought asset; defaults to mainnet.
+      - name: outputAssetName
+        type: string
+        example: UNCONFIRMED
+        description: Name of the bought token; '' if missing.
+      - name: outputAssetSymbol
+        type: string
+        example: UNCONFIRMED
+        description: Symbol of the bought token; '' if missing.
+      - name: outputAssetType
+        type: string
+        example: UNCONFIRMED
+        description: Token type field of the bought asset; '' if missing.
+      - name: parameters
+        type: object
+        example: UNCONFIRMED
+        required: false
+        description: "Not sent: trackSwapEvent only reads quote and asset fields from it (draft artifact)."
+      - name: tradeAmountUSD
+        type: numeric
+        example: UNCONFIRMED
+        description: "quote.tradeAmountUSD: USD value of the trade."
+      - name: type
+        type: string
+        example: swap | crosschainSwap
+        description: Same-chain or cross-chain swap.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: swaps.toggled_degen_mode
+    section: Swaps
+    description: The user flips the degen mode switch in swap settings (setDegenMode in useSwapSettings.ts, run on JS after
+      the worklet toggles it). Fires after the store is updated, once per toggle, with the new value.
+    question: How many users turn degen mode on, and do they keep it on?
+    track_via: client
+    properties:
+      - name: enabled
+        type: boolean
+        example: true | false
+        description: The new state of degen mode after the toggle.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_list
+    section: Swaps
+    description: "A snapshot of how complete a token list is when it is displayed, with the counts of tokens missing an icon
+      or price. Four senders: (1) swap search (useSearchCurrencyLists, screen 'swap'): when the search query has more than
+      2 characters, token search status is 'success' and at most once per 5 s; (2) Discover search (DiscoverSearch, screen
+      'discover'): 3 s after the list is not loading, if the list is non-empty; (3) Send sheet (screen 'send'): when the
+      user's assets finish loading; (4) wallet home (useWalletSectionsData, screen 'wallet'): when user assets finish
+      loading. Effects re-run when the list data changes, so one visit can fire several times. Not a user action."
+    question: How much of what users see in token lists lacks an icon or price, per screen?
+    track_via: client
+    properties:
+      - name: no_icon
+        type: numeric
+        example: 0 | 3
+        description: Count of tokens in the list with no icon_url.
+      - name: no_price
+        type: numeric
+        example: 0 | 5
+        required: false
+        description: Count of tokens with no price; sent only on discover, send and wallet (not swap). Discover counts assets
+          whose price is a number (inverted condition), so it measures the opposite.
+      - name: query
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Raw search text; sent only from swap and discover.
+      - name: screen
+        type: string
+        example: swap | discover | send | wallet
+        description: Which list was shown.
+      - name: total_tokens
+        type: numeric
+        example: 0 | 42
+        description: Number of tokens in the list (headers excluded on swap).
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Added by the analytics wrapper to every event.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added by the analytics wrapper to every event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

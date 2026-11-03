@@ -1,0 +1,417 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: hooks
+surfaces:
+  - id: routes-pair-hardware-wallet-signing-sheet
+    kind: screen
+    anchor: src/features/hardware-wallet/screens/PairHardwareWalletSigningSheet.tsx#PairHardwareWalletSigningSheet
+    path: Routes.PAIR_HARDWARE_WALLET_SIGNING_SHEET
+    actions:
+      - name: Finish importing a hardware wallet
+        importance: core
+        events:
+          - Tapped "Import" button
+          - Imported seed phrase
+          - Show wallet profile modal for imported wallet
+      - name: Confirm blind signing is enabled
+        importance: secondary
+        events: []
+      - name: Open blind signing learn-more link
+        importance: incidental
+        events: []
+  - id: routes-import-or-watch-wallet-sheet
+    kind: screen
+    anchor: src/screens/ImportOrWatchWalletSheet.tsx#ImportOrWatchWalletSheet
+    path: Routes.IMPORT_OR_WATCH_WALLET_SHEET
+    actions:
+      - name: Import a wallet with seed phrase or private key
+        importance: core
+        events:
+          - Tapped "Import" button
+          - Imported seed phrase
+          - Show wallet profile modal for imported wallet
+      - name: Watch a wallet address or ENS name
+        importance: core
+        events:
+          - Tapped "Import" button
+          - watch_wallet
+          - Show wallet profile modal for read only wallet
+          - Show wallet profile modal for ENS address
+          - Show wallet profile modal for Unstoppable address
+      - name: Paste secret from clipboard
+        importance: incidental
+        events: []
+  - id: routes-avatar-builder
+    kind: screen
+    anchor: src/screens/AvatarBuilder.js#AvatarBuilder
+    path: Routes.AVATAR_BUILDER
+    actions:
+      - name: Pick an avatar color
+        importance: secondary
+        events: []
+      - name: Pick an avatar emoji
+        importance: secondary
+        events: []
+  - id: routes-qr-scanner-screen
+    kind: screen
+    anchor: src/screens/QRScannerScreen.tsx#QRScannerScreen
+    path: Routes.QR_SCANNER_SCREEN
+    actions:
+      - name: Scan an address QR code
+        importance: secondary
+        events:
+          - Scanned address QR code
+      - name: Scan a Rainbow profile QR code
+        importance: secondary
+        events:
+          - Scanned Rainbow profile url
+      - name: Scan a WalletConnect QR code
+        importance: core
+        events:
+          - Scanned WalletConnect QR code
+      - name: Scan an unsupported QR code
+        importance: incidental
+        events:
+          - Scanned broken or unsupported QR code
+      - name: Toggle camera flash
+        importance: incidental
+        events: []
+      - name: Close the scanner
+        importance: incidental
+        events: []
+  - id: routes-diagnostics-sheet
+    kind: screen
+    anchor: src/features/debug/screens/WalletDiagnosticsSheet.tsx#WalletDiagnosticsSheet
+    path: Routes.DIAGNOSTICS_SHEET
+    actions:
+      - name: Authenticate with PIN to reveal wallet keys
+        importance: secondary
+        events: []
+      - name: Copy device UUID or wallet secrets
+        importance: incidental
+        events: []
+  - id: routes-transaction-details
+    kind: screen
+    anchor: src/screens/transaction-details/TransactionDetails.tsx#TransactionDetails
+    path: Routes.TRANSACTION_DETAILS
+    actions:
+      - name: Copy address, hash or link from a transaction
+        importance: incidental
+        events: []
+      - name: Open transaction in block explorer
+        importance: incidental
+        events: []
+  - id: routes-avatar-builder-wallet
+    kind: screen
+    anchor: src/screens/AvatarBuilder.js#AvatarBuilder
+    path: Routes.AVATAR_BUILDER_WALLET
+    actions:
+      - name: Pick an avatar color
+        importance: secondary
+        events: []
+      - name: Pick an avatar emoji
+        importance: secondary
+        events: []
+events:
+  Error during Google Drive Backup:
+    fires_in: src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup
+    trigger: Creating a cloud backup, or adding a wallet to the current backup, throws on Android.
+    moment: after failure
+    conditions:
+      - Platform is Android (cloudPlatform is Google Drive)
+      - Google sign-in succeeded, the wallet is not damaged and PIN entry succeeded
+      - The upload threw
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup.walletCloudBackup
+    certainty: sure
+  Error during iCloud Backup:
+    fires_in: src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup
+    trigger: Creating a cloud backup, or adding a wallet to the current backup, throws on iOS.
+    moment: after failure
+    conditions:
+      - Platform is iOS (cloudPlatform is iCloud)
+      - iCloud is available, the wallet is not damaged and PIN entry succeeded
+      - The upload threw
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup.walletCloudBackup
+    certainty: sure
+  Error updating Backup status:
+    fires_in: src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup
+    trigger: The cloud upload succeeded but marking the wallet as backed up locally threw.
+    moment: after failure
+    conditions:
+      - The upload succeeded
+      - setWalletBackedUp threw
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup.walletCloudBackup
+    certainty: sure
+  iCloud not enabled:
+    fires_in: src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup
+    trigger: The person starts a cloud backup on iOS and iCloud is not available, just before the alert appears.
+    moment: after failure
+    conditions:
+      - Platform is iOS
+      - isCloudBackupAvailable() returned false
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup.walletCloudBackup
+    certainty: sure
+  Ignore how to enable iCloud:
+    fires_in: src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup
+    trigger: The person presses 'No thanks' on the 'iCloud is not enabled' alert.
+    moment: before the request
+    conditions:
+      - Platform is iOS
+      - The iCloud-not-enabled alert was shown
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup.walletCloudBackup
+    certainty: sure
+  Imported seed phrase:
+    fires_in: src/hooks/useImportingWallet.ts#useImportingWallet
+    trigger: "The wallet import finishes: initializeWallet succeeded, the import screen was dismissed and navigation settled. This also happens
+      for private key, address, ENS and hardware imports."
+    moment: after success
+    conditions:
+      - initializeWallet returned success
+      - The app has finished its interactions (InteractionManager.runAfterInteractions)
+    path:
+      - src/features/hardware-wallet/screens/PairHardwareWalletSigningSheet.tsx#PairHardwareWalletSigningSheet
+      - src/hooks/useImportingWallet.ts#useImportingWallet.handlePressImportButton
+    certainty: sure
+  mined_transaction.assets_resolved:
+    fires_in: src/hooks/useWatchAssetUpdates.ts#watchAssetUpdates
+    trigger: A polling pass finds that the expected asset changes of watched, mined transactions have appeared
+    moment: after success
+    conditions:
+      - there is an address and at least one watched transaction
+      - the asset-updates request returned
+      - at least one watch completed and has a minedAt timestamp
+    path:
+      - src/navigation/SwipeNavigator.tsx#SwipeNavigator
+      - src/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher.tsx#AssetUpdateTransactionWatcher
+      - src/hooks/useWatchAssetUpdates.ts#useWatchAssetUpdates
+      - src/hooks/useWatchAssetUpdates.ts#watchAssetUpdates.activeWatches
+    certainty: sure
+  mined_transaction.assets_timed_out:
+    fires_in: src/hooks/useWatchAssetUpdates.ts#watchAssetUpdates
+    trigger: A watched mined transaction has waited as long as the asset detection timeout without its asset changes appearing
+    moment: after failure
+    conditions:
+      - polling time has reached ASSET_DETECTION_TIMEOUT
+      - the transaction has a minedAt timestamp
+    path:
+      - src/navigation/SwipeNavigator.tsx#SwipeNavigator
+      - src/components/asset-update-transaction-watcher/AssetUpdateTransactionWatcher.tsx#AssetUpdateTransactionWatcher
+      - src/hooks/useWatchAssetUpdates.ts#useWatchAssetUpdates
+      - src/hooks/useWatchAssetUpdates.ts#watchAssetUpdates.activeWatches
+    certainty: sure
+  network_status.offline:
+    fires_in: src/hooks/useIsOffline.ts#useIsOffline
+    trigger: The device's network state changes from online to offline (not connected or internet not reachable), and stays offline for the 500
+      ms debounce used by the app's OfflineToast.
+    moment: after success
+    conditions:
+      - The previous state is known (not the first reading after mount)
+      - The new state differs from the previous one
+      - The device stays offline for the debounce window (debounceMs > 0)
+    path:
+      - src/components/toasts/OfflineToast.tsx#default
+      - src/components/toasts/OfflineToast.tsx#OfflineToast
+      - src/hooks/useIsOffline.ts#useIsOffline.handleNetworkStateChange
+    certainty: unsure
+  network_status.reconnected:
+    fires_in: src/hooks/useIsOffline.ts#useIsOffline
+    trigger: The device's network state changes from offline back to online after network_status.offline was already sent.
+    moment: after success
+    conditions:
+      - The previous state is known (not the first reading)
+      - The previous state was offline
+      - No offline timer is pending (otherwise the timer is cancelled and nothing is sent)
+    path:
+      - src/components/toasts/OfflineToast.tsx#default
+      - src/components/toasts/OfflineToast.tsx#OfflineToast
+      - src/hooks/useIsOffline.ts#useIsOffline.handleNetworkStateChange
+    certainty: unsure
+  pending_transaction.resolved:
+    fires_in: src/hooks/useWatchPendingTxs.ts#watchPendingTransaction
+    trigger: The system sees a tracked pending transaction settle as confirmed
+    moment: after success
+    conditions:
+      - polling wasn't aborted
+      - the transaction is still in the pending list
+      - the resolution is 'settled'
+      - the status is confirmed
+    path:
+      - src/navigation/SwipeNavigator.tsx#SwipeNavigator
+      - src/components/pending-transaction-watcher/PendingTransactionWatcher.tsx#PendingTransactionWatcher
+      - src/hooks/useWatchPendingTxs.ts#useWatchPendingTransactions
+      - src/hooks/useWatchPendingTxs.ts#watchPendingTransaction
+    certainty: sure
+  refresh_account_data:
+    fires_in: src/hooks/useRefreshAccountData.ts#useRefreshAccountData
+    trigger: The person pulls to refresh the account data and the refresh finishes
+    moment: after success
+    conditions:
+      - no refresh is already running
+      - refreshAccountData didn't throw
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RefreshControl.tsx#RefreshControlWrapped
+      - src/hooks/useRefreshAccountData.ts#useRefreshAccountData.refresh
+    certainty: sure
+  Scanned address QR code:
+    fires_in: src/hooks/useScanner.ts#useScanner
+    trigger: "The scanner reads a QR code that is a plain Ethereum address (0x…, no ethereum: prefix)"
+    moment: before the request
+    conditions:
+      - scanning is enabled
+      - the code starts with 0x and is a valid address
+    path:
+      - src/screens/QRScannerScreen.tsx#QRScannerScreen
+      - src/hooks/useScanner.ts#useScanner.handleScanAddress
+    certainty: sure
+  Scanned broken or unsupported QR code:
+    fires_in: src/hooks/useScanner.ts#useScanner
+    trigger: The scanner reads a QR code that matches no supported format
+    moment: after failure
+    conditions:
+      - scanning is enabled
+      - "the code isn't an ethereum: URL, address, WalletConnect code or Rainbow profile URL"
+    path:
+      - src/screens/QRScannerScreen.tsx#QRScannerScreen
+      - src/hooks/useScanner.ts#useScanner.handleScanAddress
+    certainty: sure
+  Scanned Rainbow profile url:
+    fires_in: src/hooks/useScanner.ts#useScanner
+    trigger: The scanner reads a QR code that is a Rainbow profile URL
+    moment: before the request
+    conditions:
+      - scanning is enabled
+      - the code starts with the Rainbow profiles base URL followed by /profile/
+    path:
+      - src/screens/QRScannerScreen.tsx#QRScannerScreen
+      - src/hooks/useScanner.ts#useScanner.handleScanAddress
+    certainty: sure
+  Scanned WalletConnect QR code:
+    fires_in: src/hooks/useScanner.ts#useScanner
+    trigger: "The scanner reads a WalletConnect QR code (wc: URI or a universal wc link)"
+    moment: before the request
+    conditions:
+      - scanning is enabled
+      - "the code starts with wc: or is an https link whose path starts with /wc"
+    path:
+      - src/screens/QRScannerScreen.tsx#QRScannerScreen
+      - src/hooks/useScanner.ts#useScanner.handleScanAddress
+    certainty: sure
+  Show wallet profile modal for ENS address:
+    fires_in: src/hooks/useImportingWallet.ts#useImportingWallet
+    trigger: The person imports or watches an ENS name and it resolves to an address, so the profile import step starts.
+    moment: after success
+    conditions:
+      - The input is in ENS format
+      - The provider resolved the name to an address
+      - Resolution and startImportProfile did not throw
+    path:
+      - src/features/hardware-wallet/screens/PairHardwareWalletSigningSheet.tsx#PairHardwareWalletSigningSheet
+      - src/hooks/useImportingWallet.ts#useImportingWallet.handlePressImportButton
+    certainty: sure
+  Show wallet profile modal for imported wallet:
+    fires_in: src/hooks/useImportingWallet.ts#useImportingWallet
+    trigger: The person imports a seed phrase or private key and an account is derived from it, so the profile import step starts.
+    moment: after success
+    conditions:
+      - The input is not an ENS name, Unstoppable domain, valid address or address-lookalike
+      - deriveAccountFromWalletInput returned an address
+      - The reverse ENS lookup did not throw
+    path:
+      - src/features/hardware-wallet/screens/PairHardwareWalletSigningSheet.tsx#PairHardwareWalletSigningSheet
+      - src/hooks/useImportingWallet.ts#useImportingWallet.handlePressImportButton
+    certainty: sure
+  Show wallet profile modal for read only wallet:
+    fires_in: src/hooks/useImportingWallet.ts#useImportingWallet
+    trigger: The person imports or watches a plain 0x address and the reverse ENS lookup returns. It is sent before the profile step starts.
+    moment: after success
+    conditions:
+      - The input is a valid 0x address
+      - fetchReverseRecord did not throw
+    path:
+      - src/features/hardware-wallet/screens/PairHardwareWalletSigningSheet.tsx#PairHardwareWalletSigningSheet
+      - src/hooks/useImportingWallet.ts#useImportingWallet.handlePressImportButton
+    certainty: sure
+  Show wallet profile modal for Unstoppable address:
+    fires_in: src/hooks/useImportingWallet.ts#useImportingWallet
+    trigger: The person imports or watches an Unstoppable domain and it resolves to an address, so the profile import step starts.
+    moment: after success
+    conditions:
+      - The input is in Unstoppable domain format
+      - The domain resolved to an address
+      - Resolution did not throw
+    path:
+      - src/features/hardware-wallet/screens/PairHardwareWalletSigningSheet.tsx#PairHardwareWalletSigningSheet
+      - src/hooks/useImportingWallet.ts#useImportingWallet.handlePressImportButton
+    certainty: sure
+  Tapped "Import" button:
+    fires_in: src/hooks/useImportingWallet.ts#useImportingWallet
+    trigger: The person presses Import or Watch on the import screen, or a caller invokes the import handler directly.
+    moment: before the request
+    path:
+      - src/features/hardware-wallet/screens/PairHardwareWalletSigningSheet.tsx#PairHardwareWalletSigningSheet
+      - src/hooks/useImportingWallet.ts#useImportingWallet.handlePressImportButton
+    certainty: sure
+  Toggled an NFT as Hidden:
+    fires_in: src/hooks/useHiddenTokens.ts#useHiddenTokens
+    trigger: The person hides an NFT (isHidden true) or unhides it (isHidden false), after the preference is saved.
+    moment: after success
+    conditions:
+      - The wallet is not read-only
+      - getPreference and setPreference did not throw
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/hooks/useExternalWalletSectionsData.ts#useExternalWalletSectionsData
+      - src/hooks/useHiddenTokens.ts#useHiddenTokens.mutationFn
+    certainty: sure
+  View how to Enable iCloud:
+    fires_in: src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup
+    trigger: The person taps 'show me' in the 'iCloud not enabled' alert shown during a cloud backup on iOS
+    moment: before the request
+    conditions:
+      - Platform is iOS
+      - iCloud backup was found unavailable
+      - the person chose the 'show me' button (not 'no thanks')
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/hooks/useWalletCloudBackup.ts#useWalletCloudBackup.walletCloudBackup
+    certainty: sure
+  Viewed ENS profile:
+    fires_in: src/hooks/useOnAvatarPress.ts#default
+    trigger: The person picks 'view profile' on their own avatar
+    moment: before the request
+    path:
+      - src/navigation/Routes.android.tsx#MainNavigator
+      - src/navigation/effects.tsx#emojiPreset
+      - src/components/profile/AvatarCircle.js#AvatarCircle
+      - src/hooks/useOnAvatarPress.ts#default.onAvatarViewProfile
+    certainty: sure
+  watch_wallet:
+    fires_in: src/hooks/useImportingWallet.ts#useImportingWallet
+    trigger: The person adds a wallet to watch and the input resolves to an address. It is sent before the profile or import step starts.
+    moment: before the request
+    conditions:
+      - type is 'watch'
+      - The input resolved to an address (ENS, Unstoppable domain, valid address, or derived account)
+    path:
+      - src/features/hardware-wallet/screens/PairHardwareWalletSigningSheet.tsx#PairHardwareWalletSigningSheet
+      - src/hooks/useImportingWallet.ts#useImportingWallet.handlePressImportButton
+    certainty: sure

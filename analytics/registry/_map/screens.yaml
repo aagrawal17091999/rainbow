@@ -1,0 +1,818 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: screens
+surfaces:
+  - id: routes-add-wallet-sheet
+    kind: screen
+    anchor: src/screens/AddWalletSheet.tsx#AddWalletSheet
+    path: Routes.ADD_WALLET_SHEET
+    actions:
+      - name: Create a new wallet
+        importance: core
+        events:
+          - add_wallet_flow.started
+          - Tapped Create New Wallet
+      - name: Import an existing wallet with a seed phrase or key
+        importance: core
+        events:
+          - add_wallet_flow.started
+          - Tapped Add Existing Wallet
+      - name: Watch an address
+        importance: core
+        events:
+          - add_wallet_flow.started
+          - Tapped Watch Address
+      - name: Restore a wallet from cloud backup
+        importance: core
+        events:
+          - add_wallet_flow.started
+      - name: Connect a hardware wallet
+        importance: secondary
+        events:
+          - add_wallet_flow.started
+  - id: routes-fiat-on-ramp-sheet
+    kind: screen
+    anchor: src/screens/FiatOnRamp/index.tsx#FiatOnRampSheet
+    path: Routes.FIAT_ON_RAMP_SHEET
+    actions:
+      - name: Choose a provider to buy crypto
+        importance: core
+        events:
+          - f2c.provider.flow_opened
+  - id: routes-welcome-screen
+    kind: screen
+    anchor: src/screens/WelcomeScreen/WelcomeScreen.tsx#WelcomeScreen
+    path: Routes.WELCOME_SCREEN
+    actions:
+      - name: Get a new wallet
+        importance: core
+        events:
+          - Tapped "Get a new wallet"
+      - name: Start with an existing wallet
+        importance: core
+        events:
+          - Tapped "I already have one"
+  - id: show-secret-view
+    kind: screen
+    anchor: src/screens/SettingsSheet/components/Backups/ShowSecretView.tsx#ShowSecretView
+    path: ShowSecretView
+    actions:
+      - name: View secret recovery phrase
+        importance: core
+        events:
+          - Show Secret View
+  - id: routes-wallet-connect-approval-sheet
+    kind: screen
+    anchor: src/screens/WalletConnectApprovalSheet.tsx#WalletConnectApprovalSheet
+    path: Routes.WALLET_CONNECT_APPROVAL_SHEET
+    actions:
+      - name: Approve a WalletConnect connection
+        importance: core
+        events:
+          - Received wc connection
+      - name: Cancel a WalletConnect connection
+        importance: secondary
+        events: []
+      - name: Change the wallet or network for the connection
+        importance: secondary
+        events: []
+      - name: View a WalletConnect session request
+        importance: secondary
+        events:
+          - Shown Walletconnect session request
+  - id: routes-learn-web-view-screen
+    kind: screen
+    anchor: src/screens/LearnWebViewScreen.tsx#LearnWebViewScreen
+    path: Routes.LEARN_WEB_VIEW_SCREEN
+    actions:
+      - name: Read a learn article
+        importance: secondary
+        events:
+          - learn_article.opened
+      - name: Share a learn article
+        importance: secondary
+        events:
+          - learn_article.shared
+  - id: routes-add-wallet-navigator
+    kind: screen
+    anchor: src/navigation/AddWalletNavigator.tsx#AddWalletNavigator
+    path: Routes.ADD_WALLET_NAVIGATOR
+    actions: []
+  - id: routes-profile-sheet
+    kind: screen
+    anchor: src/screens/ProfileSheet.tsx#ProfileSheet
+    path: Routes.PROFILE_SHEET
+    actions:
+      - name: View an ENS profile
+        importance: secondary
+        events:
+          - Viewed profile
+  - id: routes-profile-preview-sheet
+    kind: screen
+    anchor: src/screens/ProfileSheet.tsx#ProfileSheet
+    path: Routes.PROFILE_PREVIEW_SHEET
+    actions:
+      - name: View an ENS profile preview
+        importance: secondary
+        events:
+          - Viewed profile
+      - name: Browse the profile's assets
+        importance: incidental
+        events: []
+  - id: routes-settings-sheet
+    kind: screen
+    anchor: src/screens/SettingsSheet/SettingsSheet.tsx#SettingsSheet
+    path: Routes.SETTINGS_SHEET
+    actions:
+      - name: Back up a wallet
+        importance: core
+        events:
+          - Backup Complete
+          - Tapped "Confirm Backup"
+          - backup.error
+          - Saved backup password on iCloud
+          - Didn't save backup password on iCloud
+          - Error during Google Drive Backup
+          - Error during iCloud Backup
+          - Error updating Backup status
+          - iCloud not enabled
+          - Ignore how to enable iCloud
+          - View how to Enable iCloud
+      - name: Add a wallet
+        importance: core
+        events:
+          - add_wallet_flow.started
+      - name: View a wallet secret phrase or key
+        importance: secondary
+        events:
+          - Show Secret View
+      - name: Change language
+        importance: secondary
+        events:
+          - Changed language
+      - name: Change native currency
+        importance: secondary
+        events:
+          - Changed native currency
+      - name: Change network
+        importance: secondary
+        events:
+          - Changed network
+      - name: Change app icon
+        importance: secondary
+        events:
+          - Set App Icon
+      - name: Change notification settings
+        importance: secondary
+        events:
+          - Changed Global Notification Settings
+      - name: Toggle analytics tracking
+        importance: secondary
+        events:
+          - analytics_tracking.enabled
+          - analytics_tracking.disabled
+      - name: Contact support
+        importance: incidental
+        events: []
+      - name: Close settings
+        importance: incidental
+        events: []
+  - id: routes-op-rewards-sheet
+    kind: screen
+    anchor: src/screens/rewards/RewardsSheet.tsx#RewardsSheet
+    path: Routes.OP_REWARDS_SHEET
+    actions:
+      - name: View OP rewards
+        importance: secondary
+        events:
+          - rewards.viewed_sheet
+      - name: Tap bridged stats card
+        importance: incidental
+        events:
+          - rewards.pressed_bridged_card
+      - name: Tap swapped stats card
+        importance: incidental
+        events:
+          - rewards.pressed_swapped_card
+      - name: Tap pending earnings card
+        importance: incidental
+        events:
+          - rewards.pressed_pending_earnings_card
+  - id: routes-claim-claimable-panel
+    kind: screen
+    anchor: src/screens/claimables/ClaimPanel.tsx#ClaimClaimablePanel
+    path: Routes.CLAIM_CLAIMABLE_PANEL
+    actions:
+      - name: Claim a claimable
+        importance: core
+        events:
+          - claim_claimable.succeeded
+          - claim_claimable.failed
+  - id: routes-change-wallet-sheet
+    kind: screen
+    anchor: src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    path: Routes.CHANGE_WALLET_SHEET
+    actions:
+      - name: Switch wallet
+        importance: core
+        events: []
+      - name: Add another wallet
+        importance: core
+        events:
+          - Pressed Button
+      - name: Enter edit mode
+        importance: secondary
+        events:
+          - Tapped Edit
+      - name: Edit a wallet's name and color
+        importance: secondary
+        events:
+          - Tapped "Edit Wallet"
+          - Tapped "Done" after editing wallet
+          - Tapped "Cancel" after editing wallet
+      - name: Delete a wallet
+        importance: secondary
+        events:
+          - Tapped Delete Wallet
+          - Tapped "Delete Wallet" (final confirm)
+      - name: Open wallet notification settings
+        importance: secondary
+        events:
+          - Tapped "Notification Settings"
+      - name: Pin a wallet
+        importance: incidental
+        events: []
+  - id: routes-expanded-asset-sheet-v2
+    kind: screen
+    anchor: src/screens/expandedAssetSheet/ExpandedAssetSheet.tsx#ExpandedAssetSheet
+    path: Routes.EXPANDED_ASSET_SHEET_V2
+    actions:
+      - name: View asset details
+        importance: secondary
+        events:
+          - spot_pnl.pill.shown
+          - top_holders.shown
+      - name: Favorite a token
+        importance: secondary
+        events:
+          - add_favorite_token
+      - name: Buy an asset
+        importance: core
+        events:
+          - buy_button.pressed
+      - name: Swap or send an asset
+        importance: core
+        events: []
+  - id: routes-claim-airdrop-sheet
+    kind: screen
+    anchor: src/screens/Airdrops/ClaimAirdropSheet.tsx#ClaimAirdropSheet
+    path: Routes.CLAIM_AIRDROP_SHEET
+    actions:
+      - name: Claim an airdrop
+        importance: core
+        events:
+          - claim_claimable.succeeded
+          - claim_claimable.failed
+      - name: View the claimed token
+        importance: incidental
+        events: []
+  - id: routes-token-launcher-screen
+    kind: screen
+    anchor: src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreen
+    path: Routes.TOKEN_LAUNCHER_SCREEN
+    actions:
+      - name: Move between launch steps
+        importance: secondary
+        events:
+          - token_launcher.step_changed
+      - name: Create a token
+        importance: core
+        events:
+          - token_launcher.token_created
+          - token_launcher.creation_failed
+          - token_launcher.wallet_load_failed
+      - name: Upload a token image
+        importance: secondary
+        events:
+          - token_launcher.image_upload_failed
+      - name: Abandon the token launch
+        importance: secondary
+        events:
+          - token_launcher.abandoned
+      - name: Share the launched token
+        importance: secondary
+        events:
+          - token_launcher.share_pressed
+  - id: routes-settings-section
+    kind: screen
+    anchor: src/screens/SettingsSheet/SettingsSheet.tsx#"Routes.SETTINGS_SECTION"
+    path: Routes.SETTINGS_SECTION
+    actions:
+      - name: Open a settings page (backup, currency, language, network, notifications, privacy, app icon, support, dev)
+        importance: secondary
+        events: []
+      - name: Close settings
+        importance: incidental
+        events: []
+  - id: key
+    kind: screen
+    anchor: src/screens/SettingsSheet/SettingsSheet.tsx#"key"
+    path: key
+    actions:
+      - name: Change app language
+        importance: secondary
+        events:
+          - Changed language
+      - name: Change native currency
+        importance: secondary
+        events:
+          - Changed native currency
+      - name: Change network
+        importance: secondary
+        events:
+          - Changed network
+      - name: Turn analytics tracking on or off
+        importance: secondary
+        events:
+          - analytics_tracking.enabled
+          - analytics_tracking.disabled
+      - name: Change notification settings
+        importance: secondary
+        events:
+          - Changed Global Notification Settings
+      - name: Set app icon
+        importance: secondary
+        events:
+          - Set App Icon
+      - name: Back up wallet to cloud
+        importance: core
+        events:
+          - Tapped "Confirm Backup"
+          - Backup Complete
+          - backup.error
+          - Saved backup password on iCloud
+          - Didn't save backup password on iCloud
+          - Error during Google Drive Backup
+          - Error during iCloud Backup
+          - Error updating Backup status
+          - iCloud not enabled
+          - Ignore how to enable iCloud
+          - View how to Enable iCloud
+      - name: View support or help
+        importance: incidental
+        events: []
+  - id: routes-view-wallet-backup
+    kind: screen
+    anchor: src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+    path: Routes.VIEW_WALLET_BACKUP
+    actions:
+      - name: Back up wallet to the cloud
+        importance: core
+        events:
+          - Tapped "Confirm Backup"
+          - Backup Complete
+          - backup.error
+          - Saved backup password on iCloud
+          - Didn't save backup password on iCloud
+          - Error during Google Drive Backup
+          - Error during iCloud Backup
+          - Error updating Backup status
+          - iCloud not enabled
+          - Ignore how to enable iCloud
+          - View how to Enable iCloud
+      - name: Back up wallet manually (view secret warning)
+        importance: core
+        events: []
+      - name: View secret phrase or private key
+        importance: secondary
+        events: []
+      - name: Create a new wallet account
+        importance: core
+        events:
+          - add_wallet_flow.started
+          - wallet_create.succeeded
+          - wallet_create.failed
+      - name: Copy wallet address
+        importance: incidental
+        events: []
+  - id: routes-show-secret
+    kind: screen
+    anchor: src/screens/SettingsSheet/components/Backups/ShowSecretView.tsx#ShowSecretView
+    path: Routes.SHOW_SECRET
+    actions:
+      - name: View secret phrase or private key
+        importance: secondary
+        events:
+          - Show Secret View
+events:
+  add_wallet_flow.started:
+    fires_in:
+      - src/screens/AddWalletSheet.tsx#AddWalletSheet
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+    trigger: The person picks a way to add a wallet on the Add Wallet sheet (new, seed, watch, cloud restore, hardware) or taps Create new
+      wallet in a wallet's backup settings.
+    moment: before the request
+    path:
+      - src/screens/AddWalletSheet.tsx#AddWalletSheet.onPressCreate
+    certainty: sure
+  analytics_tracking.disabled:
+    fires_in: src/screens/SettingsSheet/components/PrivacySection.tsx#PrivacySection
+    trigger: The person switches the Analytics toggle off in Settings > Privacy.
+    moment: before the request
+    conditions:
+      - Analytics is currently on
+    path:
+      - src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+      - src/screens/SettingsSheet/SettingsPages.ts#SettingsPages
+      - src/screens/SettingsSheet/components/PrivacySection.tsx#PrivacySection
+    certainty: sure
+  analytics_tracking.enabled:
+    fires_in: src/screens/SettingsSheet/components/PrivacySection.tsx#PrivacySection
+    trigger: The person switches the Analytics toggle back on in Settings > Privacy.
+    moment: after success
+    conditions:
+      - Analytics is currently off
+    path:
+      - src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+      - src/screens/SettingsSheet/SettingsPages.ts#SettingsPages
+      - src/screens/SettingsSheet/components/PrivacySection.tsx#PrivacySection
+    certainty: sure
+  Changed language:
+    fires_in: src/screens/SettingsSheet/components/LanguageSection.tsx#LanguageSection
+    trigger: The person taps a language in Settings > Language.
+    moment: after success
+    path:
+      - src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+      - src/screens/SettingsSheet/SettingsPages.ts#SettingsPages
+      - src/screens/SettingsSheet/components/LanguageSection.tsx#LanguageSection.onSelectLanguage
+    certainty: sure
+  Changed native currency:
+    fires_in: src/screens/SettingsSheet/components/CurrencySection.tsx#CurrencySection
+    trigger: The person taps a currency in Settings > Currency.
+    moment: after success
+    path:
+      - src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+      - src/screens/SettingsSheet/SettingsPages.ts#SettingsPages
+      - src/screens/SettingsSheet/components/CurrencySection.tsx#CurrencySection.onSelectCurrency
+    certainty: sure
+  Changed network:
+    fires_in: src/screens/SettingsSheet/components/NetworkSection.tsx#NetworkSection
+    trigger: The person taps a network in the Settings network list.
+    moment: after success
+    path:
+      - src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+      - src/screens/SettingsSheet/SettingsPages.ts#SettingsPages
+      - src/screens/SettingsSheet/components/NetworkSection.tsx#NetworkSection.onNetworkChange
+    certainty: sure
+  claim_claimable.failed:
+    fires_in:
+      - src/screens/Airdrops/utils.ts#executeAirdropClaim
+      - src/screens/claimables/sponsored/context/SponsoredClaimableContext.tsx#SponsoredClaimableContextProvider
+      - src/screens/claimables/transaction/context/TransactionClaimableContext.tsx#TransactionClaimableContextProvider
+    trigger: A claim of an airdrop, sponsored or transaction claimable fails, including when the person rejects the signature
+    moment: after failure
+    conditions:
+      - "Airdrop flow: the wallet loaded and signing or sending the transaction threw"
+      - "Sponsored flow: the Addys API call threw, the response had payload.success false, or the mutation errored"
+      - "Transaction flow: the claim or swap rap returned an error, or a claim threw, or the mutation errored"
+    path:
+      - src/screens/Airdrops/ClaimAirdropSheet.tsx#ClaimAirdropSheet
+      - src/screens/Airdrops/ClaimAirdropSheet.tsx#PanelFooter
+      - src/screens/Airdrops/useClaimAirdrop.ts#useClaimAirdrop
+      - src/screens/Airdrops/useClaimAirdrop.ts#handleAndExecuteClaim
+      - src/screens/Airdrops/utils.ts#executeAirdropClaim
+    certainty: sure
+  claim_claimable.succeeded:
+    fires_in:
+      - src/screens/Airdrops/utils.ts#executeAirdropClaim
+      - src/screens/claimables/sponsored/context/SponsoredClaimableContext.tsx#SponsoredClaimableContextProvider
+      - src/screens/claimables/transaction/context/TransactionClaimableContext.tsx#TransactionClaimableContextProvider
+    trigger: A claim of a claimable completes from the app's point of view
+    moment: after success
+    conditions:
+      - "Airdrop flow: the signed transaction was submitted to the provider (not yet confirmed on-chain)"
+      - "Sponsored flow: the Addys API answered with payload.success true"
+      - "Transaction flow: the claim (and swap, if any) finished without error"
+    path:
+      - src/screens/Airdrops/ClaimAirdropSheet.tsx#ClaimAirdropSheet
+      - src/screens/Airdrops/ClaimAirdropSheet.tsx#PanelFooter
+      - src/screens/Airdrops/useClaimAirdrop.ts#useClaimAirdrop
+      - src/screens/Airdrops/useClaimAirdrop.ts#handleAndExecuteClaim
+      - src/screens/Airdrops/utils.ts#executeAirdropClaim
+    certainty: sure
+  f2c.provider.flow_opened:
+    fires_in: src/screens/FiatOnRamp/ProviderListItem.tsx#ProviderListItem
+    trigger: The person taps a provider in the Add Cash list and the app gets a widget URL back
+    moment: after success
+    conditions:
+      - The getWidgetURL request succeeded
+    path:
+      - src/screens/FiatOnRamp/index.tsx#FiatOnRampSheet
+      - src/screens/FiatOnRamp/ProviderListItem.tsx#ProviderListItem.onPress
+    certainty: sure
+  learn_article.opened:
+    fires_in: src/screens/LearnWebViewScreen.tsx#LearnWebViewScreen
+    trigger: The person closes the Learn article web view screen (or its route params change while open)
+    moment: on mount
+    conditions:
+      - Sent from the cleanup of a mount effect, so it fires on unmount, not when the article opens
+    path:
+      - src/screens/LearnWebViewScreen.tsx#LearnWebViewScreen
+    certainty: sure
+  learn_article.shared:
+    fires_in: src/screens/LearnWebViewScreen.tsx#LearnWebViewScreen
+    trigger: The person taps the share icon in the Learn web view header and completes sharing
+    moment: after success
+    conditions:
+      - Share.share resolved with sharedAction (not dismissed)
+    path:
+      - src/screens/LearnWebViewScreen.tsx#LearnWebViewScreen
+    certainty: sure
+  Received wc connection:
+    fires_in: src/screens/WalletConnectApprovalSheet.tsx#WalletConnectApprovalSheet
+    trigger: The WalletConnect approval sheet is shown for a dapp and interactions settle
+    moment: on mount
+    conditions:
+      - Re-fires if dappName, dappUrl or receivedTimestamp change while the sheet is open
+    path:
+      - src/screens/WalletConnectApprovalSheet.tsx#WalletConnectApprovalSheet
+    certainty: sure
+  rewards.pressed_available_card:
+    fires_in: src/screens/rewards/components/RewardsClaimed.tsx#RewardsClaimed
+    trigger: The person taps the 'Rewards claimed' progress card in the rewards sheet.
+    moment: before the request
+    conditions:
+      - Rewards remain unclaimed (the card for the all-claimed state has no handler)
+    path:
+      - src/screens/rewards/components/RewardsClaimed.tsx#RewardsClaimed.navigateToAmountsExplainer
+    certainty: unsure
+  rewards.pressed_bridged_card:
+    fires_in: src/screens/rewards/components/RewardsStats.tsx#RewardsStats
+    trigger: The person taps the 'bridged' stats card in the rewards sheet
+    moment: before the request
+    path:
+      - src/screens/rewards/RewardsSheet.tsx#RewardsSheet
+      - src/screens/rewards/components/RewardsContent.tsx#RewardsContent
+      - src/screens/rewards/components/RewardsStats.tsx#RewardsStats.getPressHandlerForType
+    certainty: sure
+  rewards.pressed_leaderboard_item:
+    fires_in: src/screens/rewards/components/RewardsLeaderboardItem.tsx#RewardsLeaderboardItem
+    trigger: The person taps a row in the rewards leaderboard.
+    moment: before the request
+    path:
+      - src/screens/rewards/components/RewardsLeaderboard.tsx#RewardsLeaderboard
+      - src/screens/rewards/components/RewardsLeaderboardItem.tsx#RewardsLeaderboardItem.navigateToProfile
+    certainty: unsure
+  rewards.pressed_pending_earnings_card:
+    fires_in: src/screens/rewards/components/RewardsEarnings.tsx#RewardsEarnings
+    trigger: The person taps the 'Pending earnings' card in the rewards sheet
+    moment: before the request
+    path:
+      - src/screens/rewards/RewardsSheet.tsx#RewardsSheet
+      - src/screens/rewards/components/RewardsContent.tsx#RewardsContent
+      - src/screens/rewards/components/RewardsEarnings.tsx#RewardsEarnings.navigateToTimingExplainer
+    certainty: sure
+  rewards.pressed_swapped_card:
+    fires_in: src/screens/rewards/components/RewardsStats.tsx#RewardsStats
+    trigger: The person taps the 'swapped' stats card in the rewards sheet
+    moment: before the request
+    path:
+      - src/screens/rewards/RewardsSheet.tsx#RewardsSheet
+      - src/screens/rewards/components/RewardsContent.tsx#RewardsContent
+      - src/screens/rewards/components/RewardsStats.tsx#RewardsStats.getPressHandlerForType
+    certainty: sure
+  rewards.viewed_sheet:
+    fires_in: src/screens/rewards/RewardsSheet.tsx#RewardsSheet
+    trigger: The rewards sheet screen gains focus, including when the person returns to it from a pushed screen
+    moment: on view
+    path:
+      - src/screens/rewards/RewardsSheet.tsx#RewardsSheet
+    certainty: sure
+  Show Secret View:
+    fires_in: src/screens/SettingsSheet/components/Backups/ShowSecretView.tsx#ShowSecretView
+    trigger: The person opens the settings backup 'show secret' screen
+    moment: on mount
+    path:
+      - src/screens/SettingsSheet/components/Backups/ShowSecretView.tsx#ShowSecretView
+    certainty: sure
+  Shown Walletconnect session request:
+    fires_in: src/screens/WalletConnectApprovalSheet.tsx#WalletConnectApprovalSheet
+    trigger: A WalletConnect connect or transaction/signature approval sheet is shown to the person
+    moment: on mount
+    conditions:
+      - runs after navigation interactions finish
+    path:
+      - src/screens/WalletConnectApprovalSheet.tsx#WalletConnectApprovalSheet
+    certainty: sure
+  spot_pnl.pill.shown:
+    fires_in: src/screens/expandedAssetSheet/components/sections/BalanceSection.tsx#BalanceSection
+    trigger: The spot PnL pill on the expanded asset sheet reports it has been shown.
+    moment: on view
+    conditions:
+      - Not already sent for this mount of BalanceSection (ref guard)
+    path:
+      - src/screens/expandedAssetSheet/components/sections/BalanceSection.tsx#BalanceSection.onPillShown
+    certainty: unsure
+  Tapped "Cancel" after editing wallet:
+    fires_in: src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    trigger: The wallet profile modal closes with an empty name.
+    moment: after success
+    conditions:
+      - The address is a valid hex address
+      - The name is empty
+    path:
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet.renameWallet.onCloseModal
+    certainty: sure
+  Tapped "Delete Wallet" (final confirm):
+    fires_in: src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    trigger: The person picks the destructive 'Delete wallet' option in the confirmation action sheet.
+    moment: before the request
+    conditions:
+      - The person chose button index 0 (not Cancel)
+    path:
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet.renameWallet.onCloseModal
+    certainty: sure
+  Tapped "Done" after editing wallet:
+    fires_in: src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    trigger: The wallet profile modal closes with a non-empty name.
+    moment: before the request
+    conditions:
+      - The address is a valid hex address
+      - The name is not empty
+    path:
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet.renameWallet.onCloseModal
+    certainty: sure
+  Tapped "Edit Wallet":
+    fires_in: src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    trigger: The person picks Edit on a wallet address in the Change Wallet sheet
+    moment: before the request
+    path:
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet.renameWallet.onCloseModal
+    certainty: sure
+  Tapped "Get a new wallet":
+    fires_in: src/screens/WelcomeScreen/WelcomeScreen.tsx#WelcomeScreen
+    trigger: The person taps 'Get a new wallet' on the welcome screen
+    moment: before the request
+    conditions:
+      - a wallet creation is not already running
+    path:
+      - src/screens/WelcomeScreen/WelcomeScreen.tsx#WelcomeScreen.onCreateWallet
+    certainty: sure
+  Tapped "I already have one":
+    fires_in: src/screens/WelcomeScreen/WelcomeScreen.tsx#WelcomeScreen
+    trigger: The person taps 'I already have one' on the welcome screen
+    moment: before the request
+    path:
+      - src/screens/WelcomeScreen/WelcomeScreen.tsx#WelcomeScreen.onCreateWallet
+    certainty: sure
+  Tapped "Notification Settings":
+    fires_in: src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    trigger: The person taps Notifications on a wallet row in the Change Wallet sheet
+    moment: before the request
+    path:
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet.renameWallet.onCloseModal
+    certainty: sure
+  Tapped Add Existing Wallet:
+    fires_in: src/screens/AddWalletSheet.tsx#AddWalletSheet
+    trigger: The person taps the restore-from-seed option on the Add Wallet sheet.
+    moment: before the request
+    path:
+      - src/screens/AddWalletSheet.tsx#AddWalletSheet.onPressCreate
+    certainty: sure
+  Tapped Create New Wallet:
+    fires_in: src/screens/AddWalletSheet.tsx#AddWalletSheet
+    trigger: The person taps Create new wallet on the Add Wallet sheet.
+    moment: before the request
+    path:
+      - src/screens/AddWalletSheet.tsx#AddWalletSheet.onPressCreate
+    certainty: sure
+  Tapped Delete Wallet:
+    fires_in: src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    trigger: The person taps Delete on a wallet in the Change Wallet sheet, before the confirmation action sheet opens
+    moment: before the request
+    path:
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet.renameWallet.onCloseModal
+    certainty: sure
+  Tapped Edit:
+    fires_in: src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+    trigger: The person taps the Edit button in the Change Wallet sheet header, which enters or leaves edit mode
+    moment: before the request
+    path:
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet.renameWallet.onCloseModal
+    certainty: sure
+  Tapped Watch Address:
+    fires_in: src/screens/AddWalletSheet.tsx#AddWalletSheet
+    trigger: The person taps the watch-an-address option on the Add Wallet sheet.
+    moment: before the request
+    path:
+      - src/screens/AddWalletSheet.tsx#AddWalletSheet.onPressCreate
+    certainty: sure
+  token_launcher.abandoned:
+    fires_in: src/screens/token-launcher/components/TokenLauncherHeader.tsx#TokenLauncherHeader
+    trigger: The person taps exit in the token launcher header and picks 'Discard and exit' after entering some info
+    moment: after success
+    conditions:
+      - the form has some info entered
+      - the person picked 'Discard and exit' (not Cancel)
+    path:
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreen
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreenContent
+      - src/screens/token-launcher/components/TokenLauncherHeader.tsx#TokenLauncherHeader.handlePressExit
+    certainty: sure
+  token_launcher.creation_failed:
+    fires_in: src/screens/token-launcher/state/tokenLauncherStore.ts#useTokenLauncherStore
+    trigger: Launching the token (or a step after it) throws after the person held the create button
+    moment: after failure
+    conditions:
+      - an error is thrown inside the createToken try block
+    path:
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreen
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreenContent
+      - src/screens/token-launcher/state/tokenLauncherStore.ts#useTokenLauncherStore.setStep
+    certainty: sure
+  token_launcher.image_upload_failed:
+    fires_in: src/screens/token-launcher/hooks/useUploadToCloudinary.ts#useUploadToCloudinary
+    trigger: Uploading the token logo to Cloudinary fails or returns no url
+    moment: after failure
+    path:
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreen
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreenContent
+      - src/screens/token-launcher/components/InfoInputStep.tsx#InfoInputStep
+      - src/screens/token-launcher/components/TokenLogo.tsx#TokenLogo
+      - src/screens/token-launcher/hooks/useUploadToCloudinary.ts#useUploadToCloudinary.upload
+    certainty: sure
+  token_launcher.share_pressed:
+    fires_in:
+      - src/screens/token-launcher/components/TokenLauncherFooter.tsx#HoldToCreateButton
+      - src/screens/token-launcher/components/TokenLauncherFooter.tsx#ShareButton
+    trigger: The person taps Share link on the token launch success screen and the system share sheet closes
+    moment: after success
+    conditions:
+      - a launched token address and chain are set
+    path:
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreen
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreenContent
+      - src/screens/token-launcher/components/TokenLauncherFooter.tsx#TokenLauncherFooter
+      - src/screens/token-launcher/components/TokenLauncherFooter.tsx#HoldToCreateButton.handleLongPress
+    certainty: sure
+  token_launcher.step_changed:
+    fires_in: src/screens/token-launcher/state/tokenLauncherStore.ts#useTokenLauncherStore
+    trigger: The token launcher moves to another step (back to info, creating, success, review)
+    conditions:
+      - fires on every setStep call, with no check that the step changed
+    path:
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreen
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreenContent
+      - src/screens/token-launcher/state/tokenLauncherStore.ts#useTokenLauncherStore.setStep
+    certainty: sure
+  token_launcher.token_created:
+    fires_in: src/screens/token-launcher/state/tokenLauncherStore.ts#useTokenLauncherStore
+    trigger: The token launch SDK returns a token address and transaction hash
+    moment: after success
+    conditions:
+      - launchToken returned a result
+    path:
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreen
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreenContent
+      - src/screens/token-launcher/state/tokenLauncherStore.ts#useTokenLauncherStore.setStep
+    certainty: sure
+  token_launcher.wallet_load_failed:
+    fires_in:
+      - src/screens/token-launcher/components/TokenLauncherFooter.tsx#HoldToCreateButton
+      - src/screens/token-launcher/components/TokenLauncherFooter.tsx#ShareButton
+    trigger: The person finishes the hold-to-create gesture but the app can't get a usable signing wallet
+    moment: after failure
+    conditions:
+      - the account is a hardware wallet, or the keychain gives no valid private key, or loading the key throws
+      - the person didn't cancel the biometric prompt
+    path:
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreen
+      - src/screens/token-launcher/TokenLauncherScreen.tsx#TokenLauncherScreenContent
+      - src/screens/token-launcher/components/TokenLauncherFooter.tsx#TokenLauncherFooter
+      - src/screens/token-launcher/components/TokenLauncherFooter.tsx#HoldToCreateButton.handleLongPress
+    certainty: sure
+  top_holders.shown:
+    fires_in: src/screens/expandedAssetSheet/components/sections/TopHoldersSection.tsx#TopHoldersSection
+    trigger: The Top Holders section in the expanded asset sheet first renders real holders data
+    moment: on view
+    conditions:
+      - The top-holders feature is enabled
+      - Holders data is available to show (cached or fresh), not the skeleton, an error or an empty result
+      - A PnL-eligible token exists
+      - Not already sent during this mount of the section
+    path:
+      - src/screens/expandedAssetSheet/ExpandedAssetSheet.tsx#ExpandedAssetSheet
+      - src/screens/expandedAssetSheet/ExpandedAssetSheet.tsx#ExpandedAssetSheetContent
+      - src/screens/expandedAssetSheet/components/SheetContent.tsx#SheetContent
+      - src/screens/expandedAssetSheet/components/sections/TopHoldersSection.tsx#TopHoldersSection
+    certainty: sure
+  Viewed profile:
+    fires_in: src/screens/ProfileSheet.tsx#ProfileSheet
+    trigger: The person opens a profile sheet (own, someone else's or a preview)
+    moment: on mount
+    conditions:
+      - a profile address is set
+      - an active account address is set
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+    certainty: sure

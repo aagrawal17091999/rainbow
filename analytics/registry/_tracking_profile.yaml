@@ -1,0 +1,1044 @@
+# How this codebase sends analytics, written by the install audit and read by the scanner and the implementer.
+# Changing it changes what the checks see: route it to the analytics owner (CODEOWNERS). A PR's edits count once merged.
+version: 1
+stack:
+  - { path: ., language: typescript, framework: expo, sides: [ client ] }
+  - { path: android, language: kotlin, framework: android, sides: [ client ] }
+  - { path: ios, language: swift, framework: ios, sides: [ client ] }
+sdks:
+  - { package: posthog-react-native, side: client }
+wrappers:
+  - { path: src/analytics/index.ts, side: client, import: "import { analytics } from '@/analytics'" }
+  - { path: src/__swaps__/utils/trackSwapEvent.ts, side: client }
+calls:
+  - {
+      callee: analytics.track,
+      from: "@/analytics",
+      adds: [ walletAddressHash, walletType ],
+      example: "analytics.track(analytics.event.swapsFlippedAssets, { inputAmount, previousInputAsset, previousOutputAsset })",
+      ref: src/__swaps__/screens/Swap/components/FlipButton.tsx:97
+    }
+  - {
+      callee: analytics.identify,
+      from: "@/analytics",
+      kind: identify,
+      example: "analytics.identify({ installSource })",
+      ref: src/App.tsx:173
+    }
+  - {
+      callee: trackSwapEvent,
+      from: "@/__swaps__/utils/trackSwapEvent",
+      adds:
+        [
+          degenMode,
+          errorMessage,
+          inputAssetAddress,
+          inputAssetAmount,
+          inputAssetChainId,
+          inputAssetName,
+          inputAssetSymbol,
+          inputAssetType,
+          isBridge,
+          isHardwareWallet,
+          isSwappingToPopularAsset,
+          mainnetAddress,
+          outputAssetAddress,
+          outputAssetAmount,
+          outputAssetChainId,
+          outputAssetName,
+          outputAssetSymbol,
+          outputAssetType,
+          tradeAmountUSD,
+          type
+        ],
+      example: "trackSwapEvent(analytics.event.swapsFailed, { errorMessage, isHardwareWallet, parameters, type, })",
+      ref: src/__swaps__/screens/Swap/providers/swap-provider.tsx:342
+    }
+  - {
+      callee: analytics.track,
+      adds: [ walletAddressHash, walletType ],
+      side: client,
+      example: "analytics.track(analytics.event.swapsFlippedAssets, { inputAmount, previousInputAsset, previousOutputAsset })",
+      ref: src/__swaps__/screens/Swap/components/FlipButton.tsx:97
+    }
+  - {
+      callee: analytics.identify,
+      kind: identify,
+      side: client,
+      example: "analytics.identify({ currency: 'USD' })",
+      ref: src/analytics/index.test.ts:116
+    }
+  - { callee: analytics.screen, name_arg: 0, side: client }
+  - {
+      callee: analytics.identify,
+      from: "@/analytics",
+      kind: user_set,
+      props_arg: 0,
+      example: "analytics.identify({ installSource })",
+      ref: src/App.tsx:173
+    }
+  - { callee: analytics.screen, from: "@/analytics", adds: [ walletAddressHash, walletType ] }
+  - {
+      callee: analytics.screen,
+      from: "@/analytics",
+      name_arg: 0,
+      props_arg: 1,
+      adds: [ walletAddressHash, walletType ]
+    }
+  - { callee: analytics.screen, name_arg: 0, props_arg: 1, adds: [ walletAddressHash, walletType ], side: client }
+direct_sdk: fail
+paths:
+  server: []
+  client:
+    - src/
+notes: []
+dynamic_names:
+  - {
+      file: src/__swaps__/screens/Swap/components/FlipButton.tsx,
+      names: [ swaps.flipped_assets ],
+      why: "Calls the wrapper as analytics.track(analytics.event.swapsFlippedAssets, ...). The name is a member of the event
+        map in src/analytics/event.ts, which maps swapsFlippedAssets to 'swaps.flipped_assets'. It is one fixed name,
+        not built from data."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/components/TokenList/ChainSelection.tsx,
+      names: [ swaps.changed_chain_id ],
+      why: "analytics.track(analytics.event.swapsChangedChainId, ...). The map in src/analytics/event.ts:189 gives
+        'swaps.changed_chain_id'. Only the 'type' property varies (input or output)."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/components/TokenList/TokenToBuyList.tsx,
+      names: [ swaps.searched_for_token ],
+      why: "analytics.track(analytics.event.swapsSearchedForToken, ...) with type 'output'. The map in
+        src/analytics/event.ts:188 gives 'swaps.searched_for_token'."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/components/TokenList/TokenToSellList.tsx,
+      names: [ swaps.searched_for_token ],
+      why: "analytics.track(analytics.event.swapsSearchedForToken, ...) with type 'input'. It is the same event as
+        TokenToBuyList.tsx:173."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/hooks/analyticsTrackQuoteFailed.ts,
+      names: [ swaps.quote_failed ],
+      why: "analyticsTrack is a local alias of analytics.track so it can be passed to runOnJS. Its only caller, line 47 of the
+        same file, passes analytics.event.swapsQuoteFailed, which is 'swaps.quote_failed' (src/analytics/event.ts:196).
+        The one name is credited here."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/hooks/useSearchCurrencyLists.ts,
+      names: [ token_list ],
+      why: "analytics.track(analytics.event.tokenList, params). The map in src/analytics/event.ts:225 gives 'token_list'. The
+        effect is throttled and only runs for queries longer than 2 characters."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/hooks/useSwapInputsController.ts,
+      names: [ swaps.received_quote ],
+      why: "analytics.track(analytics.event.swapsReceivedQuote, ...). The map in src/analytics/event.ts:192 gives
+        'swaps.received_quote'."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/hooks/useSwapSettings.ts,
+      names: [ swaps.toggled_degen_mode ],
+      why: "analytics.track(analytics.event.swapsToggledDegenMode, { enabled }). The map in src/analytics/event.ts:191 gives
+        'swaps.toggled_degen_mode'."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/providers/swap-provider.tsx,
+      names: [ swaps.failed, swaps.submitted, swaps.selected_asset ],
+      why: "analytics.track(analytics.event.swapsSelectedAsset, ...). The map in src/analytics/event.ts:187 gives
+        'swaps.selected_asset'."
+    }
+  - {
+      file: src/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues.tsx,
+      names: [ insufficient_native_asset_for_action ],
+      why: "analytics.track(analytics.event.insufficientNativeAssetForAction, { type: Routes.SWAP, nativeAssetSymbol }). The
+        map in src/analytics/event.ts:198 gives 'insufficient_native_asset_for_action'."
+    }
+  - {
+      file: src/App.tsx,
+      names: [ debug.identify_probe, First App Open ],
+      why: analytics.track(analytics.event.firstAppOpen) passes a key of the `event` map in src/analytics/event.ts:79.
+    }
+  - {
+      file: src/app/error-boundary/ErrorBoundary.tsx,
+      names: [ error_boundary.reset, error_boundary.viewed ],
+      why: "analytics.track(analytics.event.errorBoundary, ...) passes a key of the `event` map (src/analytics/event.ts:217)."
+    }
+  - {
+      file: src/components/asset-list/RecyclerAssetList2/Claimable.tsx,
+      names: [ claimable_panel.opened ],
+      why: "analytics.track(analytics.event.claimablePanelOpened, ...) passes a key of the `event` map
+        (src/analytics/event.ts:214)."
+    }
+  - {
+      file: src/components/asset-list/RecyclerAssetList2/core/DiscoverMoreButton.tsx,
+      names: [ Pressed Button ],
+      why: "analytics.track(analytics.event.pressedButton, { buttonName, action }) passes a key of the `event` map
+        (src/analytics/event.ts:81)."
+    }
+  - {
+      file: src/components/asset-list/RecyclerAssetList2/index.tsx,
+      names: [ Tapped "My QR Code" ],
+      why: "analytics.track(analytics.event.navigationMyQrCode, ...) passes a key of the `event` map
+        (src/analytics/event.ts:289)."
+    }
+  - {
+      file: src/components/asset-list/RecyclerAssetList2/profile-header/ProfileActionButtonsRow.tsx,
+      names: [ Tapped "Add Cash", Tapped "Swap", Tapped "Send" ],
+      why: "analytics.track(analytics.event.navigationAddCash, ...) passes a key of the `event` map
+        (src/analytics/event.ts:286)."
+    }
+  - {
+      file: src/components/cards/EthCard.tsx,
+      names: [ buy_button.pressed, card.pressed ],
+      why: analytics.event.cardPressed resolves to the literal in src/analytics/event.ts:87.
+    }
+  - {
+      file: src/components/cards/LearnCard.tsx,
+      names: [ card.pressed ],
+      why: analytics.event.cardPressed resolves to the literal in src/analytics/event.ts:87.
+    }
+  - {
+      file: src/components/cards/ReceiveAssetsCard.tsx,
+      names: [ qr_code.viewed ],
+      why: analytics.event.qrCodeViewed resolves to the literal in src/analytics/event.ts:90.
+    }
+  - {
+      file: src/components/Discover/DiscoverScreenContext.tsx,
+      names: [ Tapped Search ],
+      why: analytics.event.discoverTapSearch resolves to the literal in src/analytics/event.ts:300.
+    }
+  - {
+      file: src/components/Discover/DiscoverSearch.tsx,
+      names: [ token_list ],
+      why: "analytics.event.tokenList resolves to the literal in src/analytics/event.ts:225. The properties come from a local
+        `params` object (screen, no_icon, no_price, total_tokens, query)."
+    }
+  - {
+      file: src/components/Discover/DiscoverSearchInput.tsx,
+      names: [ Search Query ],
+      why: analytics.event.searchQuery resolves to the literal in src/analytics/event.ts:42.
+    }
+  - {
+      file: src/components/Discover/useTrackDiscoverScreenTime.ts,
+      names: [ Time spent on the Discover screen ],
+      why: "This file imports `event` from '@/analytics/event' directly and passes event.timeSpentOnDiscoverScreen, which is
+        the literal at src/analytics/event.ts:250."
+    }
+  - {
+      file: src/components/expanded-state/NewWalletGroupState.tsx,
+      names: [ add_new_wallet_group.name ],
+      why: analytics.event.addNewWalletGroupName resolves to the literal in src/analytics/event.ts:184.
+    }
+  - {
+      file: src/components/expanded-state/UniqueTokenExpandedState.tsx,
+      names: [ token_details.nft ],
+      why: analytics.event.tokenDetailsNFT resolves to the literal in src/analytics/event.ts:222.
+    }
+  - {
+      file: src/components/expanded-state/WalletProfileState.js,
+      names: [ Tapped "Cancel" on Wallet Profile modal, Tapped "Submit" on Wallet Profile modal ],
+      why: "The name is `analytics.event.walletProfileSubmitted`, which is a fixed string in src/analytics/event.ts:293."
+    }
+  - {
+      file: src/components/sheet/sheet-action-buttons/BuyActionButton.tsx,
+      names: [ buy_button.pressed ],
+      why: The name is `analytics.event.buyButtonPressed` (src/analytics/event.ts:91). It is sent after navigating to the
+        add-cash route. The same name is also sent from src/components/cards/EthCard.tsx:74.
+    }
+  - {
+      file: src/components/value-chart/Chart.tsx,
+      names: [ Changed Chart Type, Changed Candle Resolution ],
+      why: The name is `event.candleResolutionChanged` (src/analytics/event.ts:315). It is sent from a `useListen` on
+        `candleResolution`.
+    }
+  - {
+      file: src/features/app-icon/components/AppIconSettingsSection.tsx,
+      names: [ Set App Icon ],
+      why: The name is `analytics.event.setAppIcon` (src/analytics/event.ts:60). It is sent when a person picks an icon.
+    }
+  - {
+      file: src/features/app-icon/screens/AppIconUnlockSheet.tsx,
+      names: [ app_icon_unlock_sheet.cta_pressed, app_icon_unlock_sheet.viewed ],
+      why: The name is `analytics.event.appIconUnlockSheetViewed` (src/analytics/event.ts:178). It is sent from a mount
+        effect.
+    }
+  - {
+      file: src/features/backup/backup.ts,
+      names: [ backup.error, Saved backup password on iCloud, Didn't save backup password on iCloud ],
+      why: The name is `analytics.event.backupSkippedPassword` (src/analytics/event.ts:273). It is sent from the catch block
+        when the iCloud save fails.
+    }
+  - {
+      file: src/features/backup/components/BackupCloudStep.tsx,
+      names: [ Choose Password Step ],
+      why: The name is `analytics.event.backupChoosePassword` (src/analytics/event.ts:277). It is sent from a mount effect.
+    }
+  - {
+      file: src/features/backup/components/BackupSheetSection.tsx,
+      names: [ BackupSheet shown ],
+      why: "Name is analytics.event.backupSheetShown, a key of the event map (src/analytics/event.ts:276)."
+    }
+  - {
+      file: src/features/backup/hooks/useCreateBackup.ts,
+      names: [ Backup Complete, Tapped "Confirm Backup" ],
+      why: Name is analytics.event.backupConfirmed (src/analytics/event.ts:275).
+    }
+  - {
+      file: src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx,
+      names: [ cash.amount_entered, cash.wallet_check_failed ],
+      why: Name is analytics.event.cashWalletCheckFailed (src/analytics/event.ts:132).
+    }
+  - {
+      file: src/features/cash/screens/add-cash-sheet/ReauthenticateContent.tsx,
+      names: [ cash.lost_passkey_recovery_selected ],
+      why: Name is analytics.event.cashLostPasskeyRecoverySelected (src/analytics/event.ts:138).
+    }
+  - {
+      file: src/features/cash/screens/add-wallet-sheet/AddWalletSheet.tsx,
+      names: [ cash.wallet_link_prompted ],
+      why: Name is analytics.event.cashWalletLinkPrompted (src/analytics/event.ts:150).
+    }
+  - {
+      file: src/features/cash/screens/add-wallet-sheet/useWalletLinkFlow.ts,
+      names: [ cash.wallet_linked, cash.wallet_link_failed ],
+      why: Name is analytics.event.cashWalletLinkFailed (src/analytics/event.ts:152).
+    }
+  - {
+      file: src/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel.tsx,
+      names: [ cash.deposit_intro_viewed, cash.deposit_signup_paused_viewed ],
+      why: A ternary on the remote flag cash_signup_enabled picks between two keys of the event map
+        (src/analytics/event.ts:126-127).
+    }
+  - {
+      file: src/features/cash/screens/cash-deposit-setup/steps/useAddPasskeyFlow.ts,
+      names: [ cash.passkey_submitted, cash.passkey_added, cash.passkey_failed ],
+      why: "Name is analytics.event.cashPasskeyFailed (src/analytics/event.ts:147). Not in the list yet, but the same file and
+        pattern."
+    }
+  - {
+      file: src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts,
+      names:
+        [
+          cash.phone_submitted,
+          cash.phone_submit_failed,
+          cash.phone_already_registered,
+          cash.existing_account_recovery_selected
+        ],
+      why: "The name is analytics.event.cashExistingAccountRecoverySelected, a constant in src/analytics/event.ts:137. It is
+        sent with no properties, in chooseRecovery."
+    }
+  - {
+      file: src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts,
+      names:
+        [
+          cash.phone_verified,
+          cash.phone_verify_failed,
+          cash.phone_submitted,
+          cash.kyc_awaiting_decision,
+          cash.kyc_submitted,
+          cash.kyc_failed,
+          cash.kyc_approved
+        ],
+      why: "The name is analytics.event.cashKycFailed, a constant in src/analytics/event.ts:144. It is sent in the
+        submitOnboarding catch, with the property `reason`."
+    }
+  - {
+      file: src/features/cash/services/cashSignInService.ts,
+      names: [ cash.sign_in_submitted, cash.sign_in_succeeded, cash.sign_in_cancelled, cash.sign_in_failed ],
+      why: "analytics.event.cashSignInFailed is the constant at src/analytics/event.ts:155, sent with { trigger, reason } for
+        failures that are not cancellations or access refusals."
+    }
+  - {
+      file: src/features/cash/services/kycStatusService.ts,
+      names: [ cash.kyc_approved, cash.kyc_awaiting_decision, cash.kyc_failed ],
+      why: "analytics.event.cashKycFailed (src/analytics/event.ts:144), sent with reason 'state_not_supported' in the final
+        else."
+    }
+  - {
+      file: src/features/cash/stores/cardLinkFlowStore.ts,
+      names: [ cash.card_linked, cash.card_link_failed ],
+      why: "analytics.event.cashCardLinked is the constant at src/analytics/event.ts:148, sent with { brand } once the card is
+        linked."
+    }
+  - {
+      file: src/features/cash/stores/cashBuyOrderStore.ts,
+      names: [ cash.buy_completed, cash.buy_failed, cash.buy_submitted ],
+      why: "analytics.track(analytics.event.cashBuyOrderSubmitted, ...): fixed name from the event map
+        (src/analytics/event.ts:129)."
+    }
+  - {
+      file: src/features/cash/stores/verifyPhoneFlowStore.ts,
+      names: [ cash.phone_submitted, cash.phone_verified, cash.phone_verify_failed, cash.phone_resend_failed ],
+      why: "analytics.track(analytics.event.cashPhoneResendFailed, { reason, mode }): fixed name from the event map
+        (src/analytics/event.ts:135)."
+    }
+  - {
+      file: src/features/dapp-browser/components/Homepage.tsx,
+      names: [ browser.tap_favorite, browser.trending_dapp_pressed ],
+      why: "analytics.track(analytics.event.browserTrendingDappClicked, { name, url, hasClickedBefore, index }): fixed name
+        from the event map (src/analytics/event.ts:201)."
+    }
+  - {
+      file: src/features/dapp-browser/stores/favoriteDappsStore.ts,
+      names: [ browser.add_favorite ],
+      why: "analytics.track(analytics.event.browserAddFavorite, { url, image, name }): fixed name from the event map
+        (src/analytics/event.ts:202)."
+    }
+  - {
+      file: src/features/dapp-request/hooks/useTransactionSetup.ts,
+      names: [ request.sheet.show ],
+      why: "analytics.track(analytics.event.txRequestShownSheet, { source }): fixed name from the event map
+        (src/analytics/event.ts:181)."
+    }
+  - {
+      file: src/features/dapp-request/screens/SignTransactionSheet.tsx,
+      names: [ request.rejected, request.approved ],
+      why: "analytics.event.txRequestApprove, which is 'request.approved' (src/analytics/event.ts:183). This is the
+        signature-approval path."
+    }
+  - {
+      file: src/features/discover/components/DiscoverHeader.tsx,
+      names: [ discover.tab_pressed ],
+      why: "analyticsEvent.discoverTabPressed, where analyticsEvent is `event` imported from '@/analytics/event'. The value is
+        'discover.tab_pressed' (event.ts:253)."
+    }
+  - {
+      file: src/features/discover/components/markets/layouts/MarketCarousel.tsx,
+      names: [ discover.prediction_order_pressed ],
+      why: "event.discoverPredictionOrderPressed, which is 'discover.prediction_order_pressed' (event.ts:252)."
+    }
+  - {
+      file: src/features/discover/components/markets/layouts/MarketGrid.tsx,
+      names: [ discover.prediction_order_pressed ],
+      why: "event.discoverPredictionOrderPressed, which is 'discover.prediction_order_pressed' (event.ts:252)."
+    }
+  - {
+      file: src/features/discover/components/markets/layouts/MarketList.tsx,
+      names: [ discover.prediction_order_pressed ],
+      why: "event.discoverPredictionOrderPressed, which is 'discover.prediction_order_pressed' (event.ts:252)."
+    }
+  - {
+      file: src/features/discover/components/PredictionEventsSection.tsx,
+      names: [ discover.section_pressed ],
+      why: "analyticsEvent.discoverSectionPressed, which is 'discover.section_pressed' (event.ts:254)."
+    }
+  - {
+      file: src/features/discover/components/SectionLayout.tsx,
+      names: [ discover.section_pressed ],
+      why: "event.discoverSectionPressed, which is 'discover.section_pressed' (event.ts:254)."
+    }
+  - {
+      file: src/features/discover/hooks/useTrackDiscoverCarouselScroll.ts,
+      names: [ discover.carousel_scrolled ],
+      why: "event.discoverCarouselScrolled, which is 'discover.carousel_scrolled' (event.ts:255). The call is debounced by 500
+        ms."
+    }
+  - {
+      file: src/features/discover/utils/trackDiscoverCardPress.ts,
+      names: [ discover.card_pressed ],
+      why: "event.discoverCardPressed, which is 'discover.card_pressed' (event.ts:251). This helper has no name argument. It
+        always sends this one event, and its callers (MarketCarousel, MarketGrid, MarketList) pass the properties."
+    }
+  - {
+      file: src/features/ens/components/ENSCreateProfileCard.tsx,
+      names: [ card.pressed ],
+      why: "analytics.event.cardPressed, which is 'card.pressed' (event.ts:87)."
+    }
+  - {
+      file: src/features/ens/components/ENSSearchCard.tsx,
+      names: [ card.pressed ],
+      why: "analytics.track(analytics.event.cardPressed, ...) goes through the wrapper in src/analytics/index.ts. The name is
+        a key of the event map in src/analytics/event.ts:87, which the scanner doesn't follow through the
+        analytics.event member. It is not a direct SDK call."
+    }
+  - {
+      file: src/features/ens/raps/actions.ts,
+      names:
+        [
+          Initiated ENS registration,
+          Edited ENS records,
+          Completed ENS registration,
+          Extended ENS,
+          Transferred ENS control,
+          Rap failed,
+          Rap started,
+          Rap completed
+        ],
+      why: "analytics.event.ensRapCompleted (event.ts:268), sent at the end of executeENSRap with category and label. It goes
+        through the wrapper."
+    }
+  - {
+      file: src/features/gas/hooks/useGas.ts,
+      names: [ insufficient_native_asset_for_action ],
+      why: "Name is the constant analytics.event.insufficientNativeAssetForAction, defined in src/analytics/event.ts:198. It
+        is one fixed string, not built from data."
+    }
+  - {
+      file: src/features/gas/redux/gas.ts,
+      names: [ Updated Gas Price ],
+      why: "Name is the constant analytics.event.swapsGasUpdatedPrice (src/analytics/event.ts:197), one fixed string."
+    }
+  - {
+      file: src/features/hardware-wallet/navigation/PairHardwareWalletNavigator.tsx,
+      names: [ pair_hw_wallet_nav.entered, pair_hw_wallet_nav.exited ],
+      why: Name is the constant analytics.event.pairHwWalletNavExited (src/analytics/event.ts:124). It fires when the sheet is
+        dismissed.
+    }
+  - {
+      file: src/features/notifications/screens/NotificationPermissionScreen.tsx,
+      names:
+        [
+          notification_permission.skipped,
+          notification_permission.requested,
+          notification_permission.granted,
+          notification_permission.denied
+        ],
+      why: "Name is event.notificationPermissionDenied (src/analytics/event.ts:97), one fixed string."
+    }
+  - {
+      file: src/features/perps/components/PerpsNavigatorFooter.tsx,
+      names: [ perps.open_position.canceled, perps.opened_position, perps.open_position.failed ],
+      why: "Name is analytics.event.perpsOpenPositionFailed (src/analytics/event.ts:320), one fixed string."
+    }
+  - {
+      file: src/features/perps/screens/ClosePositionBottomSheet.tsx,
+      names: [ perps.closed_position, perps.close_position.failed ],
+      why: "Name is analytics.event.perpsClosedPosition (src/analytics/event.ts:321), one fixed string."
+    }
+  - {
+      file: src/features/perps/screens/CreateTriggerOrderBottomSheet.tsx,
+      names: [ perps.trigger_order_created, perps.trigger_order.failed ],
+      why: Sent from the catch block of createTriggerOrder. The name is the constant event.perpsTriggerOrderFailed
+        (event.ts:324).
+    }
+  - {
+      file: src/features/perps/screens/perp-detail-screen/TriggerOrdersSection.tsx,
+      names: [ perps.trigger_order_canceled, perps.trigger_order_cancel.failed ],
+      why: Sent from the catch block of cancelOrder. The name is the constant event.perpsTriggerOrderCancelFailed
+        (event.ts:326).
+    }
+  - {
+      file: src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx,
+      names: [ perps.open_position.canceled, perps.added_to_position, perps.added_to_position.failed ],
+      why: Sent from the catch block. The name is the constant event.perpsAddedToPositionFailed (event.ts:330).
+    }
+  - {
+      file: src/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet.tsx,
+      names: [ perps.trade_details.share_pressed ],
+      why: Sent after the share sheet closes. The name is the constant event.perpsTradeDetailsSharePressed (event.ts:331).
+    }
+  - {
+      file: src/features/perps/withdrawalConfig.ts,
+      names: [ perps.withdrew, perps.withdraw.failed ],
+      why: Sent from the catch block of the withdrawal. The name is the constant event.perpsWithdrawFailed (event.ts:328).
+    }
+  - {
+      file: src/features/placements/engagement/trackInteraction.ts,
+      names: [ surface.interaction ],
+      why: "`event.surfaceInteraction` is a key in the `event` const map in src/analytics/event.ts:257. The map is `as const`,
+        so the name is always the literal 'surface.interaction'."
+    }
+  - {
+      file: src/features/polymarket/depositConfig.ts,
+      names: [ predictions.deposit.failed, predictions.deposit ],
+      why: "`analytics.event.predictionsDeposit` maps to src/analytics/event.ts:345. The name is fixed. `metadata` is
+        DepositSuccessMetadata, passed straight through."
+    }
+  - {
+      file: src/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet.tsx,
+      names: [ predictions.place_order.failed ],
+      why: "`analytics.event.predictionsPlaceOrderFailed` maps to src/analytics/event.ts:342. It fires in the catch block of
+        the buy handler and sends side: 'buy'."
+    }
+  - {
+      file: src/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet.tsx,
+      names: [ predictions.place_order.failed ],
+      why: "`analytics.event.predictionsPlaceOrderFailed` maps to src/analytics/event.ts:342. It fires in the catch block of
+        the sell handler and sends side: 'sell'. The same event is also sent from the buy sheet."
+    }
+  - {
+      file: src/features/polymarket/utils/executePolymarketOrder.ts,
+      names: [ predictions.place_order, predictions.order_match.failed ],
+      why: "`analytics.event.predictionsOrderMatchFailed` maps to src/analytics/event.ts:349. The name is fixed. It is sent
+        from trackOrderMatchFailedAnalytics."
+    }
+  - {
+      file: src/features/polymarket/utils/redeemPosition.ts,
+      names: [ predictions.redeem_position, predictions.redeem_position.failed ],
+      why: "`analytics.event.predictionsRedeemPositionFailed` maps to src/analytics/event.ts:344. The name is fixed. It is
+        sent from trackRedeemPositionFailed in the catch block."
+    }
+  - {
+      file: src/features/polymarket/withdrawalConfig.ts,
+      names: [ predictions.withdrawal.failed, predictions.withdrawal ],
+      why: "`analytics.event.predictionsWithdrawal` maps to src/analytics/event.ts:347. The name is fixed. `metadata` is
+        WithdrawalSuccessMetadata, passed through."
+    }
+  - {
+      file: src/features/positions/components/PositionCard.tsx,
+      names: [ Opened position Sheet ],
+      why: "`analytics.event.positionsOpenedSheet` maps to src/analytics/event.ts:173. The name is fixed. It fires on press of
+        a position card, before navigating to the position sheet."
+    }
+  - {
+      file: src/features/positions/screens/PositionSheet.tsx,
+      names: [ Viewed external dapp, Opened asset from position ],
+      why: "`analytics.event.positionsOpenedExternalDapp` maps to src/analytics/event.ts:174. The name is fixed. It fires when
+        the person opens the dapp URL in the browser."
+    }
+  - {
+      file: src/features/positions/stores/trackPositionsResponseErrors.ts,
+      names: [ positions.error ],
+      why: "The name is analytics.event.positionsError, the fixed string 'positions.error' (event.ts:176). The loop only
+        changes the properties (kind price_not_found, skipped_portfolio_item or unknown)."
+    }
+  - {
+      file: src/features/rnbw-rewards/utils/claimAirdrop.ts,
+      names: [ rnbw_airdrop.claim.failed, rnbw_airdrop.claim ],
+      why: "The name is analytics.event.rnbwAirdropClaimFailed, the fixed string 'rnbw_airdrop.claim.failed' (event.ts:357).
+        It fires in the catch block of submitAirdropClaim."
+    }
+  - {
+      file: src/features/rnbw-rewards/utils/claimRewards.ts,
+      names: [ rnbw_rewards.claim.failed, rnbw_rewards.claim ],
+      why: "The name is analytics.event.rnbwRewardsClaimFailed, the fixed string 'rnbw_rewards.claim.failed' (event.ts:353).
+        It fires in the catch block of submitRewardsClaim."
+    }
+  - {
+      file: src/features/rnbw-staking/utils/stakeRnbw.ts,
+      names: [ rnbw_staking.stake, rnbw_staking.stake.failed ],
+      why: "trackStakeFailure always sends analytics.event.rnbwStakingStakeFailed, the fixed string
+        'rnbw_staking.stake.failed' (event.ts:361)."
+    }
+  - {
+      file: src/features/rnbw-staking/utils/unstakeRnbw.ts,
+      names: [ rnbw_staking.unstake.failed, rnbw_staking.unstake ],
+      why: "The name is analytics.event.rnbwStakingUnstakeFailed, the fixed string 'rnbw_staking.unstake.failed'
+        (event.ts:363). It fires in the catch block when the unstake fails before it is submitted."
+    }
+  - {
+      file: src/features/spot-pnl/ui/SpotPnlSheet.tsx,
+      names: [ spot_pnl.sheet.viewed ],
+      why: analytics.event.spotPnlSheetViewed is a literal in src/analytics/event.ts:334. Sent once per mount from a useEffect
+        guarded by hasTrackedView.
+    }
+  - {
+      file: src/features/transfer/components/SendAssetFormField.js,
+      names: [ Clicked "Max" in Send flow input ],
+      why: analytics.event.sendMaxPressed is a literal in src/analytics/event.ts:93. Sent with no properties.
+    }
+  - {
+      file: src/features/transfer/screens/SendSheet.tsx,
+      names:
+        [
+          Changed native currency input in Send flow,
+          Changed token input in Send flow,
+          Reset Asset Selection Send,
+          token_list
+        ],
+      why: "analytics.event.tokenList is a literal in src/analytics/event.ts:225. Properties come from the `params` object:
+        screen, no_icon, no_price, total_tokens."
+    }
+  - {
+      file: src/features/transfer/utils/trackSentTransaction.ts,
+      names: [ Sent transaction ],
+      why: analytics.event.sentTransaction is a literal in src/analytics/event.ts:59. trackSentTransaction is a second-level
+        helper that builds the property object itself.
+    }
+  - {
+      file: src/features/wallet-connect/components/WalletConnectV2ListItem.tsx,
+      names: [ Manually disconnected from WalletConnect connection ],
+      why: analytics.event.manuallyDisconnectedFromWalletConnectConnection is a literal in src/analytics/event.ts:39. Fires
+        after the 'disconnect' menu action completes.
+    }
+  - {
+      file: src/features/wallet-connect/handlers/onSessionProposal.ts,
+      names:
+        [
+          New WalletConnect pairing,
+          Rejected new WalletConnect session,
+          Approved new WalletConnect session,
+          wc.failed_request
+        ],
+      why: analytics.event.wcNewSessionApproved is a literal in src/analytics/event.ts:168. Fires after client.approveSession
+        succeeds.
+    }
+  - {
+      file: src/features/wallet-connect/handlers/onSessionRequest.ts,
+      names: [ wc.failed_request, Showing Walletconnect signing request ],
+      why: "analytics.event.wcRequestFailed, defined in src/analytics/event.ts:171 as 'wc.failed_request'. The call also sends
+        method."
+    }
+  - {
+      file: src/handlers/deeplinks.ts,
+      names: [ f2c.provider.flow_completed ],
+      why: "analytics.event.f2cProviderFlowCompleted, defined in src/analytics/event.ts:112 as 'f2c.provider.flow_completed'.
+        This branch (other providers) omits success."
+    }
+  - {
+      file: src/hooks/useHiddenTokens.ts,
+      names: [ Toggled an NFT as Hidden ],
+      why: "analytics.event.toggledAnNFTAsHidden, defined in src/analytics/event.ts:50 as 'Toggled an NFT as Hidden'. The call
+        sends isHidden: false."
+    }
+  - {
+      file: src/hooks/useImportingWallet.ts,
+      names:
+        [
+          Tapped "Import" button,
+          watch_wallet,
+          Show wallet profile modal for ENS address,
+          Show wallet profile modal for Unstoppable address,
+          Show wallet profile modal for read only wallet,
+          Show wallet profile modal for imported wallet,
+          Imported seed phrase
+        ],
+      why: "analytics.event.watchWallet, defined in src/analytics/event.ts:209 as 'watch_wallet'."
+    }
+  - {
+      file: src/hooks/useIsOffline.ts,
+      names: [ network_status.reconnected, network_status.offline ],
+      why: "analytics.event.networkStatusOffline, defined in src/analytics/event.ts:237. Fires immediately when debounceMs is
+        0."
+    }
+  - {
+      file: src/hooks/useOnAvatarPress.ts,
+      names: [ Viewed ENS profile ],
+      why: "analytics.event.viewedEnsProfile, defined in src/analytics/event.ts:51"
+    }
+  - {
+      file: src/hooks/useRefreshAccountData.ts,
+      names: [ refresh_account_data ],
+      why: "analytics.track(analytics.event.refreshAccountData, { duration }). The name is a key of the `event` constant in
+        src/analytics/event.ts, line 306, so it is a fixed literal."
+    }
+  - {
+      file: src/hooks/useScanner.ts,
+      names:
+        [
+          Scanned address QR code,
+          Scanned Rainbow profile url,
+          Scanned WalletConnect QR code,
+          Scanned broken or unsupported QR code
+        ],
+      why: "analytics.track(analytics.event.qrCodeScannedInvalid, { qrCodeData }). The name is a fixed literal in
+        src/analytics/event.ts, line 283."
+    }
+  - {
+      file: src/hooks/useWalletCloudBackup.ts,
+      names:
+        [
+          iCloud not enabled,
+          View how to Enable iCloud,
+          Ignore how to enable iCloud,
+          Error during Google Drive Backup,
+          Error during iCloud Backup,
+          Error updating Backup status
+        ],
+      why: "analytics.track(analytics.event.errorUpdatingBackupStatus, { category, label }). The name is a fixed literal in
+        src/analytics/event.ts, line 66."
+    }
+  - {
+      file: src/hooks/useWalletSectionsData.ts,
+      names: [ token_list ],
+      why: "analytics.track(analytics.event.tokenList, params). Params are screen, no_icon, no_price and total_tokens, built
+        in the effect above. The name is a fixed literal in src/analytics/event.ts, line 225."
+    }
+  - {
+      file: src/hooks/useWatchAssetUpdates.ts,
+      names: [ mined_transaction.assets_timed_out, mined_transaction.assets_resolved ],
+      why: "analytics.track(event.minedTransactionAssetsTimedOut, { chainId, type }). `event` is imported from
+        '@/analytics/event'. The name is a fixed literal in line 311 of that file."
+    }
+  - {
+      file: src/hooks/useWatchPendingTxs.ts,
+      names: [ pending_transaction.resolved ],
+      why: "The name is `event.pendingTransactionResolved`, defined in src/analytics/event.ts:309. It's one fixed name."
+    }
+  - {
+      file: src/model/wallet.ts,
+      names: [ wallet_create.failed, wallet_create.succeeded ],
+      why: "The name is `analytics.event.walletCreateFailed`, a fixed name. It's sent from the catch block with `error` set to
+        error.message."
+    }
+  - {
+      file: src/notifications/analytics.ts,
+      names: [ Tapped Push Notification, Changed Global Notification Settings ],
+      why: "The name is `analytics.event.notificationsPromoNotificationSettingsChanged`, defined in
+        src/analytics/event.ts:100. It's one fixed name."
+    }
+  - {
+      file: src/performance/tracking/index.ts,
+      names: [ performance.report, Performance Wallet Initialize Time ],
+      why: "trackMetric(metric, ...) forwards a name its callers choose. The parameter type PerformanceEvent (line 12) is only
+        `event.performanceReport | event.performanceInitializeWallet`, so the name is always one of those two values
+        (src/analytics/event.ts:246-247)."
+    }
+  - {
+      file: src/redux/settings.ts,
+      names: [ debug.identify_probe ],
+      why: "The name is `analytics.event.debugIdentifyProbe`, defined in src/analytics/event.ts:85. It's a temporary probe
+        (FEPLAT-67), as the code comment says. The paired probe is in src/App.tsx:177."
+    }
+  - {
+      file: src/resources/favorites.ts,
+      names: [ add_favorite_token ],
+      why: "analytics.track(analytics.event.addFavoriteToken, ...) passes a key of the `event` map in
+        src/analytics/event.ts:208 instead of a string literal. The map value is 'add_favorite_token'. The call goes
+        through the '@/analytics' wrapper, not a vendor SDK."
+    }
+  - {
+      file: src/screens/AddWalletSheet.tsx,
+      names: [ add_wallet_flow.started, Tapped Create New Wallet, Tapped Add Existing Wallet, Tapped Watch Address ],
+      why: analytics.event.addWalletFlowStarted resolves to 'add_wallet_flow.started' (src/analytics/event.ts:92). It is sent
+        with type 'ledger_nano_x' and isFirstWallet false from the hardware wallet button.
+    }
+  - {
+      file: src/screens/Airdrops/utils.ts,
+      names: [ claim_claimable.succeeded, claim_claimable.failed ],
+      why: analytics.event.claimClaimableFailed resolves to 'claim_claimable.failed' (src/analytics/event.ts:213). It fires in
+        the catch block of claimAirdrop.
+    }
+  - {
+      file: src/screens/change-wallet/ChangeWalletSheet.tsx,
+      names:
+        [
+          Tapped "Done" after editing wallet,
+          Tapped "Cancel" after editing wallet,
+          Tapped "Edit Wallet",
+          Tapped "Notification Settings",
+          Tapped Delete Wallet,
+          Tapped "Delete Wallet" (final confirm),
+          Pressed Button,
+          Tapped Edit
+        ],
+      why: analytics.event.tappedEdit resolves to a string in src/analytics/event.ts:48.
+    }
+  - {
+      file: src/screens/claimables/sponsored/context/SponsoredClaimableContext.tsx,
+      names: [ claim_claimable.failed, claim_claimable.succeeded ],
+      why: The claim succeeded. analytics.event.claimClaimableSucceeded resolves to a fixed string in
+        src/analytics/event.ts:212.
+    }
+  - {
+      file: src/screens/claimables/transaction/context/TransactionClaimableContext.tsx,
+      names: [ claim_claimable.failed, claim_claimable.succeeded ],
+      why: "Wrapper call with analytics.event.claimClaimableFailed (event.ts:213), sent from onSuccess when the status is
+        still 'claiming'."
+    }
+  - {
+      file: src/screens/expandedAssetSheet/components/sections/BalanceSection.tsx,
+      names: [ spot_pnl.pill.shown ],
+      why: "Wrapper call with analytics.event.spotPnlPillShown, which event.ts:335 maps to 'spot_pnl.pill.shown'. A ref makes
+        it send once."
+    }
+  - {
+      file: src/screens/expandedAssetSheet/components/sections/TopHoldersSection.tsx,
+      names: [ top_holders.shown ],
+      why: "Wrapper call with analytics.event.topHoldersShown, which event.ts:338 maps to 'top_holders.shown'. A ref makes it
+        send once, in an effect."
+    }
+  - {
+      file: src/screens/FiatOnRamp/ProviderListItem.tsx,
+      names: [ f2c.provider.flow_opened ],
+      why: "Wrapper call with analytics.event.f2cProviderFlowStarted, which event.ts:107 maps to 'f2c.provider.flow_opened'."
+    }
+  - {
+      file: src/screens/LearnWebViewScreen.tsx,
+      names: [ learn_article.opened, learn_article.shared ],
+      why: "Wrapper call with analytics.event.learnArticleShared, which event.ts:89 maps to 'learn_article.shared'."
+    }
+  - {
+      file: src/screens/NoNeedWCSheet.tsx,
+      names: [ wc.failed_request ],
+      why: analytics.event.wcRequestFailed resolves to a fixed string in src/analytics/event.ts:171. Wrapper call on mount.
+    }
+  - {
+      file: src/screens/ProfileSheet.tsx,
+      names: [ Viewed profile ],
+      why: analytics.event.viewedProfile resolves to a fixed string in src/analytics/event.ts:52.
+    }
+  - {
+      file: src/screens/rewards/components/RewardsClaimed.tsx,
+      names: [ rewards.pressed_available_card ],
+      why: analytics.event.rewardsPressedAvailableCard resolves to a fixed string in src/analytics/event.ts:158.
+    }
+  - {
+      file: src/screens/rewards/components/RewardsEarnings.tsx,
+      names: [ rewards.pressed_pending_earnings_card ],
+      why: analytics.event.rewardsPressedPendingEarningsCard resolves to a fixed string in src/analytics/event.ts:157.
+    }
+  - {
+      file: src/screens/rewards/components/RewardsLeaderboardItem.tsx,
+      names: [ rewards.pressed_leaderboard_item ],
+      why: analytics.event.rewardsPressedLeaderboardItem resolves to a fixed string in src/analytics/event.ts:162.
+    }
+  - {
+      file: src/screens/rewards/components/RewardsStats.tsx,
+      names: [ rewards.pressed_bridged_card, rewards.pressed_swapped_card ],
+      why: analytics.event.rewardsPressedSwappedCard resolves to a fixed string in src/analytics/event.ts:160.
+    }
+  - {
+      file: src/screens/rewards/RewardsSheet.tsx,
+      names: [ rewards.viewed_sheet ],
+      why: analytics.event.rewardsViewedSheet resolves to a fixed string in src/analytics/event.ts:125.
+    }
+  - {
+      file: src/screens/SettingsSheet/components/Backups/ShowSecretView.tsx,
+      names: [ Show Secret View ],
+      why: analytics.event.showSecretView resolves to a fixed string in src/analytics/event.ts:43.
+    }
+  - {
+      file: src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx,
+      names: [ add_wallet_flow.started ],
+      why: analytics.event.addWalletFlowStarted resolves to a fixed string in src/analytics/event.ts:92.
+    }
+  - {
+      file: src/screens/SettingsSheet/components/CurrencySection.tsx,
+      names: [ Changed native currency ],
+      why: analytics.event.changedNativeCurrency resolves to a fixed string in src/analytics/event.ts:55.
+    }
+  - {
+      file: src/screens/SettingsSheet/components/LanguageSection.tsx,
+      names: [ Changed language ],
+      why: analytics.event.changedLanguage resolves to a fixed string in src/analytics/event.ts:54.
+    }
+  - {
+      file: src/screens/SettingsSheet/components/NetworkSection.tsx,
+      names: [ Changed network ],
+      why: "analytics.track(analytics.event.changedNetwork, ...) goes through the wrapper in src/analytics/index.ts. The name
+        is a key of the `event` object in src/analytics/event.ts:56, which maps to a literal string, so one name is
+        possible."
+    }
+  - {
+      file: src/screens/SettingsSheet/components/PrivacySection.tsx,
+      names: [ analytics_tracking.disabled, analytics_tracking.enabled ],
+      why: analytics.event.analyticsTrackingEnabled resolves to a literal in src/analytics/event.ts:84. It is sent right after
+        analytics.enable().
+    }
+  - {
+      file: src/screens/token-launcher/components/TokenLauncherFooter.tsx,
+      names: [ token_launcher.wallet_load_failed, token_launcher.share_pressed ],
+      why: analytics.event.tokenLauncherSharePressed resolves to a literal in src/analytics/event.ts:230. It fires after
+        Share.share returns.
+    }
+  - {
+      file: src/screens/token-launcher/components/TokenLauncherHeader.tsx,
+      names: [ token_launcher.abandoned ],
+      why: analytics.event.tokenLauncherAbandoned resolves to a literal in src/analytics/event.ts:231. It fires when the user
+        confirms discard and exit in the action sheet.
+    }
+  - {
+      file: src/screens/token-launcher/hooks/useUploadToCloudinary.ts,
+      names: [ token_launcher.image_upload_failed ],
+      why: analytics.event.tokenLauncherImageUploadFailed resolves to a literal in src/analytics/event.ts:233. It fires in the
+        catch block of the upload.
+    }
+  - {
+      file: src/screens/token-launcher/state/tokenLauncherStore.ts,
+      names: [ token_launcher.step_changed, token_launcher.token_created, token_launcher.creation_failed ],
+      why: analytics.event.tokenLauncherCreationFailed resolves to a literal in src/analytics/event.ts:232. It fires in the
+        catch block of the launch.
+    }
+  - {
+      file: src/screens/WalletConnectApprovalSheet.tsx,
+      names: [ Shown Walletconnect session request, Received wc connection ],
+      why: "analytics.event.shownWalletconnectSessionRequest resolves to a literal in src/analytics/event.ts:44. It fires on
+        mount, after interactions."
+    }
+  - {
+      file: src/screens/WelcomeScreen/WelcomeScreen.tsx,
+      names: [ Tapped "Get a new wallet", Tapped "I already have one" ],
+      why: analytics.track(analytics.event.welcomeAlreadyHave) when the restore sheet opens; name from the `event` map
+        (event.ts:297).
+    }
+  - {
+      file: src/state/performance/performance.ts,
+      names: [ performance.time_to_sign.operation, performance.time_to_sign ],
+      why: "analytics.track(analytics.event.performanceTimeToSign, {screen, completedAt, elapsedTime, totalElapsedTime,
+        error}) when isEndOfFlow; name from the `event` map (event.ts:205)."
+    }
+  - {
+      file: src/state/wallets/initializeWallet.ts,
+      names: [ wallet_initialization.failed ],
+      why: "analytics.track(event.walletInitializationFailed, {error, walletStatus}) in the catch block; `event` is imported
+        from '@/analytics/event' (event.ts:243)."
+    }
+  - {
+      file: src/utils/reviewAlert.ts,
+      names: [ app_store_review.prompted ],
+      why: "analytics.track(event.appStoreReviewPrompted, {action, promptCount}) after StoreReview.requestReview(); `event`
+        imported from '@/analytics/event' (event.ts:303)."
+    }
+sdk_exceptions:
+  - {
+      file: src/analytics/index.test.ts,
+      pattern: analytics\.track\(,
+      reason: "Unit test of the analytics wrapper itself; it calls track on a local Analytics instance with a mocked PostHog
+        client, not product tracking."
+    }
+  - {
+      file: src/analytics/index.test.ts,
+      pattern: analytics\.(track|identify|screen)\(,
+      reason: "Unit tests of the Analytics wrapper class itself, run against a mocked PostHog client; they don't send product
+        analytics"
+    }
+  - {
+      file: src/features/ens/raps/actions.ts,
+      pattern: analytics\.track\(,
+      reason: "analytics is the app's own wrapper instance from src/analytics/index.ts (PostHog behind it), not a vendor SDK"
+    }
+  - {
+      file: src/features/gas/hooks/useGas.ts,
+      pattern: analytics\.track\(,
+      reason: "App's own analytics wrapper instance (src/analytics/index.ts), not a vendor SDK"
+    }
+  - {
+      file: src/features/gas/redux/gas.ts,
+      pattern: analytics\.track\(,
+      reason: "App's own analytics wrapper instance (src/analytics/index.ts), not a vendor SDK"
+    }
+  - {
+      file: src/features/hardware-wallet/navigation/PairHardwareWalletNavigator.tsx,
+      pattern: analytics\.track\(,
+      reason: "App's own analytics wrapper instance (src/analytics/index.ts), not a vendor SDK"
+    }
+  - {
+      file: src/features/network/stores/networkSwitcherStore.ts,
+      pattern: analytics\.identify\(,
+      reason: App's own analytics wrapper instance (src/analytics/index.ts); already registered as an identify tracker
+    }
+  - {
+      file: src/features/notifications/screens/NotificationPermissionScreen.tsx,
+      pattern: analytics\.track\(,
+      reason: "App's own analytics wrapper instance (src/analytics/index.ts), not a vendor SDK"
+    }
+  - {
+      file: src/features/perps/components/PerpsNavigatorFooter.tsx,
+      pattern: analytics\.track\(,
+      reason: "App's own analytics wrapper instance (src/analytics/index.ts), not a vendor SDK"
+    }
+  - {
+      file: src/components/value-chart/Chart.tsx,
+      pattern: analytics\.identify\(,
+      reason: Call on the app's own wrapper instance imported from '@/analytics' (not a vendor SDK); it sets the chartType and
+        candleResolution user properties
+    }
+  - {
+      file: src/hooks/useIdentifyAppIcon.ts,
+      pattern: analytics\.identify\(,
+      reason: Call on the app's own wrapper instance imported from '@/analytics'; it sets the appIcon user property
+    }
+  - {
+      file: src/notifications/analytics.ts,
+      pattern: analytics\.identify\(,
+      reason: Call on the app's own wrapper instance imported from '@/analytics'; it sets notification user properties
+    }
+  - {
+      file: src/redux/settings.ts,
+      pattern: analytics\.identify\(,
+      reason: Call on the app's own wrapper instance imported from '@/analytics'; it sets the currency and enabledTestnets
+        user properties
+    }

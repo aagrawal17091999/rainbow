@@ -1,0 +1,1468 @@
+events:
+  - name: add_wallet_flow.started
+    section: Wallets
+    description: The person picks one way to add a wallet on the Add Wallet sheet (create new, restore from seed, watch an
+      address, restore from cloud) or taps Create new wallet in a wallet's backup settings (ViewWalletBackup). Fires on
+      the tap, before navigation to the next screen, so it records intent only. Nothing here says whether a wallet was
+      actually added. The 'Connect hardware wallet' option sends it with type ledger_nano_x and isFirstWallet hard-coded
+      to false.
+    question: How many people start adding a wallet, by method, and how many are first-time wallets?
+    track_via: client
+    properties:
+      - name: isFirstWallet
+        type: boolean
+        example: true | false
+        description: True when the sheet was opened for the user's first wallet. Hard-coded false from the hardware-wallet
+          option and from ViewWalletBackup.
+      - name: type
+        type: string
+        example: new | seed | watch | ledger_nano_x
+        description: Method chosen. The event schema also allows 'backup', but no call sends it. Restore-from-cloud sends 'seed'.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track. Missing before a wallet exists.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track. Missing before a wallet exists.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: analytics_tracking.disabled
+    section: Settings
+    description: The person switches the Analytics toggle off in Settings > Privacy. Fires on the toggle, just before
+      analytics.disable() is called, so it is the last event sent before tracking stops. It sets the doNotTrack device
+      flag in the same reducer.
+    question: How many people opt out of analytics, and which kinds of wallets do they hold?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: analytics_tracking.enabled
+    section: Settings
+    description: The person switches the Analytics toggle back on in Settings > Privacy. Fires on the toggle, just after
+      analytics.enable() and after doNotTrack is cleared. It does not fire when analytics is on by default.
+    question: How many people who opted out turn analytics back on?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Changed language
+    section: Settings
+    description: The person taps a language in Settings > Language. Fires on every tap right after settingsChangeLanguage is
+      called, including a tap on the language already selected.
+    question: Which languages do people switch to?
+    track_via: client
+    properties:
+      - name: language
+        type: string
+        example: UNCONFIRMED
+        description: Language code from the supportedLanguages keys that have wallet translations.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Changed native currency
+    section: Settings
+    description: The person taps a currency in Settings > Currency. Fires on every tap after the currency is saved to the
+      assets store and settings, including a tap on the current currency.
+    question: Which display currencies do people choose?
+    track_via: client
+    properties:
+      - name: currency
+        type: string
+        example: UNCONFIRMED
+        description: NativeCurrencyKey from the supported currencies list. It includes crypto options (the code compares it to
+          the ETH symbol).
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Changed network
+    section: Settings
+    description: The person taps a network in the Settings network list (and the same component in the dev section). Fires
+      after the settingsUpdateNetwork dispatch, once interactions settle (InteractionManager.runAfterInteractions). It can
+      fire for the network that is already selected. Disabled testnet rows can't be tapped.
+    question: Which default network do people select?
+    track_via: client
+    properties:
+      - name: chainId
+        type: numeric
+        example: "1"
+        description: ChainId of the selected network (1 is mainnet). The draft typed it as string, but the schema says number.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: claim_claimable.failed
+    section: Claimables
+    description: A claim of a claimable (airdrop or reward) did not complete. Fires on the client in three places. (1)
+      Airdrops/utils.ts claimAirdrop (claimableType rainbowCoin) fires when signing or sending the transaction throws,
+      with failureStep 'claim'. This includes a user rejecting or cancelling the transaction, which is not a real failure.
+      (2) SponsoredClaimableContext (claimableType sponsored) fires when the Addys API call throws, when the response has
+      payload.success false, when the mutation errors, or when the mutation resolves while status is still 'claiming'
+      (failureStep 'unknown'). (3) TransactionClaimableContext (claimableType transaction) fires when the claim or swap
+      rap returns an error ('claim' or 'swap'), on a thrown error, and on the same unhandled or unresolved cases. It does
+      not fire when biometrics or wallet loading fails in the sponsored flow.
+    question: What share of claim attempts fail, at which step, and for which claimable types?
+    track_via: client
+    properties:
+      - name: assets
+        type: array
+        example: '[{"symbol":"ETH","address":"0x…","amount":"0.1"}]'
+        description: Assets being claimed, as {symbol, address, amount (string)} objects.
+      - name: chainId
+        type: numeric
+        example: "1"
+        description: Chain the claimable lives on.
+      - name: claimableId
+        type: string
+        example: UNCONFIRMED
+        description: Claimable type string for sponsored and transaction claims (claimable.type), but claimable.uniqueId for
+          rainbowCoin airdrops.
+      - name: claimableType
+        type: string
+        example: transaction | sponsored | rainbowCoin
+        description: Kind of claimable.
+      - name: errorMessage
+        type: string
+        example: UNCONFIRMED
+        description: Constant message from the ErrorMessages enum in the sponsored and transaction flows. The raw exception
+          message in the airdrop flow.
+      - name: failureStep
+        type: string
+        example: claim | swap | unknown
+        description: Step that failed. 'swap' only comes from the transaction flow.
+      - name: isSwapping
+        type: boolean
+        example: true | false
+        description: Whether the claim includes a swap into another output asset. Always false for sponsored and rainbowCoin claims.
+      - name: outputAsset
+        type: object
+        example: '{"symbol":"ETH","address":"0x…"}'
+        description: Asset the person ends up with.
+      - name: outputChainId
+        type: numeric
+        example: "1"
+        description: Chain of the output asset. The unhandled-error path sends -1 when the output config is missing.
+      - name: usdValue
+        type: string
+        example: UNCONFIRMED
+        description: Total claimable value in the display currency, as a string. The name says USD, but the value is
+          claimable.totalCurrencyValue.amount.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: claim_claimable.succeeded
+    section: Claimables
+    description: A claim of a claimable completed from the app's point of view. The rainbowCoin airdrop flow fires it after
+      the signed transaction is submitted to the provider, before it is confirmed on-chain. The sponsored flow fires it
+      when the Addys API answers with payload.success true, whether the status is 'success' or 'pending'. The transaction
+      flow fires it after the claim (and swap, if any) finishes without error. It does not fire on failure.
+    question: How many claims succeed, by claimable type, and how much value is claimed?
+    track_via: client
+    properties:
+      - name: assets
+        type: array
+        example: '[{"symbol":"ETH","address":"0x…","amount":"0.1"}]'
+        description: Assets claimed, as {symbol, address, amount (string)} objects.
+      - name: chainId
+        type: numeric
+        example: "1"
+        description: Chain the claimable lives on.
+      - name: claimableId
+        type: string
+        example: UNCONFIRMED
+        description: Claimable type string for sponsored and transaction claims, claimable.uniqueId for rainbowCoin airdrops.
+      - name: claimableType
+        type: string
+        example: transaction | multi_transaction | sponsored | rainbowCoin
+        description: Kind of claimable. In the transaction flow it is claimable.actionType.
+      - name: errorMessage
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Never sent on success. The draft lists it because the scanner merged calls.
+      - name: failureStep
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Never sent on success. The draft lists it because the scanner merged calls.
+      - name: isSwapping
+        type: boolean
+        example: true | false
+        description: Whether the claim included a swap into another asset.
+      - name: outputAsset
+        type: object
+        example: '{"symbol":"ETH","address":"0x…"}'
+        description: Asset the person received.
+      - name: outputChainId
+        type: numeric
+        example: "1"
+        description: Chain of the output asset.
+      - name: usdValue
+        type: string
+        example: UNCONFIRMED
+        description: Total claimable value in the display currency, as a string.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: f2c.provider.flow_opened
+    section: Fiat on-ramp
+    description: The person taps a provider in the Add Cash list and the app has received a widget URL from getWidgetURL.
+      Fires just before the URL opens in the external browser. It does not fire if the widget URL request fails (the
+      person sees an alert instead). Completion comes back through an external callback (the rnbw.app/f2c redirect, which
+      is currently passed only to Moonpay), so a flow_opened with no matching f2c.provider.flow_completed or flow_errored
+      for the same sessionId is an abandonment, not a failure.
+    question: How many people start buying crypto with a card, with which provider, and how many finish?
+    track_via: client
+    properties:
+      - name: provider
+        type: string
+        example: ramp | coinbase | moonpay | stripe
+        description: FiatProviderName of the selected provider.
+      - name: sessionId
+        type: string
+        example: UNCONFIRMED
+        description: Random nanoid generated per tap. It is also sent in the Moonpay redirect URI, so it can join the open event
+          to completion events.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: learn_article.opened
+    section: Learn
+    description: Fires when the Learn web view screen is closed or unmounted, not when it opens. It is sent from the cleanup
+      of a useEffect, with the seconds the screen was open. The cleanup also runs if the route params (category,
+      displayType, key, routeName, url) change while the screen is open, which would send an extra event.
+    question: Which Learn articles do people read, and for how long?
+    track_via: client
+    properties:
+      - name: cardId
+        type: string
+        example: UNCONFIRMED
+        description: Key of the Learn card that opened the article.
+      - name: category
+        type: string
+        example: UNCONFIRMED
+        description: LearnCategory of the article.
+      - name: displayType
+        type: string
+        example: UNCONFIRMED
+        description: CardType used to show the card that opened the article.
+      - name: durationSeconds
+        type: numeric
+        example: "12.4"
+        description: Seconds between screen mount and close, with decimals.
+      - name: routeName
+        type: string
+        example: UNCONFIRMED
+        description: Route the card was on when tapped.
+      - name: url
+        type: string
+        example: UNCONFIRMED
+        description: Article URL.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: learn_article.shared
+    section: Learn
+    description: The person taps the share icon in the Learn web view header and finishes sharing. Fires after Share.share
+      resolves with sharedAction. It does not fire if they dismiss the share sheet.
+    question: How many readers share a Learn article, and which ones?
+    track_via: client
+    properties:
+      - name: cardId
+        type: string
+        example: UNCONFIRMED
+        description: Key of the Learn card that opened the article.
+      - name: category
+        type: string
+        example: UNCONFIRMED
+        description: LearnCategory of the article.
+      - name: displayType
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Never sent by the share call. The draft lists it because the scanner merged calls.
+      - name: durationSeconds
+        type: numeric
+        example: "12.4"
+        description: Seconds since the screen mounted when the share completed.
+      - name: routeName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Never sent by the share call. The draft lists it because the scanner merged calls.
+      - name: url
+        type: string
+        example: UNCONFIRMED
+        description: Article URL.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Received wc connection
+    section: WalletConnect
+    description: A WalletConnect approval sheet is shown for a dapp, once interactions settle after mount. It records that a
+      request arrived and how long it waited, not whether the person approved it. Approval or rejection goes through
+      handleSuccess and is not tracked here. The effect re-runs, and re-fires, if dappName, dappUrl or receivedTimestamp
+      change while the sheet is open. The sheet also fires shownWalletconnectSessionRequest on mount.
+    question: How many dapp connection requests do people receive, and how long do they wait before the sheet shows?
+    track_via: client
+    properties:
+      - name: dappName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Name the dapp gives itself in the WalletConnect request.
+      - name: dappUrl
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: URL the dapp gives in the WalletConnect request.
+      - name: waitingTime
+        type: numeric
+        example: 1.8 | Error calculating waiting time.
+        required: false
+        description: Seconds between the request being received and the sheet showing. It becomes the string 'Error calculating
+          waiting time.' when the timestamp is invalid, so the type is mixed.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: rewards.pressed_available_card
+    section: Rewards
+    description: Fires on the client when the person taps the 'Rewards claimed' progress card in the rewards sheet, at the
+      start of the press handler and just before the explainer sheet (op_rewards_amount_distributed) opens. Only the card
+      shown while rewards remain unclaimed is tappable; the 'all rewards claimed' variant has no handler and doesn't fire
+      it.
+    question: How many people open the explainer for how rewards are distributed, out of those who view the rewards sheet?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper (securelyHashWalletAddress). Omitted when
+          there is no active address.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper. Can be undefined, e.g. right after first wallet
+          creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: rewards.pressed_bridged_card
+    section: Rewards
+    description: Fires on the client when the person taps the 'bridged' stats card in the rewards sheet, before the
+      explainer sheet (op_rewards_bridge) opens. One of two card types handled by the same press-handler factory; the swap
+      card fires rewards.pressed_swapped_card.
+    question: Which rewards cards do people open the explainer for?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper. Omitted when there is no active address.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: rewards.pressed_leaderboard_item
+    section: Rewards
+    description: Fires on the client when the person taps a row in the rewards leaderboard, before the profile sheet of that
+      address opens. Fires once per tap, for any row.
+    question: Do people look at other users' profiles from the rewards leaderboard?
+    track_via: client
+    properties:
+      - name: ens
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: ENS name of the tapped leaderboard row; undefined when the row has no ENS name. Identifies another person,
+          see migration.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the viewer's active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the viewer's active wallet, added by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: rewards.pressed_pending_earnings_card
+    section: Rewards
+    description: Fires on the client when the person taps the 'Pending earnings' card in the rewards sheet, before the
+      airdrop-timing explainer (op_rewards_airdrop_timing) opens.
+    question: How many people open the airdrop timing explainer from the rewards sheet?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: rewards.pressed_swapped_card
+    section: Rewards
+    description: Fires on the client when the person taps the 'swapped' stats card in the rewards sheet, before the
+      explainer sheet (op_rewards_swap) opens. The bridge card fires rewards.pressed_bridged_card.
+    question: Which rewards cards do people open the explainer for?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: rewards.viewed_sheet
+    section: Rewards
+    description: Fires on the client every time the rewards sheet screen gains focus (useFocusEffect), including when the
+      person returns to it from a pushed screen such as the profile sheet or an explainer. It doesn't wait for the rewards
+      data to load and fires even if loading fails.
+    question: How many people open the rewards sheet, and how many of them tap into a card or the leaderboard?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Show Secret View
+    section: Settings
+    description: Fires on the client once, when the settings backup 'show secret' view mounts and the secret display section
+      is rendered. It fires on display, not when the person copies or confirms anything, and doesn't say whether the
+      secret was a recovery phrase or a private key.
+    question: How many people reveal a wallet secret from settings backup?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: settings backup
+        description: Hardcoded source of the view; the only call site sends this literal.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Shown Walletconnect session request
+    section: WalletConnect
+    description: Fires on the client once, after interactions finish following mount of the WalletConnect approval sheet
+      (connect or transaction/signature type). Fires when the sheet is shown, not when the person approves or rejects.
+      Approval, cancel and dismissal (which counts as rejection) have no event, so abandonment is shown only as this event
+      with no outcome.
+    question: How many WalletConnect session requests are shown to people, and what share are approved?
+    track_via: client
+    properties:
+      - name: dappName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The draft took it from the neighbouring 'Received wc connection' call (line 298).
+      - name: dappUrl
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The draft took it from the neighbouring 'Received wc connection' call (line 298).
+      - name: waitingTime
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. Belongs to 'Received wc connection' (seconds, or an error string).
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: spot_pnl.pill.shown
+    section: Asset
+    description: Fires on the client at most once per mount of the expanded asset sheet's balance section, the first time
+      the spot PnL pill reports it has been shown (onShown). A ref in BalanceSection guards it, so the pill remounting
+      when the asset becomes owned or not owned doesn't fire it again. Closing and reopening the sheet fires it again.
+    question: How often do people see a spot PnL pill on an asset, and in which state (unrealized, partially or fully realized)?
+    track_via: client
+    properties:
+      - name: chainId
+        type: string
+        example: 1 | 10 | 8453
+        description: Chain ID of the asset (sent as a number in code, ChainId enum).
+      - name: tokenAddress
+        type: string
+        example: UNCONFIRMED
+        description: Contract address of the asset the sheet is open for (basicAsset.address).
+      - name: variant
+        type: string
+        example: unrealized | partiallyRealized | fullyRealized
+        description: State of the PnL pill (SpotPnlVariant).
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Cancel" after editing wallet
+    section: Wallets
+    description: "Fires on the client when the wallet profile modal (opened from Change Wallet > Edit) closes and the person
+      saved no name (empty name), so the label update is skipped. Despite its name it doesn't come from a Cancel button
+      tap: it is the 'closed with no name' branch of onCloseModal, and the account is still updated with an undefined
+      label."
+    question: How many wallet-edit sessions end without a name being saved?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to pressed_button.
+      - name: buttonName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to pressed_button.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+      - name: wallet_label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to the Done event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Delete Wallet" (final confirm)
+    section: Wallets
+    description: Fires on the client when the person picks the destructive 'Delete wallet' option in the confirmation action
+      sheet (button index 0), before deleteWallet runs. It records the confirmation, not that the wallet was deleted, and
+      cancelling the sheet doesn't fire it. The intent event is 'Tapped Delete Wallet'.
+    question: How many people confirm deleting a wallet after tapping Delete?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to pressed_button.
+      - name: buttonName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to pressed_button.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+      - name: wallet_label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to the Done event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Done" after editing wallet
+    section: Wallets
+    description: Fires on the client when the wallet profile modal (opened from Change Wallet > Edit) closes with a
+      non-empty name, just before the web profile is updated. It fires once per modal close and not when the name is
+      unchanged-but-empty.
+    question: How many people rename or relabel a wallet?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to pressed_button.
+      - name: buttonName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to pressed_button.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+      - name: wallet_label
+        type: string
+        example: UNCONFIRMED
+        description: The name the person typed for the wallet. Raw user text, see migration. Always present on this event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Edit Wallet"
+    section: Wallets
+    description: Fires on the client when the person picks Edit for a wallet address in the Change Wallet sheet
+      (onPressEdit), before the profile modal opens. Fires at the tap, not when an edit is saved.
+    question: How many people start editing a wallet's name from the wallet list?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to pressed_button.
+      - name: buttonName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to pressed_button.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper.
+      - name: wallet_label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event; it belongs to the Done event.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Get a new wallet"
+    section: Onboarding
+    description: Fires on the client when the person taps 'Get a new wallet' on the welcome screen, once per attempt (a ref
+      blocks a second tap while creation is running), before the wallet is created. Creation can fail afterwards with an
+      alert, and no event records the outcome.
+    question: How many people who open the welcome screen start creating a new wallet, and how many get one?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper. Usually missing here because no wallet
+          exists yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper. Usually missing on the welcome screen.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "I already have one"
+    section: Onboarding
+    description: Fires on the client when the person taps 'I already have one' on the welcome screen, before the add-wallet
+      navigator opens in the onboarding flow. Doesn't say whether a wallet is then imported.
+    question: How many people who open the welcome screen choose to import an existing wallet?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added by the analytics wrapper. Usually missing here because no wallet
+          exists yet.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added by the analytics wrapper. Usually missing on the welcome screen.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Notification Settings"
+    section: Wallets
+    description: Fires on the client the moment the user taps Notifications on a wallet row in the Change Wallet sheet
+      (onPressNotifications), before the code checks whether notification settings exist for that address. It fires
+      whether the tap then opens the wallet notification settings screen or only shows the alert for a wallet with no
+      settings. It does not fire when notifications are toggled on that settings screen. The only properties actually sent
+      are the wallet context (walletAddressHash, walletType) that analytics.track adds to every event.
+    question: How many people open per-wallet notification settings from the wallet list, and how often does that dead-end
+      in the "notifications unavailable" alert?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the neighbouring pressedButton call in the same file.
+      - name: buttonName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the neighbouring pressedButton call in the same file.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track. Missing when no wallet context is set or hashing fails.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track. Missing when the wallet type is unknown.
+      - name: wallet_label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the "Done" after editing wallet call at ChangeWalletSheet.tsx:264.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped Add Existing Wallet
+    section: Wallets
+    description: Fires on the client when the user taps the restore-from-seed option ("add existing wallet") on the Add
+      Wallet sheet, in onPressRestoreFromSeed. It fires just before add_wallet_flow.started with type 'seed' and before
+      navigating to the import screen. It does not fire for the cloud-backup restore option or the hardware wallet option,
+      which only send add_wallet_flow.started. It is an intent with no outcome event, so completion is not measurable from
+      it. The call sends no properties of its own, only the wallet context.
+    track_via: client
+    properties:
+      - name: isFirstWallet
+        type: boolean
+        example: true | false
+        required: false
+        description: Not sent by this event. It is sent on the add_wallet_flow.started call right after it.
+      - name: type
+        type: string
+        example: new | seed | watch | ledger_nano_x
+        required: false
+        description: Not sent by this event. It is sent on add_wallet_flow.started; for this tap the value is 'seed'.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track. Missing when no wallet context is set or hashing fails.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped Create New Wallet
+    section: Wallets
+    description: Fires on the client when the user taps Create New Wallet on the Add Wallet sheet (onPressCreate). It fires
+      right after add_wallet_flow.started with type 'new' and before navigating to the choose-wallet-group screen. It
+      records the tap, not that a wallet was created. The call sends no properties of its own, only the wallet context.
+    track_via: client
+    properties:
+      - name: isFirstWallet
+        type: boolean
+        example: true | false
+        required: false
+        description: Not sent by this event. It is sent on add_wallet_flow.started.
+      - name: type
+        type: string
+        example: new | seed | watch | ledger_nano_x
+        required: false
+        description: Not sent by this event. It is sent on add_wallet_flow.started; for this tap the value is 'new'.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped Delete Wallet
+    section: Wallets
+    description: Fires on the client when the user taps Delete on a wallet in the Change Wallet sheet (onPressRemove),
+      before the confirmation action sheet opens. It is the intent only. Confirming fires the separate 'Tapped "Delete
+      Wallet" (final confirm)' event, and cancelling fires nothing. The actual deletion (deleteWallet) has no outcome
+      event. The call sends no properties of its own, only the wallet context.
+    question: How many people start deleting a wallet, and how many go on to confirm?
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the pressedButton call in the same file.
+      - name: buttonName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the pressedButton call in the same file.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+      - name: wallet_label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the "Done" after editing wallet call.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped Edit
+    section: Wallets
+    description: Fires on the client each time the user taps the Edit button in the Change Wallet sheet header
+      (onPressEditMode). The handler toggles edit mode, so it fires both when entering and when leaving edit mode, and
+      nothing in the payload tells the two apart. It also fires when the tap dismisses the feature-hint tooltip. The call
+      sends no properties of its own, only the wallet context.
+    track_via: client
+    properties:
+      - name: action
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the pressedButton call in the same file.
+      - name: buttonName
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the pressedButton call in the same file.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+      - name: wallet_label
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the "Done" after editing wallet call.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped Watch Address
+    section: Wallets
+    description: Fires on the client when the user taps the watch-an-address option on the Add Wallet sheet (onPressWatch).
+      It fires just before add_wallet_flow.started with type 'watch' and before navigating to the import-or-watch sheet.
+      It records the tap, not that an address was watched. The call sends no properties of its own, only the wallet
+      context.
+    track_via: client
+    properties:
+      - name: isFirstWallet
+        type: boolean
+        example: true | false
+        required: false
+        description: Not sent by this event. It is sent on add_wallet_flow.started.
+      - name: type
+        type: string
+        example: new | seed | watch | ledger_nano_x
+        required: false
+        description: Not sent by this event. It is sent on add_wallet_flow.started; for this tap the value is 'watch'.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_launcher.abandoned
+    section: Token Launcher
+    description: Fires on the client when the user taps the exit button in the token launcher header, has entered at least
+      some info (hasEnteredAnyInfo), and picks 'Discard and exit' in the confirmation action sheet. It fires right after
+      navigation.goBack(). It does not fire when the form is empty (the screen closes silently), when the user cancels the
+      sheet, or when they leave after a successful launch. The payload is the wallet context plus the whole form state
+      from getAnalyticsParams.
+    question: How many people start filling in a new coin and then throw it away, and at what point do they leave?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_launcher.creation_failed
+    section: Token Launcher
+    description: Fires on the client in the catch block of createToken in tokenLauncherStore, after the user has held the
+      create button and TokenLauncherSDK.launchToken or any step after it throws. The try block also contains the
+      dominant-colour lookup, publicClient.getTransaction and addNewTransaction, so an error there fires this event even
+      though token_created has already fired for the same launch. It also fires after the error alert has been shown. It
+      does not fire when launchToken resolves with no result, when the user cancels biometrics, or for wallet-load
+      failures (a separate event). The error field is the raw error message.
+    question: Of the people who hold to create a coin, how many fail, at which operation, and why?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Typed on the payload but never set by this call, because getAnalyticsParams does not return it. Not sent in
+          practice.
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: error.message of the caught exception. Free text from the SDK or chain client.
+      - name: operation
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: From the TokenLauncherSDKError context when present. Undefined for other errors.
+      - name: source
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: From the TokenLauncherSDKError context when present. Undefined for other errors.
+      - name: step
+        type: string
+        example: INFO | REVIEW | CREATING | SUCCESS
+        required: false
+        description: Not sent by this event. It comes from the setStep call at tokenLauncherStore.ts:292.
+      - name: transactionHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: From the SDK error context when the transaction was sent before the failure. Undefined otherwise.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_launcher.image_upload_failed
+    section: Token Launcher
+    description: Fires on the client in the catch block of the upload function in useUploadToCloudinary, when
+      uploadImageToCloudinary throws or returns a response with no url ('Failed to upload image'). It fires once per
+      failed attempt, not on success, and there is no matching success event. url and isModerated are assigned only after
+      the success check, so in the catch they are always undefined and never reach the event.
+    question: How often does the coin image upload fail, and how often is it because of moderation?
+    track_via: client
+    properties:
+      - name: error
+        type: string
+        example: Failed to upload image
+        description: error.message of the caught exception. 'Failed to upload image' is the only literal in this file; other
+          messages come from the upload helper.
+      - name: isModerated
+        type: boolean
+        example: true | false
+        required: false
+        description: Always undefined at the call site (assigned only after a successful upload), so it never arrives.
+      - name: url
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Always undefined at the call site (assigned only after a successful upload), so it never arrives.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_launcher.share_pressed
+    section: Token Launcher
+    description: Fires on the client on the success screen after the user taps Share link and the system Share.share promise
+      resolves, i.e. after the share sheet closes. The code does not check whether the user actually shared or dismissed
+      the sheet. It does not fire if launchedTokenAddress or chainId is missing, or if Share.share throws. Sends the token
+      address, the deeplink url and the form state from getAnalyticsParams.
+    question: After launching a coin, how many creators share its link?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: 0x<40 hex chars> (launched token contract address)
+        description: The launched token's contract address (launchedTokenAddress).
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the tokenLauncherWalletLoadFailed calls in the same
+          file (lines 61, 79, 120).
+      - name: url
+        type: string
+        example: UNCONFIRMED
+        description: Token deeplink built by buildTokenDeeplink from the chain label and the token address.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_launcher.step_changed
+    section: Token Launcher
+    description: "Fires on the client every time setStep in tokenLauncherStore is called, right after the new step is
+      stored. Callers seen: the header back button (INFO), and the footer on hold-to-create (CREATING), success (SUCCESS),
+      a failed or empty creation (REVIEW) and moving to review. There is no dedupe, so setting the same step twice fires
+      twice. The initial INFO step on open and reset() do not go through setStep, so they are not tracked."
+    question: Where in the new-coin flow (info, review, creating, success) do people progress or drop off?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the token_created call at tokenLauncherStore.ts:379.
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the creation_failed call at tokenLauncherStore.ts:438.
+      - name: operation
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the creation_failed call.
+      - name: source
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the creation_failed call.
+      - name: step
+        type: string
+        example: INFO | REVIEW | CREATING | SUCCESS
+        description: Name of the step the flow moved to (NavigationStepsNames).
+      - name: transactionHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the creation_failed call.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_launcher.token_created
+    section: Token Launcher
+    description: Fires on the client in createToken after TokenLauncherSDK.launchToken resolves with a result (token address
+      and tx hash), once launchedTokenAddress is stored, the dominant colour is computed and the super token is added. It
+      fires before the transaction is fetched and added as pending, so it can be followed by
+      token_launcher.creation_failed for the same launch. It does not fire when launchToken returns nothing. Sends the
+      token address and the form state from getAnalyticsParams.
+    question: How many coins do users launch, on which chain, and with or without an initial buy?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: 0x<40 hex chars> (launched token contract address)
+        description: result.tokenAddress of the launched token.
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the creation_failed call.
+      - name: operation
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the creation_failed call.
+      - name: source
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. It belongs to the creation_failed call.
+      - name: step
+        type: string
+        example: INFO | REVIEW | CREATING | SUCCESS
+        required: false
+        description: Not sent by this event. It belongs to the step_changed call at line 292.
+      - name: transactionHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The hash (result.txHash) goes only to the super token store, not to analytics.
+      - name: walletAddressHash
+        type: string
+        example: 0x<64 hex chars> (HMAC-SHA256 of the wallet address)
+        required: false
+        description: Added to every event by analytics.track.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Added to every event by analytics.track.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_launcher.wallet_load_failed
+    section: Token launcher
+    description: "Fires on the client when the person completes the hold-to-create gesture on the token launcher review
+      screen and the app cannot get a usable signing wallet. The call runs before any token-creation request is sent. It
+      has three branches: the active account is a hardware wallet (the app shows an alert and stops); the keychain returns
+      no private key or a non-hex value, which includes not authenticated (the app opens the wallet error sheet); and any
+      exception while loading the key or creating the token (the app opens the wallet error sheet). It does not fire when
+      the person cancels the biometric prompt. It does not fire when the launch itself fails after the wallet loads,
+      because that is a different event. The catch branch wraps the createToken call too, so a thrown error from token
+      creation is also reported here."
+    question: How often do people fail to create a token because their wallet can't sign, and for which reason?
+    track_via: client
+    properties:
+      - name: address
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the token_launcher.share_pressed call at
+          TokenLauncherFooter.tsx:212. See migration.
+      - name: error
+        type: string
+        example: Hardware wallets are not supported by the token launcher SDK | Private key is null | Not authenticated |
+          <error.message of a caught exception>
+        description: Failure reason. Three fixed strings plus the free-text message of whatever exception was caught, so
+          cardinality is open-ended.
+      - name: url
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Not sent by this event. The scanner picked it up from the token_launcher.share_pressed call at
+          TokenLauncherFooter.tsx:212. See migration.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added to every event by the analytics wrapper. Empty when no address is set.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added to every event by the analytics wrapper. Can be undefined, for example
+          right after wallet creation.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: top_holders.shown
+    section: Asset sheet
+    description: Fires on the client, at most once per mount of the Top Holders section in the expanded asset sheet. It
+      fires the first time the top-holders feature is enabled, a PnL-eligible token is present, and holders data is
+      available to render. The loading skeleton, a failed load and an empty result do not count as shown. Cached data from
+      an earlier fetch counts if it is on screen. The once-only guard is a ref, so closing and reopening the sheet fires
+      it again, and a refetch within the same mount does not.
+    question: How many people see the top-holders section on an asset, and for which tokens and chains?
+    track_via: client
+    properties:
+      - name: chainId
+        type: numeric
+        example: UNCONFIRMED
+        description: Numeric chain ID of the token (the event schema types it as a number, not a string). Mainnet is 1.
+      - name: tokenAddress
+        type: string
+        example: 0x-prefixed 20-byte hex token address
+        description: Contract address of the token whose sheet is open.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added to every event by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added to every event by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Viewed profile
+    section: Profiles
+    description: "Fires on the client from an effect in the ProfileSheet screen when both a profile address and the active
+      account address are set. That means once when the sheet opens. It fires again whenever the effect's inputs change:
+      the route params object, the resolved ENS name, the profile address or the account address. Loading the ENS name
+      after the sheet opens can therefore produce a second event. It fires whether the profile is the person's own or
+      someone else's, and whether the sheet is a preview or not. It fires on view, before the profile data finishes
+      loading."
+    question: How many profile sheets do people open, and from where?
+    track_via: client
+    properties:
+      - name: category
+        type: string
+        example: profiles
+        description: Always the literal 'profiles'.
+      - name: fromRoute
+        type: string
+        example: UNCONFIRMED
+        description: Route name of the screen the person came from, taken from the sheet's route params.
+      - name: name
+        type: string
+        example: UNCONFIRMED
+        description: ENS name of the profile being viewed. It is an empty string when the profile is the person's own account.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the active wallet address, added to every event by the analytics wrapper.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet, added to every event by the analytics wrapper.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

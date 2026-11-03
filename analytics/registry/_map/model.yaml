@@ -1,0 +1,89 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: model
+surfaces:
+  - id: routes-choose-wallet-group
+    kind: screen
+    anchor: src/screens/ChooseWalletGroup.tsx#ChooseWalletGroup
+    path: Routes.CHOOSE_WALLET_GROUP
+    actions:
+      - name: Create a new wallet group
+        importance: core
+        events:
+          - wallet_create.succeeded
+          - wallet_create.failed
+          - wallet_initialization.failed
+      - name: Add an account to an existing wallet group
+        importance: core
+        events: []
+      - name: Go back from wallet group chooser
+        importance: incidental
+        events: []
+  - id: routes-speed-up-and-cancel-sheet
+    kind: screen
+    anchor: src/screens/SpeedUpAndCancelSheet.tsx#SpeedUpAndCancelSheet
+    path: Routes.SPEED_UP_AND_CANCEL_SHEET
+    actions:
+      - name: Speed up a pending transaction
+        importance: core
+        events: []
+      - name: Attempt to cancel a pending transaction
+        importance: core
+        events: []
+      - name: Adjust the gas fee for the replacement transaction
+        importance: secondary
+        events:
+          - Updated Gas Price
+      - name: Close the sheet without replacing
+        importance: incidental
+        events: []
+  - id: routes-speed-up-and-cancel-bottom-sheet
+    kind: screen
+    anchor: src/screens/SpeedUpAndCancelSheet.tsx#SpeedUpAndCancelSheet
+    path: Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET
+    actions:
+      - name: Speed up a pending transaction
+        importance: core
+        events: []
+      - name: Attempt to cancel a pending transaction
+        importance: core
+        events: []
+      - name: Adjust the gas fee for the replacement transaction
+        importance: secondary
+        events:
+          - Updated Gas Price
+      - name: Close the sheet without replacing
+        importance: incidental
+        events: []
+events:
+  wallet_create.failed:
+    fires_in: src/model/wallet.ts#createWallet
+    trigger: "Creating or importing a wallet doesn't finish: the derived wallet or address is missing, the wallet is already imported and
+      visible, or an error is thrown (keychain, derivation)."
+    moment: after failure
+    conditions:
+      - Analytics params are set, which means the account was derived before the failure. An exception thrown during derivation sends
+        nothing.
+      - "Path 1: the derived wallet or address is missing (error wallet_or_address_missing)."
+      - "Path 2: importing, no overwrite, the wallet is already visible and isn't damaged, it's a watch-only wallet or a private key over a
+        seed or mnemonic, and this isn't a restore (error wallet_already_exists)."
+      - "Path 3: same as path 2 but during a restore (error wallet_already_exists_restoring)."
+      - "Path 4: any other exception in the try block, except WalletAlreadyExistsError (error is the raw exception message)."
+    path:
+      - src/screens/ChooseWalletGroup.tsx#ChooseWalletGroup
+      - src/screens/ChooseWalletGroup.tsx#NewWalletGroup
+      - src/model/wallet.ts#createWallet
+    certainty: sure
+  wallet_create.succeeded:
+    fires_in: src/model/wallet.ts#createWallet
+    trigger: "A wallet is created or imported and fully saved: seed phrase, address, wallets list, selected wallet and the not-damaged flag."
+    moment: after success
+    conditions:
+      - Every save step finished without an exception.
+      - The derived wallet and address exist.
+      - Analytics params are set, which is always true by this point.
+    path:
+      - src/screens/ChooseWalletGroup.tsx#ChooseWalletGroup
+      - src/screens/ChooseWalletGroup.tsx#NewWalletGroup
+      - src/model/wallet.ts#createWallet
+    certainty: sure

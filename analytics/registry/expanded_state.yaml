@@ -1,0 +1,110 @@
+events:
+  - name: add_new_wallet_group.name
+    section: Wallets
+    description: "Fires on the client when the person presses the submit button (labelled 'Create wallet group') in the New
+      Wallet Group modal, inside handleSubmit. It fires before onCloseModal runs and the modal closes, so it records the
+      submit tap, not a confirmed wallet group creation. Nothing validates the value first: an empty or whitespace-only
+      name fires it too. Pressing cancel (goBack) does not fire it."
+    question: How many people start naming a new wallet group, and how long are the names they choose?
+    track_via: client
+    properties:
+      - name: name
+        type: string
+        example: UNCONFIRMED
+        description: The wallet group name the user typed, trimmed. This is raw user text and matches the never-send pattern ^name$.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: HMAC-SHA256 hash of the active wallet address. analytics.track adds it automatically from the wallet
+          context, so the call does not pass it. It can be undefined, for example before a wallet exists.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet. analytics.track adds it automatically. It can be undefined, for example right
+          after the first wallet is created.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Cancel" on Wallet Profile modal
+    section: Wallets
+    description: "Sent from src/components/expanded-state/WalletProfileState.js:54,
+      src/components/expanded-state/WalletProfileState.js:54, src/components/expanded-state/WalletProfileState.js:61. When
+      exactly it fires isn't confirmed yet: see the open questions in the install audit report."
+    question: How often do people abandon the wallet profile modal instead of saving it?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: HMAC-SHA256 hash of the active wallet address. analytics.track adds it automatically, and the call passes
+          no properties. It can be undefined.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet. analytics.track adds it automatically. It can be undefined.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: Tapped "Submit" on Wallet Profile modal
+    section: Wallets
+    description: Fires on the client when the person presses Submit in the Wallet Profile modal. It fires at the start of
+      handleSubmit, before onCloseModal saves the profile and before the modal closes. For actionType 'Create' the flow
+      then waits for the keychain callback. So this records the submit tap, not a saved profile. A failure after the tap
+      is not tracked. There is no start event for opening the modal, so the cancel and submit events cannot be turned into
+      a rate.
+    question: How many people save a wallet profile (name, color, emoji) after opening the modal?
+    track_via: client
+    properties:
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: HMAC-SHA256 hash of the active wallet address. analytics.track adds it automatically, and the call passes
+          no properties. It can be undefined.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet. analytics.track adds it automatically. It can be undefined.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: token_details.nft
+    section: Collectibles
+    description: Fires once on the client per mount of the NFT expanded state sheet. A timer started in useTimeoutEffect
+      fires 5 seconds after mount. If the sheet unmounts earlier, the hook's cleanup calls the same callback, so the event
+      still fires, with a shorter eventSentAfterMs. The call ignores the hook's 'cancelled' flag, so the two cases look
+      the same in the data. It means the NFT detail was open for up to 5 seconds, not that a tap or view happened at a
+      specific moment.
+    question: Which NFT detail views are opened, and how often is description or image metadata missing?
+    track_via: client
+    properties:
+      - name: available_data
+        type: object
+        example: '{"description": true, "image_url": true}'
+        description: Booleans for whether the NFT has a description and a low-res image URL. The call sends it as a nested object.
+      - name: eventSentAfterMs
+        type: numeric
+        example: "5000"
+        description: Milliseconds between mount and the event. About 5000 when the timer completes, lower when the sheet closes first.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: HMAC-SHA256 hash of the active wallet address. analytics.track adds it automatically. It can be undefined.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Type of the active wallet. analytics.track adds it automatically. It can be undefined.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

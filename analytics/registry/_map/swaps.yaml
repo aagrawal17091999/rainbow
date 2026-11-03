@@ -1,0 +1,205 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: swaps
+surfaces:
+  - id: routes-revoke-delegation-panel
+    kind: screen
+    anchor: src/features/delegation/screens/RevokeDelegationPanel.tsx#RevokeDelegationPanel
+    path: Routes.REVOKE_DELEGATION_PANEL
+    actions:
+      - name: Revoke smart wallet delegation
+        importance: core
+        events: []
+      - name: Retry a failed revoke
+        importance: secondary
+        events: []
+  - id: routes-swap
+    kind: screen
+    anchor: src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+    path: Routes.SWAP
+    actions:
+      - name: Select a token to swap
+        importance: core
+        events:
+          - swaps.selected_asset
+      - name: Search for a token
+        importance: secondary
+        events:
+          - swaps.searched_for_token
+          - token_list
+      - name: Change the token list chain
+        importance: secondary
+        events:
+          - swaps.changed_chain_id
+      - name: Flip input and output assets
+        importance: secondary
+        events:
+          - swaps.flipped_assets
+      - name: Receive a swap quote
+        importance: secondary
+        events:
+          - swaps.received_quote
+          - swaps.quote_failed
+      - name: Submit a swap
+        importance: core
+        events:
+          - swaps.submitted
+          - swaps.failed
+      - name: Toggle degen mode
+        importance: secondary
+        events:
+          - swaps.toggled_degen_mode
+  - id: routes-perps-deposit-screen
+    kind: screen
+    anchor: src/features/perps/screens/perps-deposit-withdraw-screen/PerpsDepositScreen.tsx#PerpsDepositScreen
+    path: Routes.PERPS_DEPOSIT_SCREEN
+    actions:
+      - name: Deposit funds into perps account
+        importance: core
+        events: []
+events:
+  insufficient_native_asset_for_action:
+    fires_in:
+      - src/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues.tsx#reportInsufficientFunds
+      - src/features/gas/hooks/useGas.ts#useTrackInsufficientGas
+    trigger: The person's balance of the chain's gas asset is too low to pay for the swap or other action on screen, so they get a warning.
+    moment: on view
+    conditions:
+      - "Swap screen: the gas-asset balance is non-zero, the quote value plus gas fee is above that balance, and the previous check had
+        enough funds (or none)"
+      - "Other screens (useTrackInsufficientGas): tracking is enabled, gas is valid and not sufficient, and this chain hasn't been reported
+        yet"
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues.tsx#SyncSwapStateAndSharedValues
+      - src/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues.tsx#SyncGasStateToSharedValues
+      - src/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues.tsx#getHasEnoughFundsForGasWorklet
+      - src/__swaps__/screens/Swap/providers/SyncSwapStateAndSharedValues.tsx#reportInsufficientFunds
+    certainty: sure
+  swaps.changed_chain_id:
+    fires_in: src/__swaps__/screens/Swap/components/TokenList/ChainSelection.tsx#ChainSelection
+    trigger: The person picks a chain in the network selector of the swap token list.
+    moment: after success
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/components/SwapInputAsset.tsx#SwapInputAsset
+      - src/__swaps__/screens/Swap/components/TokenList/TokenList.tsx#TokenList
+      - src/__swaps__/screens/Swap/components/TokenList/TokenToBuyList.tsx#TokenToBuyList
+      - src/__swaps__/screens/Swap/components/TokenList/ChainSelection.tsx#ChainSelection.handleSelectChain
+    certainty: sure
+  swaps.failed:
+    fires_in:
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#setStoreAssets
+    trigger: The person confirms a swap and the swap execution returns an error.
+    moment: after failure
+    conditions:
+      - The execution result has an errorMessage
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider.getNonceAndPerformSwap
+    certainty: sure
+  swaps.flipped_assets:
+    fires_in: src/__swaps__/screens/Swap/components/FlipButton.tsx#FlipButton
+    trigger: The person presses the flip button on the Swap screen to swap the input and output assets.
+    moment: after success
+    conditions:
+      - An input or output asset is already selected
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/components/FlipButton.tsx#FlipButton.flipWithTracking
+    certainty: sure
+  swaps.quote_failed:
+    fires_in: src/__swaps__/screens/Swap/hooks/analyticsTrackQuoteFailed.ts#analyticsTrack
+    trigger: The quote request returns an error (no routes, insufficient funds and so on) for a selected asset pair with a non-zero amount.
+    moment: after failure
+    conditions:
+      - The quote is an error or null
+      - Input asset, output asset and a non-zero input amount are set
+      - The error code, amounts and asset addresses differ from the previous failure
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider
+      - src/__swaps__/screens/Swap/hooks/useSwapInputsController.ts#useSwapInputsController
+      - src/__swaps__/screens/Swap/hooks/analyticsTrackQuoteFailed.ts#analyticsTrackQuoteFailed
+      - src/__swaps__/screens/Swap/hooks/analyticsTrackQuoteFailed.ts#analyticsTrack
+    certainty: sure
+  swaps.received_quote:
+    fires_in: src/__swaps__/screens/Swap/hooks/useSwapInputsController.ts#useSwapInputsController
+    trigger: A quote request (same-chain or cross-chain) returns while the Swap screen is open, on an interval or after the person edits the swap.
+    moment: after success
+    conditions:
+      - The Swap screen is still mounted
+      - Valid quote params could be built
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider
+      - src/__swaps__/screens/Swap/hooks/useSwapInputsController.ts#useSwapInputsController.fetchAndUpdateQuote
+    certainty: sure
+  swaps.searched_for_token:
+    fires_in:
+      - src/__swaps__/screens/Swap/components/TokenList/TokenToBuyList.tsx#TokenToBuyList
+      - src/__swaps__/screens/Swap/components/TokenList/TokenToSellList.tsx#TokenToSellListComponent
+    trigger: The person selects a token from the swap list after typing a search query.
+    moment: after success
+    conditions:
+      - The trimmed search query is non-empty
+      - "Output side: sent right after the asset is set; input side: 200 ms later, after interactions"
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/components/SwapInputAsset.tsx#SwapInputAsset
+      - src/__swaps__/screens/Swap/components/TokenList/TokenList.tsx#TokenList
+      - src/__swaps__/screens/Swap/components/TokenList/TokenToBuyList.tsx#TokenToBuyList.handleSelectToken
+    certainty: sure
+  swaps.selected_asset:
+    fires_in:
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#setStoreAssets
+    trigger: An input or output asset is set in the swap, either by picking a token or by flipping.
+    moment: after success
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider.getNonceAndPerformSwap
+    certainty: sure
+  swaps.submitted:
+    fires_in:
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#setStoreAssets
+    trigger: The person confirms a swap and the swap execution hands it off without a blocking error, and the sheet is dismissed.
+    moment: after success
+    conditions:
+      - The swap execution didn't throw
+      - No error was returned, or the error was the 'handled' sentinel
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider.getNonceAndPerformSwap
+    certainty: sure
+  swaps.toggled_degen_mode:
+    fires_in: src/__swaps__/screens/Swap/hooks/useSwapSettings.ts#useSwapSettings
+    trigger: The person flips the degen mode switch in swap settings.
+    moment: after success
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/providers/swap-provider.tsx#SwapProvider
+      - src/__swaps__/screens/Swap/hooks/useSwapSettings.ts#useSwapSettings.setDegenMode
+    certainty: sure
+  token_list:
+    fires_in:
+      - src/__swaps__/screens/Swap/hooks/useSearchCurrencyLists.ts#useSearchCurrencyLists
+      - src/components/Discover/DiscoverSearch.tsx#DiscoverSearch
+      - src/features/transfer/screens/SendSheet.tsx#SendSheet
+      - src/hooks/useWalletSectionsData.ts#useWalletSectionsData
+    trigger: A token list finishes loading or changes. The senders are swap token search, Discover search, the Send sheet and wallet home. The
+      person does nothing to send it.
+    moment: on mount
+    conditions:
+      - "Swap: the search query is longer than 2 characters, the token search status is success, and at most once per 5 seconds"
+      - "Discover: the list isn't loading, the list is non-empty, and 3 seconds have passed"
+      - "Send and wallet home: user assets have finished loading"
+    path:
+      - src/__swaps__/screens/Swap/Swap.tsx#SwapScreen
+      - src/__swaps__/screens/Swap/components/SwapInputAsset.tsx#SwapInputAsset
+      - src/__swaps__/screens/Swap/components/TokenList/TokenList.tsx#TokenList
+      - src/__swaps__/screens/Swap/components/TokenList/TokenToBuyList.tsx#TokenToBuyList
+      - src/__swaps__/screens/Swap/hooks/useSearchCurrencyLists.ts#useSearchCurrencyLists
+    certainty: sure

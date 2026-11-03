@@ -54,3 +54,17 @@ PRs are deliberately narrow. Refactor and migration PRs are behavior-preserving:
 ## Reviewing
 
 Hold PRs to the scope contract above, not to the state of the code they touch: flag only what a PR introduces, makes worse, or newly exposes. A severe pre-existing issue may be surfaced, clearly marked as pre-existing and out of scope, without counting against the PR. Don't ask a PR to widen its scope.
+
+<!-- datalyze:start (written by the Datalyze Tracking Agent) -->
+## Analytics tracking
+
+This repo's tracking plan is in `analytics/registry/`, and the [Datalyze Tracking Agent](https://www.joindatalyze.com/tracking-agent) checks every pull request against it. When a change adds, moves, renames or removes an analytics event or property:
+
+- **Change the plan in the same pull request.** Add or edit the event's entry in its area file in `analytics/registry/` (one YAML file per area of the product). Names and properties follow `analytics/registry/_conventions.yaml`.
+- **Send it the way the code already does.** Call the wrappers listed under `wrappers:` in `analytics/registry/_tracking_profile.yaml`, never the analytics SDK directly, and copy the `example` of the matching entry under `calls:`.
+- **Keep the tracking map true.** `analytics/registry/_map/` says, per page, screen or handler, what people do and which events record it, anchored to `path#Symbol`. If you rename or move a function or component an anchor names, update the anchor in the same pull request.
+- **Don't rename or remove an event or property that's already sent.** Dashboards and reports read those names. If the change needs it, say so in the pull request description and leave it to a reviewer.
+- **Leave these to the agent:** `_tracking_profile.yaml` and `_baseline.json` in the plan, and `.datalyze/` and `analytics/.datalyze/`.
+
+If you're not sure a change needs tracking, leave it out: the agent proposes what's missing on the pull request, and a reviewer approves it.
+<!-- datalyze:end -->

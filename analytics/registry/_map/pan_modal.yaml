@@ -1,0 +1,16 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: pan_modal
+surfaces:
+  - id: pan-modal-view-controller
+    kind: screen
+    anchor: src/react-native-cool-modals/ios/UIViewController+slack.swift#PanModalViewController
+    path: PanModalViewController
+    actions:
+      - name: Dismiss the pan modal
+        importance: incidental
+        events: []
+      - name: Expand or collapse the modal between short and long form
+        importance: incidental
+        events: []
+events: {}

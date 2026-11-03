@@ -1,0 +1,41 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: notifications
+surfaces:
+  - id: routes-wallet-notifications-settings
+    kind: screen
+    anchor: src/screens/SettingsSheet/components/WalletNotificationsSettings.tsx#WalletNotificationsSettings
+    path: Routes.WALLET_NOTIFICATIONS_SETTINGS
+    actions:
+      - name: Turn notifications on or off for a wallet
+        importance: secondary
+        events: []
+      - name: Toggle a notification topic for a wallet
+        importance: secondary
+        events: []
+events:
+  Changed Global Notification Settings:
+    fires_in:
+      - src/notifications/analytics.ts#trackChangedGlobalNotificationSettings
+      - src/notifications/analytics.ts#trackTappedPushNotification
+    trigger: The person flips an app-wide notification topic in Settings > Notifications and the new setting is published and saved successfully
+    moment: after success
+    conditions:
+      - the device is online (the offline alert returns early)
+      - publishAndSaveNotificationSettings returned true
+      - a global topic exists to toggle (none exists in the current code)
+    path:
+      - src/notifications/analytics.ts#trackTappedPushNotification
+    certainty: sure
+  Tapped Push Notification:
+    fires_in:
+      - src/notifications/analytics.ts#trackChangedGlobalNotificationSettings
+      - src/notifications/analytics.ts#trackTappedPushNotification
+    trigger: "The person opens a push notification: tapping it in the background, launching the app from it, or pressing it while the app is in
+      the foreground"
+    moment: before the request
+    conditions:
+      - a notification payload is present
+    path:
+      - src/notifications/analytics.ts#trackTappedPushNotification
+    certainty: sure

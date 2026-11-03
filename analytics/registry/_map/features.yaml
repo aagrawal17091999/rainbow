@@ -1,0 +1,2261 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: features
+surfaces:
+  - id: routes-pair-hardware-wallet-again-sheet
+    kind: screen
+    anchor: src/features/hardware-wallet/screens/PairHardwareWalletAgainSheet.tsx#PairHardwareWalletAgainSheet
+    path: Routes.PAIR_HARDWARE_WALLET_AGAIN_SHEET
+    actions:
+      - name: Retry pairing a hardware wallet after a rejected transaction
+        importance: secondary
+        events: []
+  - id: routes-send-sheet
+    kind: screen
+    anchor: src/features/transfer/screens/SendSheet.tsx#SendSheet
+    path: Routes.SEND_SHEET
+    actions:
+      - name: Enter a recipient and select an asset to send
+        importance: core
+        events: []
+      - name: Change the token amount to send
+        importance: secondary
+        events:
+          - Changed token input in Send flow
+      - name: Change the native currency amount to send
+        importance: secondary
+        events:
+          - Changed native currency input in Send flow
+      - name: Reset the selected asset
+        importance: incidental
+        events:
+          - Reset Asset Selection Send
+      - name: Submit a send transaction
+        importance: core
+        events:
+          - Sent transaction
+      - name: View the token list when the send screen loads
+        importance: incidental
+        events:
+          - token_list
+  - id: routes-connected-dapps
+    kind: screen
+    anchor: src/features/wallet-connect/screens/ConnectedDappsSheet.js#ConnectedDappsSheet
+    path: Routes.CONNECTED_DAPPS
+    actions:
+      - name: Disconnect a connected dapp
+        importance: secondary
+        events:
+          - Manually disconnected from WalletConnect connection
+  - id: routes-position-sheet
+    kind: screen
+    anchor: src/features/positions/screens/PositionSheet.tsx#PositionSheet
+    path: Routes.POSITION_SHEET
+    actions:
+      - name: Open a position's dapp in the browser
+        importance: secondary
+        events:
+          - Viewed external dapp
+      - name: Open an asset from a position
+        importance: secondary
+        events:
+          - Opened asset from position
+  - id: routes-receive-modal
+    kind: screen
+    anchor: src/screens/ReceiveModal.js#ReceiveModal
+    path: Routes.RECEIVE_MODAL
+    actions:
+      - name: Copy wallet address
+        importance: secondary
+        events: []
+      - name: Share wallet address
+        importance: secondary
+        events: []
+  - id: routes-restore-sheet
+    kind: screen
+    anchor: src/screens/RestoreSheet.tsx#RestoreSheet
+    path: Routes.RESTORE_SHEET
+    actions:
+      - name: Choose a backup to restore a wallet
+        importance: core
+        events: []
+      - name: Restore a wallet from a cloud backup
+        importance: core
+        events:
+          - wallet_create.succeeded
+          - wallet_create.failed
+          - backup.error
+  - id: routes-main-navigator-wrapper
+    kind: screen
+    anchor: src/navigation/Routes.android.tsx#MainNavigator
+    path: Routes.MAIN_NAVIGATOR_WRAPPER
+    actions: []
+  - id: routes-notification-permission-screen
+    kind: screen
+    anchor: src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen
+    path: Routes.NOTIFICATION_PERMISSION_SCREEN
+    actions:
+      - name: Enable push notifications
+        importance: core
+        events:
+          - notification_permission.requested
+          - notification_permission.granted
+          - notification_permission.denied
+      - name: Skip notification permission
+        importance: secondary
+        events:
+          - notification_permission.skipped
+  - id: routes-pair-hardware-wallet-navigator
+    kind: screen
+    anchor: src/features/hardware-wallet/navigation/PairHardwareWalletNavigator.tsx#PairHardwareWalletNavigator
+    path: Routes.PAIR_HARDWARE_WALLET_NAVIGATOR
+    actions:
+      - name: Start pairing a hardware wallet
+        importance: core
+        events:
+          - pair_hw_wallet_nav.entered
+      - name: Dismiss hardware wallet pairing
+        importance: secondary
+        events:
+          - pair_hw_wallet_nav.exited
+      - name: Search for and select a Ledger device
+        importance: core
+        events: []
+  - id: routes-register-ens-navigator
+    kind: screen
+    anchor: src/features/ens/navigation/RegisterENSNavigator.tsx#RegisterENSNavigator
+    path: Routes.REGISTER_ENS_NAVIGATOR
+    actions:
+      - name: Search for an ENS name
+        importance: secondary
+        events: []
+      - name: Register an ENS name
+        importance: core
+        events: []
+      - name: Edit ENS profile records
+        importance: secondary
+        events: []
+      - name: Set primary ENS name
+        importance: secondary
+        events: []
+  - id: routes-backup-sheet
+    kind: screen
+    anchor: src/features/backup/components/BackupSheet.tsx#BackupSheet
+    path: Routes.BACKUP_SHEET
+    actions:
+      - name: Create a cloud backup
+        importance: core
+        events:
+          - Choose Password Step
+          - Tapped "Confirm Backup"
+          - Backup Complete
+          - backup.error
+          - Saved backup password on iCloud
+          - Didn't save backup password on iCloud
+          - Error during Google Drive Backup
+          - Error during iCloud Backup
+          - Error updating Backup status
+          - iCloud not enabled
+          - View how to Enable iCloud
+          - Ignore how to enable iCloud
+      - name: Restore wallet from cloud backup
+        importance: core
+        events: []
+      - name: Choose a backup method (manual or cloud)
+        importance: secondary
+        events: []
+  - id: routes-confirm-request
+    kind: screen
+    anchor: src/features/dapp-request/screens/SignTransactionSheet.tsx#SignTransactionSheet
+    path: Routes.CONFIRM_REQUEST
+    actions:
+      - name: Review a dapp transaction or signature request
+        importance: secondary
+        events:
+          - request.sheet.show
+      - name: Approve a dapp request
+        importance: core
+        events:
+          - request.approved
+      - name: Reject a dapp request
+        importance: core
+        events:
+          - request.rejected
+      - name: Change gas speed
+        importance: secondary
+        events:
+          - Updated Gas Price
+  - id: routes-app-icon-unlock-sheet
+    kind: screen
+    anchor: src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+    path: Routes.APP_ICON_UNLOCK_SHEET
+    actions:
+      - name: View app icon unlock
+        importance: incidental
+        events:
+          - app_icon_unlock_sheet.viewed
+      - name: Go to app icon settings
+        importance: secondary
+        events:
+          - app_icon_unlock_sheet.cta_pressed
+  - id: routes-dapp-browser-control-panel
+    kind: screen
+    anchor: src/features/dapp-browser/screens/ControlPanel.tsx#ControlPanel
+    path: Routes.DAPP_BROWSER_CONTROL_PANEL
+    actions:
+      - name: Switch wallet for a dapp session
+        importance: secondary
+        events: []
+      - name: Switch network for a dapp session
+        importance: secondary
+        events: []
+      - name: Disconnect from a dapp
+        importance: secondary
+        events: []
+  - id: routes-polymarket-deposit-screen
+    kind: screen
+    anchor: src/features/polymarket/funding/screens/PolymarketDepositScreen.tsx#PolymarketDepositScreen
+    path: Routes.POLYMARKET_DEPOSIT_SCREEN
+    actions:
+      - name: Deposit funds to Polymarket
+        importance: core
+        events:
+          - predictions.deposit
+          - predictions.deposit.failed
+  - id: routes-perps-withdrawal-screen
+    kind: screen
+    anchor: src/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen.tsx#PerpsWithdrawalScreen
+    path: Routes.PERPS_WITHDRAWAL_SCREEN
+    actions:
+      - name: Withdraw funds from perps
+        importance: core
+        events:
+          - perps.withdrew
+          - perps.withdraw.failed
+  - id: routes-polymarket-withdrawal-screen
+    kind: screen
+    anchor: src/features/polymarket/funding/screens/PolymarketWithdrawalScreen.tsx#PolymarketWithdrawalScreen
+    path: Routes.POLYMARKET_WITHDRAWAL_SCREEN
+    actions:
+      - name: Withdraw funds from Polymarket
+        importance: core
+        events:
+          - predictions.withdrawal
+          - predictions.withdrawal.failed
+  - id: routes-send-sheet-navigator
+    kind: screen
+    anchor: src/features/transfer/screens/SendSheet.tsx#SendSheet
+    path: Routes.SEND_SHEET_NAVIGATOR
+    actions:
+      - name: Send a token or NFT to a recipient
+        importance: core
+        events:
+          - Sent transaction
+      - name: Enter send amount in token units
+        importance: secondary
+        events:
+          - Changed token input in Send flow
+      - name: Enter send amount in native currency
+        importance: secondary
+        events:
+          - Changed native currency input in Send flow
+      - name: Reset selected asset
+        importance: incidental
+        events:
+          - Reset Asset Selection Send
+      - name: View token list to choose asset
+        importance: incidental
+        events:
+          - token_list
+      - name: Transfer ENS control
+        importance: secondary
+        events:
+          - Transferred ENS control
+  - id: routes-perps-detail-screen
+    kind: screen
+    anchor: src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreen
+    path: Routes.PERPS_DETAIL_SCREEN
+    actions:
+      - name: Change chart candle resolution
+        importance: incidental
+        events:
+          - Changed Candle Resolution
+      - name: Change chart type
+        importance: incidental
+        events:
+          - Changed Chart Type
+      - name: Cancel a trigger order
+        importance: secondary
+        events:
+          - perps.trigger_order_canceled
+          - perps.trigger_order_cancel.failed
+      - name: Open close-position, add-to-position or trigger order sheets
+        importance: incidental
+        events: []
+  - id: routes-perps-navigator
+    kind: screen
+    anchor: src/features/perps/screens/PerpsNavigator.tsx#PerpsNavigator
+    path: Routes.PERPS_NAVIGATOR
+    actions:
+      - name: Open a perps position
+        importance: core
+        events:
+          - perps.opened_position
+          - perps.open_position.failed
+          - perps.open_position.canceled
+      - name: Search perps markets
+        importance: secondary
+        events: []
+      - name: View perps account
+        importance: incidental
+        events: []
+  - id: routes-create-trigger-order-bottom-sheet
+    kind: screen
+    anchor: src/features/perps/screens/CreateTriggerOrderBottomSheet.tsx#CreateTriggerOrderBottomSheet
+    path: Routes.CREATE_TRIGGER_ORDER_BOTTOM_SHEET
+    actions:
+      - name: Create a take-profit or stop-loss trigger order
+        importance: core
+        events:
+          - perps.trigger_order_created
+          - perps.trigger_order.failed
+  - id: routes-close-position-bottom-sheet
+    kind: screen
+    anchor: src/features/perps/screens/ClosePositionBottomSheet.tsx#ClosePositionBottomSheet
+    path: Routes.CLOSE_POSITION_BOTTOM_SHEET
+    actions:
+      - name: Close a perps position
+        importance: core
+        events:
+          - perps.closed_position
+          - perps.close_position.failed
+  - id: routes-perps-add-to-position-sheet
+    kind: screen
+    anchor: src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#PerpsAddToPositionSheet
+    path: Routes.PERPS_ADD_TO_POSITION_SHEET
+    actions:
+      - name: Add to a perps position
+        importance: core
+        events:
+          - perps.added_to_position
+          - perps.added_to_position.failed
+      - name: Cancel adding to position
+        importance: incidental
+        events:
+          - perps.open_position.canceled
+  - id: routes-cash-deposit-intro-panel
+    kind: screen
+    anchor: src/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel.tsx#CashDepositIntroPanel
+    path: Routes.CASH_DEPOSIT_INTRO_PANEL
+    actions:
+      - name: View cash deposit intro
+        importance: incidental
+        events:
+          - cash.deposit_intro_viewed
+          - cash.deposit_signup_paused_viewed
+      - name: Set up cash account
+        importance: core
+        events: []
+      - name: Sign in to existing cash account
+        importance: core
+        events: []
+      - name: Choose other deposit methods
+        importance: secondary
+        events: []
+  - id: routes-cash-deposit-setup-screen
+    kind: screen
+    anchor: src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+    path: Routes.CASH_DEPOSIT_SETUP_SCREEN
+    actions:
+      - name: Submit phone number for Cash account
+        importance: core
+        events:
+          - cash.phone_submitted
+          - cash.phone_submit_failed
+          - cash.phone_already_registered
+      - name: Verify phone with code
+        importance: core
+        events:
+          - cash.phone_verified
+          - cash.phone_verify_failed
+      - name: Resend phone verification code
+        importance: incidental
+        events:
+          - cash.phone_resend_failed
+      - name: Recover an existing Cash account
+        importance: secondary
+        events:
+          - cash.existing_account_recovery_selected
+      - name: Submit identity verification (KYC)
+        importance: core
+        events:
+          - cash.kyc_submitted
+          - cash.kyc_approved
+          - cash.kyc_awaiting_decision
+          - cash.kyc_failed
+      - name: Add a passkey
+        importance: core
+        events:
+          - cash.passkey_submitted
+          - cash.passkey_added
+          - cash.passkey_failed
+      - name: Link a debit card
+        importance: core
+        events:
+          - cash.card_linked
+          - cash.card_link_failed
+      - name: Sign in to existing Cash account
+        importance: core
+        events:
+          - cash.sign_in_submitted
+          - cash.sign_in_succeeded
+          - cash.sign_in_failed
+          - cash.sign_in_cancelled
+      - name: Go back or cancel setup
+        importance: incidental
+        events: []
+  - id: routes-cash-setup-cancel-sheet
+    kind: screen
+    anchor: src/features/cash/screens/cash-deposit-setup/components/SetupCancelSheet.tsx#SetupCancelSheet
+    path: Routes.CASH_SETUP_CANCEL_SHEET
+    actions:
+      - name: Continue Cash setup
+        importance: incidental
+        events: []
+      - name: Confirm abandoning Cash setup
+        importance: secondary
+        events: []
+  - id: routes-cash-sign-in-screen
+    kind: screen
+    anchor: src/features/cash/screens/cash-sign-in/CashSignInScreen.tsx#CashSignInScreen
+    path: Routes.CASH_SIGN_IN_SCREEN
+    actions:
+      - name: Sign in to Cash with phone number
+        importance: core
+        events:
+          - cash.sign_in_submitted
+          - cash.sign_in_succeeded
+          - cash.sign_in_failed
+          - cash.sign_in_cancelled
+      - name: Go back
+        importance: incidental
+        events: []
+  - id: routes-add-cash-sheet
+    kind: screen
+    anchor: src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet
+    path: Routes.ADD_CASH_SHEET
+    actions:
+      - name: Enter deposit amount and hold to add cash
+        importance: core
+        events:
+          - cash.amount_entered
+      - name: Place buy order for cash deposit
+        importance: core
+        events:
+          - cash.buy_submitted
+          - cash.buy_completed
+          - cash.buy_failed
+      - name: Fail wallet link check
+        importance: secondary
+        events:
+          - cash.wallet_check_failed
+      - name: Choose lost passkey recovery
+        importance: secondary
+        events:
+          - cash.lost_passkey_recovery_selected
+      - name: Re-authenticate to Cash
+        importance: secondary
+        events:
+          - cash.sign_in_submitted
+          - cash.sign_in_succeeded
+          - cash.sign_in_failed
+          - cash.sign_in_cancelled
+  - id: routes-cash-add-wallet-sheet
+    kind: screen
+    anchor: src/features/cash/screens/add-wallet-sheet/AddWalletSheet.tsx#AddWalletSheet
+    path: Routes.CASH_ADD_WALLET_SHEET
+    actions:
+      - name: Be prompted to link wallet to Cash
+        importance: secondary
+        events:
+          - cash.wallet_link_prompted
+      - name: Link wallet to Cash account
+        importance: core
+        events:
+          - cash.wallet_linked
+          - cash.wallet_link_failed
+      - name: Submit buy order after linking
+        importance: core
+        events:
+          - cash.buy_submitted
+          - cash.buy_completed
+          - cash.buy_failed
+  - id: routes-cash-payment-methods-sheet
+    kind: screen
+    anchor: src/features/cash/screens/payment-methods-sheet/PaymentMethodsSheet.tsx#PaymentMethodsSheet
+    path: Routes.CASH_PAYMENT_METHODS_SHEET
+    actions:
+      - name: Remove linked card
+        importance: secondary
+        events: []
+      - name: Keep linked card
+        importance: incidental
+        events: []
+  - id: routes-perps-trade-details-sheet
+    kind: screen
+    anchor: src/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet.tsx#PerpsTradeDetailsSheet
+    path: Routes.PERPS_TRADE_DETAILS_SHEET
+    actions:
+      - name: Share trade details
+        importance: secondary
+        events:
+          - perps.trade_details.share_pressed
+  - id: routes-polymarket-manage-position-sheet
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-redeem-position-sheet/PolymarketRedeemPositionSheet.tsx#PolymarketRedeemPositionSheet
+    path: Routes.POLYMARKET_MANAGE_POSITION_SHEET
+    actions:
+      - name: Claim or clear a prediction position
+        importance: core
+        events:
+          - predictions.redeem_position
+          - predictions.redeem_position.failed
+  - id: routes-polymarket-new-position-sheet
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet.tsx#PolymarketNewPositionSheet
+    path: Routes.POLYMARKET_NEW_POSITION_SHEET
+    actions:
+      - name: Place a prediction market buy order
+        importance: core
+        events:
+          - predictions.place_order
+          - predictions.place_order.failed
+          - predictions.order_match.failed
+  - id: routes-polymarket-sell-position-sheet
+    kind: screen
+    anchor: src/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet.tsx#PolymarketSellPositionSheet
+    path: Routes.POLYMARKET_SELL_POSITION_SHEET
+    actions:
+      - name: Cash out a prediction market position
+        importance: core
+        events:
+          - predictions.place_order
+          - predictions.place_order.failed
+          - predictions.order_match.failed
+  - id: routes-rnbw-airdrop-screen
+    kind: screen
+    anchor: src/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen.tsx#RnbwAirdropScreen
+    path: Routes.RNBW_AIRDROP_SCREEN
+    actions:
+      - name: Claim RNBW airdrop
+        importance: core
+        events:
+          - rnbw_airdrop.claim
+          - rnbw_airdrop.claim.failed
+  - id: routes-rnbw-rewards-claim-sheet
+    kind: screen
+    anchor: src/features/rnbw-rewards/screens/rnbw-rewards-claim-sheet/RnbwRewardsClaimSheet.tsx#RnbwRewardsClaimSheet
+    path: Routes.RNBW_REWARDS_CLAIM_SHEET
+    actions:
+      - name: Claim RNBW rewards
+        importance: core
+        events:
+          - rnbw_rewards.claim
+          - rnbw_rewards.claim.failed
+  - id: routes-rnbw-staking-screen
+    kind: screen
+    anchor: src/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen.tsx#RnbwStakingScreen
+    path: Routes.RNBW_STAKING_SCREEN
+    actions:
+      - name: Stake RNBW
+        importance: core
+        events:
+          - rnbw_staking.stake
+          - rnbw_staking.stake.failed
+  - id: routes-rnbw-unstake-sheet
+    kind: screen
+    anchor: src/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet.tsx#RnbwUnstakeSheet
+    path: Routes.RNBW_UNSTAKE_SHEET
+    actions:
+      - name: Acknowledge exit fee warning and proceed to unstake
+        importance: secondary
+        events: []
+      - name: Unstake RNBW
+        importance: core
+        events:
+          - rnbw_staking.unstake
+          - rnbw_staking.unstake.failed
+  - id: routes-spot-pnl-sheet
+    kind: screen
+    anchor: src/features/spot-pnl/ui/SpotPnlSheet.tsx#SpotPnlSheet
+    path: Routes.SPOT_PNL_SHEET
+    actions:
+      - name: View spot P&L for a token position
+        importance: secondary
+        events:
+          - spot_pnl.sheet.viewed
+  - id: routes-main-native-bottom-sheet-navigator
+    kind: screen
+    anchor: src/navigation/Routes.android.tsx#BSNavigator
+    path: Routes.MAIN_NATIVE_BOTTOM_SHEET_NAVIGATOR
+    actions: []
+  - id: routes-stack
+    kind: screen
+    anchor: src/navigation/Routes.ios.tsx#MainNavigator
+    path: Routes.STACK
+    actions:
+      - name: Create a new wallet from welcome
+        importance: core
+        events:
+          - Tapped "Get a new wallet"
+      - name: Import an existing wallet from welcome
+        importance: core
+        events:
+          - Tapped "I already have one"
+      - name: Add cash
+        importance: core
+        events:
+          - cash.amount_entered
+          - cash.deposit_intro_viewed
+          - cash.deposit_signup_paused_viewed
+          - cash.wallet_check_failed
+          - cash.wallet_link_prompted
+      - name: Add to a perps position
+        importance: core
+        events:
+          - perps.added_to_position
+          - perps.added_to_position.failed
+          - perps.open_position.canceled
+      - name: Close a perps position
+        importance: core
+        events:
+          - perps.closed_position
+          - perps.close_position.failed
+      - name: Create a perps trigger order
+        importance: core
+        events:
+          - perps.trigger_order_created
+          - perps.trigger_order.failed
+      - name: Place a prediction order
+        importance: core
+        events:
+          - predictions.place_order.failed
+      - name: Approve or reject a dapp transaction request
+        importance: core
+        events:
+          - request.approved
+          - request.rejected
+      - name: Approve a WalletConnect session
+        importance: core
+        events:
+          - Shown Walletconnect session request
+          - Received wc connection
+      - name: Pair a hardware wallet
+        importance: secondary
+        events:
+          - pair_hw_wallet_nav.entered
+          - pair_hw_wallet_nav.exited
+      - name: Edit a wallet
+        importance: secondary
+        events:
+          - Tapped "Edit Wallet"
+          - Tapped "Done" after editing wallet
+          - Tapped "Cancel" after editing wallet
+          - Pressed Button
+          - Tapped "Notification Settings"
+      - name: Delete a wallet
+        importance: secondary
+        events:
+          - Tapped Delete Wallet
+          - Tapped "Delete Wallet" (final confirm)
+      - name: Respond to notification permission prompt
+        importance: secondary
+        events:
+          - notification_permission.requested
+          - notification_permission.granted
+          - notification_permission.denied
+          - notification_permission.skipped
+      - name: Share a perps trade
+        importance: secondary
+        events:
+          - perps.trade_details.share_pressed
+      - name: Open an asset from a position
+        importance: secondary
+        events:
+          - Opened asset from position
+      - name: View spot PnL
+        importance: secondary
+        events:
+          - spot_pnl.sheet.viewed
+      - name: Open a learn article
+        importance: incidental
+        events:
+          - learn_article.opened
+      - name: Share a learn article
+        importance: incidental
+        events:
+          - learn_article.shared
+      - name: View rewards
+        importance: incidental
+        events:
+          - rewards.viewed_sheet
+      - name: Unlock an app icon
+        importance: incidental
+        events:
+          - app_icon_unlock_sheet.viewed
+          - app_icon_unlock_sheet.cta_pressed
+  - id: routes-check-identifier-screen
+    kind: screen
+    anchor: src/screens/CheckIdentifierScreen.tsx#CheckIdentifierScreen
+    path: Routes.CHECK_IDENTIFIER_SCREEN
+    actions:
+      - name: Run keychain check to restore wallet
+        importance: secondary
+        events: []
+      - name: Dismiss with maybe later
+        importance: incidental
+        events: []
+      - name: Contact support after check error
+        importance: incidental
+        events: []
+  - id: routes-send-sheet-navigator-2
+    kind: screen
+    anchor: src/features/transfer/navigation/SendFlowNavigator.tsx#SendFlowNavigator
+    path: Routes.SEND_SHEET_NAVIGATOR
+    actions:
+      - name: Choose a token to send
+        importance: core
+        events:
+          - Changed token input in Send flow
+          - Reset Asset Selection Send
+          - token_list
+      - name: Enter an amount in native currency
+        importance: secondary
+        events:
+          - Changed native currency input in Send flow
+      - name: Send a transaction
+        importance: core
+        events:
+          - Sent transaction
+  - id: routes-no-need-wc-sheet
+    kind: screen
+    anchor: src/screens/NoNeedWCSheet.tsx#default
+    path: Routes.NO_NEED_WC_SHEET
+    actions:
+      - name: See WalletConnect not-needed notice
+        importance: incidental
+        events:
+          - wc.failed_request
+  - id: routes-dapp-browser-screen
+    kind: screen
+    anchor: src/features/dapp-browser/screens/DappBrowser.tsx#DappBrowser
+    path: Routes.DAPP_BROWSER_SCREEN
+    actions:
+      - name: Browse to a dapp
+        importance: secondary
+        events: []
+      - name: Open a favorite dapp
+        importance: secondary
+        events:
+          - browser.tap_favorite
+      - name: Open a trending dapp
+        importance: secondary
+        events:
+          - browser.trending_dapp_pressed
+      - name: Add a dapp to favorites
+        importance: secondary
+        events:
+          - browser.add_favorite
+  - id: routes-rnbw-rewards-screen
+    kind: screen
+    anchor: src/features/rnbw-rewards/screens/rnbw-rewards-screen/RnbwRewardsScreen.tsx#RnbwRewardsScreen
+    path: Routes.RNBW_REWARDS_SCREEN
+    actions:
+      - name: Claim RNBW airdrop
+        importance: core
+        events:
+          - rnbw_airdrop.claim
+          - rnbw_airdrop.claim.failed
+      - name: Claim RNBW rewards
+        importance: core
+        events:
+          - rnbw_rewards.claim
+          - rnbw_rewards.claim.failed
+  - id: routes-choose-backup-sheet
+    kind: screen
+    anchor: src/features/backup/components/ChooseBackupStep.tsx#ChooseBackupStep
+    path: Routes.CHOOSE_BACKUP_SHEET
+    actions:
+      - name: Select a cloud backup to restore
+        importance: core
+        events: []
+      - name: Retry or refresh backup list
+        importance: incidental
+        events: []
+  - id: routes-restore-cloud-sheet
+    kind: screen
+    anchor: src/features/backup/components/RestoreCloudStep.tsx#RestoreCloudStep
+    path: Routes.RESTORE_CLOUD_SHEET
+    actions:
+      - name: Restore wallet from cloud backup
+        importance: core
+        events:
+          - wallet_create.succeeded
+          - wallet_create.failed
+          - wallet_initialization.failed
+      - name: Enter backup password
+        importance: secondary
+        events: []
+  - id: routes-secret-warning
+    kind: screen
+    anchor: src/screens/SettingsSheet/components/Backups/SecretWarning.tsx#SecretWarningPage
+    path: Routes.SECRET_WARNING
+    actions:
+      - name: Continue to view secret phrase or private key
+        importance: secondary
+        events: []
+  - id: routes-settings-section-support-category-picker
+    kind: screen
+    anchor: src/screens/SettingsSheet/components/support/SupportCategoryPickerView.tsx#SupportCategoryPickerView
+    path: Routes.SETTINGS_SECTION_SUPPORT_CATEGORY_PICKER
+    actions:
+      - name: Pick a support category to send feedback
+        importance: incidental
+        events: []
+events:
+  app_icon_unlock_sheet.cta_pressed:
+    fires_in: src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+    trigger: The person taps the button on the app icon unlock sheet.
+    moment: after success
+    path:
+      - src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet.navigateToAppIconSettings
+    certainty: sure
+  app_icon_unlock_sheet.viewed:
+    fires_in: src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+    trigger: The app icon unlock sheet opens (or its appIconKey param changes).
+    moment: on mount
+    path:
+      - src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet.navigateToAppIconSettings
+    certainty: sure
+  Approved new WalletConnect session:
+    fires_in:
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#onSessionProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#rejectProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#trackTopicHandler
+    trigger: The person approves a dapp's connection proposal and the app finishes setting up the session
+    moment: after success
+    conditions:
+      - The person pressed approve
+      - The approved namespaces are valid
+      - client.approveSession resolved without throwing
+    path:
+      - src/features/wallet-connect/handlers/listeners.ts#initListeners
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#onSessionProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#trackTopicHandler
+    certainty: unsure
+  Backup Complete:
+    fires_in: src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+    trigger: "A cloud backup finishes: the file is uploaded and the wallets are marked backed up."
+    moment: after success
+    conditions:
+      - the backup upload and the backed-up marking succeeded
+      - the stored local password has been saved if it differed
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup.onSuccess
+    certainty: sure
+  backup.error:
+    fires_in:
+      - src/features/backup/backup.ts#backupAllWalletsToCloud
+      - src/features/backup/backup.ts#saveBackupPassword
+    trigger: Creating, encrypting or uploading the cloud backup of all wallets throws an Error
+    moment: after failure
+    conditions:
+      - the thrown value is an Error instance
+      - createBackup returned data (the no-keys early return sends nothing)
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/features/backup/backup.ts#backupAllWalletsToCloud
+    certainty: sure
+  BackupSheet shown:
+    fires_in: src/features/backup/components/BackupSheetSection.tsx#BackupSheetSection
+    trigger: A backup sheet section appears, or its type changes
+    moment: on mount
+    path:
+      - src/features/backup/components/BackupSheetSection.tsx#BackupSheetSection
+    certainty: unsure
+  browser.add_favorite:
+    fires_in: src/features/dapp-browser/stores/favoriteDappsStore.ts#useFavoriteDappsStore
+    trigger: The person adds a site to favorites in the dapp browser control panel.
+    moment: before the request
+    conditions:
+      - the standardized URL isn't already a favorite
+    path:
+      - src/features/dapp-browser/screens/ControlPanel.tsx#ControlPanel
+      - src/features/dapp-browser/screens/ControlPanel.tsx#HomePanel
+      - src/features/dapp-browser/screens/ControlPanel.tsx#FavoriteButton
+      - src/features/dapp-browser/stores/favoriteDappsStore.ts#useFavoriteDappsStore.addFavorite
+    certainty: sure
+  browser.tap_favorite:
+    fires_in:
+      - src/features/dapp-browser/components/Homepage.tsx#Card
+      - src/features/dapp-browser/components/Homepage.tsx#Favorites
+    trigger: The person taps a favorite dapp tile on the browser homepage.
+    moment: before the request
+    path:
+      - src/features/dapp-browser/screens/DappBrowser.tsx#DappBrowser
+      - src/features/dapp-browser/screens/DappBrowser.tsx#DappBrowserComponent
+      - src/features/dapp-browser/screens/DappBrowser.tsx#TabViewContent
+      - src/features/dapp-browser/components/BrowserTab.tsx#BrowserTab
+      - src/features/dapp-browser/components/BrowserTab.tsx#HomepageOrWebView
+      - src/features/dapp-browser/components/Homepage.tsx#Homepage
+      - src/features/dapp-browser/components/Homepage.tsx#Favorites.onPressFavorite
+    certainty: unsure
+  browser.trending_dapp_pressed:
+    fires_in:
+      - src/features/dapp-browser/components/Homepage.tsx#Card
+      - src/features/dapp-browser/components/Homepage.tsx#Favorites
+    trigger: The person taps a dapp card in the homepage trending list.
+    moment: before the request
+    conditions:
+      - the card has a truthy index (so index 0, recents and the featured card never send it)
+    path:
+      - src/features/dapp-browser/screens/DappBrowser.tsx#DappBrowser
+      - src/features/dapp-browser/screens/DappBrowser.tsx#DappBrowserComponent
+      - src/features/dapp-browser/screens/DappBrowser.tsx#TabViewContent
+      - src/features/dapp-browser/components/BrowserTab.tsx#BrowserTab
+      - src/features/dapp-browser/components/BrowserTab.tsx#HomepageOrWebView
+      - src/features/dapp-browser/components/Homepage.tsx#Homepage
+      - src/features/dapp-browser/components/Homepage.tsx#Favorites.onPressFavorite
+    certainty: unsure
+  cash.amount_entered:
+    fires_in: src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet
+    trigger: The person holds Hold to Add to confirm a deposit amount with a card
+    moment: before the request
+    conditions:
+      - The funding source is a card
+      - No wallet check is already running
+    path:
+      - src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet.handleHoldToAdd
+    certainty: sure
+  cash.buy_completed:
+    fires_in: src/features/cash/stores/cashBuyOrderStore.ts#useCashBuyOrderStore
+    trigger: A cash buy order is found in the Completed status, by polling or by a resume probe
+    moment: after success
+    conditions:
+      - The order status is Completed
+      - The order has cryptoAmount, fiatAmount, createdTime and completedTime
+    path:
+      - src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet
+      - src/features/cash/stores/cashBuyOrderStore.ts#useCashBuyOrderStore.applyTerminalOrder
+    certainty: sure
+  cash.buy_failed:
+    fires_in: src/features/cash/stores/cashBuyOrderStore.ts#useCashBuyOrderStore
+    trigger: A cash buy order is found Failed, or the backend definitively rejects the create-order request
+    moment: after failure
+    conditions:
+      - Terminal order status is Failed, or createBuyOrder was definitively rejected on the first attempt
+      - Not sent for ambiguous failures, passkey cancellations or access refusals
+    path:
+      - src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet
+      - src/features/cash/stores/cashBuyOrderStore.ts#useCashBuyOrderStore.applyTerminalOrder
+    certainty: sure
+  cash.buy_submitted:
+    fires_in: src/features/cash/stores/cashBuyOrderStore.ts#useCashBuyOrderStore
+    trigger: The person submits a card deposit and the app starts creating the buy order
+    moment: before the request
+    conditions:
+      - No order is already pending
+    path:
+      - src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet
+      - src/features/cash/stores/cashBuyOrderStore.ts#useCashBuyOrderStore.applyTerminalOrder
+    certainty: sure
+  cash.card_link_failed:
+    fires_in: src/features/cash/stores/cardLinkFlowStore.ts#useCardLinkFlowStore
+    trigger: Linking a debit or credit card fails when the person submits the card form
+    moment: after failure
+    conditions:
+      - the flow was not aborted
+      - the error is not a handled Cash error
+      - the flow was not already submitting or succeeded
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/stores/cardLinkFlowStore.ts#useCardLinkFlowStore.submit
+    certainty: sure
+  cash.card_linked:
+    fires_in: src/features/cash/stores/cardLinkFlowStore.ts#useCardLinkFlowStore
+    trigger: A debit or credit card is linked successfully after the person submits the card form
+    moment: after success
+    conditions:
+      - linkCardWithVault resolved and the card was added to the payment-method store
+      - the flow was not aborted
+      - the flow was not already submitting or succeeded
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/stores/cardLinkFlowStore.ts#useCardLinkFlowStore.submit
+    certainty: sure
+  cash.deposit_intro_viewed:
+    fires_in: src/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel.tsx#CashDepositIntroPanel
+    trigger: The Cash deposit intro panel comes into focus while sign-up is enabled
+    moment: on view
+    conditions:
+      - the remote config flag cash_signup_enabled is true
+    path:
+      - src/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel.tsx#CashDepositIntroPanel
+    certainty: sure
+  cash.deposit_signup_paused_viewed:
+    fires_in: src/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel.tsx#CashDepositIntroPanel
+    trigger: The Cash deposit intro panel comes into focus while sign-up is paused
+    moment: on view
+    conditions:
+      - the remote config flag cash_signup_enabled is false
+    path:
+      - src/features/cash/screens/cash-deposit-intro-panel/CashDepositIntroPanel.tsx#CashDepositIntroPanel
+    certainty: sure
+  cash.existing_account_recovery_selected:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#advanceToChallenge
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#useSubmitPhoneFlowStore
+    trigger: On the existing-account prompt in Cash setup, the person chooses to recover access instead of signing in with their passkey
+    moment: before the request
+    conditions:
+      - The phone-flow state is existingAccount
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#useSubmitPhoneFlowStore
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#advanceToChallenge
+    certainty: sure
+  cash.kyc_approved:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore
+      - src/features/cash/services/kycStatusService.ts#trackKycOutcome
+    trigger: The KYC provider's verdict for the Cash account is read as approved, after submitting, on resume, or on return to the flow
+    moment: after success
+    conditions:
+      - the outcome read is approved (not reviewing, rejected or unsupported)
+      - for the submit path, the run was not cancelled and the polling loop ended with an approved status
+      - for resume and return, a KYC outcome could be read
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore.submit
+    certainty: sure
+  cash.kyc_awaiting_decision:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore
+      - src/features/cash/services/kycStatusService.ts#trackKycOutcome
+    trigger: The KYC provider has not given a verdict and the person is shown the reviewing state
+    moment: after success
+    conditions:
+      - "submit path: the review delay passed while polling, or a status poll failed after submission; at most once per run"
+      - "resume or return path: the outcome read is reviewing"
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore.submit
+    certainty: sure
+  cash.kyc_failed:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore
+      - src/features/cash/services/kycStatusService.ts#trackKycOutcome
+    trigger: "Identity verification ends without approval: the KYC submission request errors, the provider rejects the person, or their state
+      isn't supported"
+    moment: after failure
+    conditions:
+      - Fires from the submit step at useSubmitReviewFlow.ts:191 when submitOnboarding throws and the error isn't a cash-access refusal
+      - Fires at :231 or :235 when the provider's verdict is state-not-supported or rejected
+      - Does not fire on a failed status poll after submission, or while the provider is still reviewing
+      - The run isn't stale (cancelled)
+      - The session is in phoneVerified, not recovery
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore.submit
+    certainty: sure
+  cash.kyc_submitted:
+    fires_in: src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore
+    trigger: The person submits identity and government ID details for verification for the first time in the session
+    moment: before the request
+    conditions:
+      - The session is in phoneVerified, not recovery
+      - Details haven't already been submitted (kycSubmitted is false)
+      - Identity and government ID are both present
+      - The flow isn't already submitting, reviewing or locked
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore.submit
+    certainty: sure
+  cash.lost_passkey_recovery_selected:
+    fires_in: src/features/cash/screens/add-cash-sheet/ReauthenticateContent.tsx#ReauthenticateContent
+    trigger: The person taps 'recover lost passkey' on the Add Cash re-authentication sheet.
+    moment: before the request
+    path:
+      - src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet
+      - src/features/cash/screens/add-cash-sheet/ReauthenticateContent.tsx#ReauthenticateContent.handleRecoverLostPasskey
+    certainty: sure
+  cash.passkey_added:
+    fires_in: src/features/cash/screens/cash-deposit-setup/steps/useAddPasskeyFlow.ts#useAddPasskeyFlowStore
+    trigger: The person creates a passkey for the Cash account and the backend registration completes
+    moment: after success
+    conditions:
+      - The passkey ceremony isn't already pending
+      - The setup session is phoneVerified
+      - addPasskey, the device passkey ceremony and finishAddPasskey all succeeded
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useAddPasskeyFlow.ts#useAddPasskeyFlowStore.submit
+    certainty: sure
+  cash.passkey_failed:
+    fires_in: src/features/cash/screens/cash-deposit-setup/steps/useAddPasskeyFlow.ts#useAddPasskeyFlowStore
+    trigger: Adding a passkey fails with an unexpected error
+    moment: after failure
+    conditions:
+      - Not a cash-access refusal
+      - Not a user cancellation
+      - Not 'passkey already on this device'
+      - The setup session is phoneVerified
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useAddPasskeyFlow.ts#useAddPasskeyFlowStore.submit
+    certainty: sure
+  cash.passkey_submitted:
+    fires_in: src/features/cash/screens/cash-deposit-setup/steps/useAddPasskeyFlow.ts#useAddPasskeyFlowStore
+    trigger: The person starts adding a passkey in Cash deposit setup
+    moment: before the request
+    conditions:
+      - The passkey ceremony isn't already pending
+      - The setup session is phoneVerified
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useAddPasskeyFlow.ts#useAddPasskeyFlowStore.submit
+    certainty: sure
+  cash.phone_already_registered:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#advanceToChallenge
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#useSubmitPhoneFlowStore
+    trigger: The person submits their phone number and the create-user request returns that the number already has an account.
+    moment: after success
+    conditions:
+      - the create-user request returned without error
+      - the run isn't stale
+      - the outcome is 'alreadyRegistered' or 'registeredWithPasskey'
+      - the person is not in the recovery (restoringAccess) path
+      - no code is already outstanding for this number
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#useSubmitPhoneFlowStore
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#advanceToChallenge
+    certainty: sure
+  cash.phone_resend_failed:
+    fires_in: src/features/cash/stores/verifyPhoneFlowStore.ts#useVerifyPhoneFlowStore
+    trigger: The person asks for the phone verification code again and the resend request fails.
+    moment: after failure
+    conditions:
+      - no resend is already running, and the person isn't verifying or done
+      - the session is awaiting a code or in recovery
+      - the resend cooldown has passed
+      - the challenge wasn't replaced while the request ran
+      - the error isn't a cash-access refusal
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/stores/verifyPhoneFlowStore.ts#useVerifyPhoneFlowStore.submit
+    certainty: sure
+  cash.phone_submit_failed:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#advanceToChallenge
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#useSubmitPhoneFlowStore
+    trigger: The person submits their phone number and creating the user or starting the verification challenge fails.
+    moment: after failure
+    conditions:
+      - the run isn't stale
+      - the error isn't a cash-access refusal
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#useSubmitPhoneFlowStore
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#advanceToChallenge
+    certainty: sure
+  cash.phone_submitted:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#advanceToChallenge
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#useSubmitPhoneFlowStore
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore
+      - src/features/cash/stores/verifyPhoneFlowStore.ts#useVerifyPhoneFlowStore
+    trigger: A phone verification code was started (signup, resume or recovery) and the setup session moved to code entry.
+    moment: after success
+    conditions:
+      - the run isn't stale
+      - "for the phone step: the challenge request succeeded"
+      - "for code verification: the signup was already complete and recovery started"
+      - "for account recovery: signupIncomplete was returned and a signup resume started"
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#useSubmitPhoneFlowStore
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitPhoneFlow.ts#advanceToChallenge
+    certainty: sure
+  cash.phone_verified:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore
+      - src/features/cash/stores/verifyPhoneFlowStore.ts#useVerifyPhoneFlowStore
+    trigger: The phone number is confirmed during Cash setup. This call site is the one where a recovery finishes with outcome 'recovered'
+    moment: after success
+    conditions:
+      - The setup session is in recovery
+      - A 6-digit code has been entered
+      - finishRecovery returned outcome 'recovered'
+      - The challenge isn't stale
+      - The identity and government ID are present
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore.submit
+    certainty: sure
+  cash.phone_verify_failed:
+    fires_in:
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore
+      - src/features/cash/stores/verifyPhoneFlowStore.ts#useVerifyPhoneFlowStore
+    trigger: The phone one-time code is rejected during Cash setup. This call site is the one where recovery answers codeInvalid
+    moment: after failure
+    conditions:
+      - The setup session is in recovery
+      - finishRecovery returned outcome 'codeInvalid'
+      - The challenge isn't stale
+    path:
+      - src/features/cash/screens/cash-deposit-setup/CashDepositSetupScreen.tsx#CashDepositSetupScreen
+      - src/features/cash/screens/cash-deposit-setup/steps/useSubmitReviewFlow.ts#useSubmitReviewFlowStore.submit
+    certainty: sure
+  cash.sign_in_cancelled:
+    fires_in: src/features/cash/services/cashSignInService.ts#runLoginCeremony
+    trigger: The person dismisses the passkey prompt during a Cash sign-in.
+    moment: after failure
+    conditions:
+      - the error is a passkey cancellation
+    path:
+      - src/features/cash/screens/cash-sign-in/CashSignInScreen.tsx#CashSignInScreen
+      - src/features/cash/services/cashSignInService.ts#signInWithPhone
+      - src/features/cash/services/cashSignInService.ts#runLoginCeremony
+    certainty: sure
+  cash.sign_in_failed:
+    fires_in: src/features/cash/services/cashSignInService.ts#runLoginCeremony
+    trigger: A Cash sign-in ceremony fails (start login, passkey, finish login or finalize auth), including a 2-minute passkey timeout.
+    moment: after failure
+    conditions:
+      - the error isn't a passkey cancellation
+      - the error isn't a cash-access refusal
+    path:
+      - src/features/cash/screens/cash-sign-in/CashSignInScreen.tsx#CashSignInScreen
+      - src/features/cash/services/cashSignInService.ts#signInWithPhone
+      - src/features/cash/services/cashSignInService.ts#runLoginCeremony
+    certainty: sure
+  cash.sign_in_submitted:
+    fires_in: src/features/cash/services/cashSignInService.ts#runLoginCeremony
+    trigger: A Cash passkey sign-in starts because no valid cached access token exists.
+    moment: before the request
+    conditions:
+      - no valid cached access token (for ensureAccessToken callers)
+      - concurrent callers share one ceremony
+    path:
+      - src/features/cash/screens/cash-sign-in/CashSignInScreen.tsx#CashSignInScreen
+      - src/features/cash/services/cashSignInService.ts#signInWithPhone
+      - src/features/cash/services/cashSignInService.ts#runLoginCeremony
+    certainty: sure
+  cash.sign_in_succeeded:
+    fires_in: src/features/cash/services/cashSignInService.ts#runLoginCeremony
+    trigger: "A Cash sign-in finishes: login done, auth finalized and the access token stored."
+    moment: after success
+    path:
+      - src/features/cash/screens/cash-sign-in/CashSignInScreen.tsx#CashSignInScreen
+      - src/features/cash/services/cashSignInService.ts#signInWithPhone
+      - src/features/cash/services/cashSignInService.ts#runLoginCeremony
+    certainty: sure
+  cash.wallet_check_failed:
+    fires_in: src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet
+    trigger: The person holds to add cash with a card and the check that the Cash account has linked the deposit wallet fails.
+    moment: after failure
+    conditions:
+      - the funding source is a card
+      - no wallet check is already running
+      - the check wasn't aborted
+      - the error isn't already handled elsewhere
+    path:
+      - src/features/cash/screens/add-cash-sheet/AddCashSheet.tsx#AddCashSheet.handleHoldToAdd
+    certainty: sure
+  cash.wallet_link_failed:
+    fires_in: src/features/cash/screens/add-wallet-sheet/useWalletLinkFlow.ts#useWalletLinkFlow
+    trigger: Linking the wallet to the Cash account fails after the person confirms in the add-wallet sheet
+    moment: after failure
+    conditions:
+      - the flow was not aborted
+      - the error is not a WalletSignatureError (signature stage or cancelled passkey)
+      - the error is not a handled Cash error such as an access refusal
+    path:
+      - src/features/cash/screens/add-wallet-sheet/AddWalletSheet.tsx#AddWalletSheet
+      - src/features/cash/screens/add-wallet-sheet/useWalletLinkFlow.ts#useWalletLinkFlow.confirm
+    certainty: sure
+  cash.wallet_link_prompted:
+    fires_in: src/features/cash/screens/add-wallet-sheet/AddWalletSheet.tsx#AddWalletSheet
+    trigger: The add-wallet sheet comes into focus for a wallet that can sign
+    moment: on view
+    conditions:
+      - the wallet is not read-only or watched
+      - the wallet is not a hardware wallet
+    path:
+      - src/features/cash/screens/add-wallet-sheet/AddWalletSheet.tsx#AddWalletSheet
+    certainty: sure
+  cash.wallet_linked:
+    fires_in: src/features/cash/screens/add-wallet-sheet/useWalletLinkFlow.ts#useWalletLinkFlow
+    trigger: The wallet is linked to the Cash account after the person confirms and the signature and request succeed
+    moment: after success
+    conditions:
+      - linkWalletWithSignature resolved
+      - the flow was not aborted
+      - no link was already in progress or finished
+    path:
+      - src/features/cash/screens/add-wallet-sheet/AddWalletSheet.tsx#AddWalletSheet
+      - src/features/cash/screens/add-wallet-sheet/useWalletLinkFlow.ts#useWalletLinkFlow.confirm
+    certainty: sure
+  Changed native currency input in Send flow:
+    fires_in: src/features/transfer/screens/SendSheet.tsx#SendSheet
+    trigger: The person edits the fiat amount field in the Send sheet.
+    moment: after success
+    conditions:
+      - the new value is a string
+    path:
+      - src/features/transfer/screens/SendSheet.tsx#SendSheet.onChangeNativeAmount
+    certainty: sure
+  Changed token input in Send flow:
+    fires_in: src/features/transfer/screens/SendSheet.tsx#SendSheet
+    trigger: The person edits the token amount field in the Send sheet.
+    moment: after success
+    conditions:
+      - the new value is a string
+    path:
+      - src/features/transfer/screens/SendSheet.tsx#SendSheet.onChangeNativeAmount
+    certainty: sure
+  Choose Password Step:
+    fires_in: src/features/backup/components/BackupCloudStep.tsx#BackupCloudStep
+    trigger: The cloud-backup password screen opens
+    moment: on mount
+    path:
+      - src/features/backup/components/BackupSheet.tsx#BackupSheet
+      - src/features/backup/components/BackupCloudStep.tsx#BackupCloudStep
+    certainty: sure
+  Clicked "Max" in Send flow input:
+    fires_in: src/features/transfer/components/SendAssetFormField.js#SendAssetFormFieldComponent
+    trigger: The person presses the Max button in the Send amount field
+    moment: before the request
+    path:
+      - src/features/transfer/screens/SendSheet.tsx#SendSheet
+      - src/features/transfer/components/SendAssetForm.js#SendAssetForm
+      - src/features/transfer/components/SendAssetFormToken.js#SendAssetFormToken
+      - src/features/transfer/components/SendAssetFormField.js#SendAssetFormField
+      - src/features/transfer/components/SendAssetFormField.js#SendAssetFormFieldComponent.handlePressMax
+    certainty: sure
+  Completed ENS registration:
+    fires_in:
+      - src/features/ens/raps/actions.ts#ensAction
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#executeENSRap
+    trigger: The register transaction of an ENS registration has been signed and broadcast.
+    moment: after success
+    conditions:
+      - the REGISTER_WITH_CONFIG step runs
+      - executeRegisterWithConfig did not throw
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/features/ens/hooks/useENSRegistrationActionHandler.ts#useENSRegistrationActionHandler
+      - src/features/ens/raps/actions.ts#executeENSRap
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#findENSActionByType
+      - src/features/ens/raps/actions.ts#commitENS
+      - src/features/ens/raps/actions.ts#ensAction
+    certainty: sure
+  Didn't save backup password on iCloud:
+    fires_in:
+      - src/features/backup/backup.ts#backupAllWalletsToCloud
+      - src/features/backup/backup.ts#saveBackupPassword
+    trigger: Saving the backup password to the iCloud keychain throws, for example the person cancels or the keychain errors
+    moment: after failure
+    conditions:
+      - the platform is not Android (on Android nothing is attempted, so nothing can throw)
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/features/backup/backup.ts#backupAllWalletsToCloud
+    certainty: sure
+  discover.card_pressed:
+    fires_in: src/features/discover/utils/trackDiscoverCardPress.ts#trackDiscoverCardPress
+    trigger: The person taps a card in a Discover section
+    moment: before the request
+    conditions:
+      - The card belongs to a placement
+    path:
+      - src/features/discover/components/DiscoverSection.tsx#DiscoverSection
+      - src/features/discover/components/PredictionsSection.tsx#PredictionsSection
+      - src/features/discover/components/PredictionEventsSection.tsx#PredictionEventsSection
+      - src/features/discover/utils/trackDiscoverCardPress.ts#trackDiscoverCardPress
+    certainty: sure
+  discover.carousel_scrolled:
+    fires_in: src/features/discover/hooks/useTrackDiscoverCarouselScroll.ts#useTrackDiscoverCarouselScroll
+    trigger: The person scrolls a Discover carousel and it comes to rest
+    moment: on view
+    conditions:
+      - 500 ms after the last momentum scroll ended
+      - Also sent when the component unmounts while a call is still pending
+    path:
+      - src/features/discover/components/DiscoverSection.tsx#DiscoverSection
+      - src/features/discover/components/PredictionsSection.tsx#PredictionsSection
+      - src/features/discover/components/PredictionEventsSection.tsx#PredictionEventsSection
+      - src/features/discover/hooks/useTrackDiscoverCarouselScroll.ts#useTrackDiscoverCarouselScroll.onScrollSettle
+    certainty: sure
+  discover.prediction_order_pressed:
+    fires_in:
+      - src/features/discover/components/markets/layouts/MarketCarousel.tsx#MarketCarousel
+      - src/features/discover/components/markets/layouts/MarketGrid.tsx#MarketGrid
+      - src/features/discover/components/markets/layouts/MarketList.tsx#MarketList
+    trigger: The person taps an outcome button on a prediction market card
+    moment: before the request
+    conditions:
+      - The card belongs to a placement
+    path:
+      - src/features/discover/components/DiscoverSection.tsx#DiscoverSection
+      - src/features/discover/components/MarketSection.tsx#MarketSection
+      - src/features/discover/components/MarketSection.tsx#MarketPlacementContent
+      - src/features/discover/components/SectionLayout.tsx#renderSectionLayout
+      - src/features/discover/components/markets/layouts/MarketCarousel.tsx#MarketCarousel.renderCarouselItem
+    certainty: sure
+  discover.section_pressed:
+    fires_in:
+      - src/features/discover/components/PredictionEventsSection.tsx#PredictionEventsSection
+      - src/features/discover/components/SectionLayout.tsx#renderSectionLayout
+    trigger: The person taps a Discover section header that has a destination
+    moment: before the request
+    conditions:
+      - The section has a destination or an onPress handler
+      - The section has items (not an empty list)
+    path:
+      - src/features/discover/components/DiscoverSection.tsx#DiscoverSection
+      - src/features/discover/components/PredictionsSection.tsx#PredictionsSection
+      - src/features/discover/components/PredictionEventsSection.tsx#PredictionEventsSection
+    certainty: sure
+  discover.tab_pressed:
+    fires_in: src/features/discover/components/DiscoverHeader.tsx#DiscoverCategorySelector
+    trigger: The person taps a section chip in the Discover header.
+    moment: before the request
+    conditions:
+      - a Discover surface is loaded
+      - fires whether or not the tab was already active
+    path:
+      - src/screens/DiscoverScreen.tsx#DiscoverScreen
+      - src/screens/DiscoverScreen.tsx#Content
+      - src/features/discover/components/DiscoverHeader.tsx#DiscoverHeader
+      - src/features/discover/components/DiscoverHeader.tsx#DiscoverCategorySelector.handlePress
+    certainty: sure
+  Edited ENS records:
+    fires_in:
+      - src/features/ens/raps/actions.ts#ensAction
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#executeENSRap
+    trigger: A records-editing transaction (multicall, set text, set content hash or set address) has been sent in an ENS rap.
+    moment: after success
+    conditions:
+      - the step is MULTICALL, SET_TEXT, SET_CONTENTHASH or SET_ADDR
+      - the transaction call did not throw
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/features/ens/hooks/useENSRegistrationActionHandler.ts#useENSRegistrationActionHandler
+      - src/features/ens/raps/actions.ts#executeENSRap
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#findENSActionByType
+      - src/features/ens/raps/actions.ts#commitENS
+      - src/features/ens/raps/actions.ts#ensAction
+    certainty: sure
+  Extended ENS:
+    fires_in:
+      - src/features/ens/raps/actions.ts#ensAction
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#executeENSRap
+    trigger: The renew transaction for an ENS name has been sent.
+    moment: after success
+    conditions:
+      - the step is RENEW
+      - executeRenew did not throw
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/features/ens/hooks/useENSRegistrationActionHandler.ts#useENSRegistrationActionHandler
+      - src/features/ens/raps/actions.ts#executeENSRap
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#findENSActionByType
+      - src/features/ens/raps/actions.ts#commitENS
+      - src/features/ens/raps/actions.ts#ensAction
+    certainty: sure
+  Initiated ENS registration:
+    fires_in:
+      - src/features/ens/raps/actions.ts#ensAction
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#executeENSRap
+    trigger: The commit transaction (first of two) of an ENS registration has been broadcast and its parameters saved.
+    moment: after success
+    conditions:
+      - the step is COMMIT
+      - executeCommit did not throw
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/features/ens/hooks/useENSRegistrationActionHandler.ts#useENSRegistrationActionHandler
+      - src/features/ens/raps/actions.ts#executeENSRap
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#findENSActionByType
+      - src/features/ens/raps/actions.ts#commitENS
+      - src/features/ens/raps/actions.ts#ensAction
+    certainty: sure
+  Manually disconnected from WalletConnect connection:
+    fires_in: src/features/wallet-connect/components/WalletConnectV2ListItem.tsx#WalletConnectV2ListItem
+    trigger: The person picks Disconnect from the context menu of a connected dapp
+    moment: after success
+    conditions:
+      - The chosen action is 'disconnect'
+      - disconnectSession didn't throw
+    path:
+      - src/features/wallet-connect/screens/ConnectedDappsSheet.js#ConnectedDappsSheet
+      - src/features/wallet-connect/components/WalletConnectV2ListItem.tsx#WalletConnectV2ListItem.handleOnPressMenuItem
+    certainty: sure
+  New WalletConnect pairing:
+    fires_in:
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#onSessionProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#rejectProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#trackTopicHandler
+    trigger: A dapp sends a WalletConnect session proposal to the app
+    moment: before the request
+    conditions:
+      - Sent on receipt, before the person approves or rejects
+      - Only the session_proposal listener is registered; the session_authenticate listener is commented out
+    path:
+      - src/features/wallet-connect/handlers/listeners.ts#initListeners
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#onSessionProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#trackTopicHandler
+    certainty: unsure
+  notification_permission.denied:
+    fires_in: src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen
+    trigger: The person taps Enable and the OS permission prompt returns a status other than granted
+    moment: after success
+    conditions:
+      - The person tapped Enable
+      - The permission request returned without throwing
+      - The returned status is not granted
+    path:
+      - src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen.handleDismiss
+    certainty: sure
+  notification_permission.granted:
+    fires_in: src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen
+    trigger: The person taps Enable and the OS permission prompt returns a granted status
+    moment: after success
+    conditions:
+      - The person tapped Enable
+      - The permission request returned without throwing
+      - The returned status is granted
+    path:
+      - src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen.handleDismiss
+    certainty: sure
+  notification_permission.requested:
+    fires_in: src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen
+    trigger: The person taps Enable on the notification permission screen
+    moment: before the request
+    path:
+      - src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen.handleDismiss
+    certainty: sure
+  notification_permission.skipped:
+    fires_in: src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen
+    trigger: The person dismisses the notification permission screen without tapping Enable
+    moment: before the request
+    path:
+      - src/features/notifications/screens/NotificationPermissionScreen.tsx#NotificationPermissionScreen.handleDismiss
+    certainty: sure
+  Opened asset from position:
+    fires_in: src/features/positions/screens/PositionSheet.tsx#PositionSheet
+    trigger: The person taps an asset row (deposit, stake, borrow, reward or pool) inside the position detail sheet
+    moment: before the request
+    path:
+      - src/features/positions/screens/PositionSheet.tsx#PositionSheet.openDapp
+    certainty: sure
+  Opened position Sheet:
+    fires_in: src/features/positions/components/PositionCard.tsx#PositionCard
+    trigger: The person taps a position card in the asset list
+    moment: before the request
+    path:
+      - src/screens/ProfileSheet.tsx#ProfileSheet
+      - src/components/asset-list/RecyclerAssetList2/index.tsx#RecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RawRecyclerList.tsx#RawMemoRecyclerAssetList
+      - src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx#rowRenderer
+      - src/components/asset-list/RecyclerAssetList2/WrappedPosition.tsx#WrappedPosition
+      - src/features/positions/components/PositionCard.tsx#PositionCard.onPressHandler
+    certainty: sure
+  pair_hw_wallet_nav.entered:
+    fires_in: src/features/hardware-wallet/navigation/PairHardwareWalletNavigator.tsx#PairHardwareWalletNavigator
+    trigger: The pair-hardware-wallet sheet opens
+    moment: on mount
+    path:
+      - src/features/hardware-wallet/navigation/PairHardwareWalletNavigator.tsx#PairHardwareWalletNavigator
+    certainty: sure
+  pair_hw_wallet_nav.exited:
+    fires_in: src/features/hardware-wallet/navigation/PairHardwareWalletNavigator.tsx#PairHardwareWalletNavigator
+    trigger: The person dismisses the pair-hardware-wallet sheet
+    conditions:
+      - The sheet's onDismiss callback runs
+    path:
+      - src/features/hardware-wallet/navigation/PairHardwareWalletNavigator.tsx#PairHardwareWalletNavigator
+    certainty: sure
+  perps.added_to_position:
+    fires_in: src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#submitAddToPositionOrder
+    trigger: The person submits extra margin to an existing perps position and the order is accepted
+    moment: after success
+    conditions:
+      - The amount is greater than 0
+      - createIsolatedMarginPosition returned a position
+    path:
+      - src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#PerpsAddToPositionSheet
+      - src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#AddToPositionSheetContent
+      - src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#submitAddToPositionOrder
+    certainty: sure
+  perps.added_to_position.failed:
+    fires_in: src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#submitAddToPositionOrder
+    trigger: Adding to a perps position throws, or the person submits an amount of 0 or less
+    moment: after failure
+    conditions:
+      - The amount check or createIsolatedMarginPosition threw
+    path:
+      - src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#PerpsAddToPositionSheet
+      - src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#AddToPositionSheetContent
+      - src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#submitAddToPositionOrder
+    certainty: sure
+  perps.close_position.failed:
+    fires_in: src/features/perps/screens/ClosePositionBottomSheet.tsx#PanelContent
+    trigger: "Closing a perp position fails: the close request throws, or a later step after the close throws"
+    moment: after failure
+    conditions:
+      - A position exists
+    path:
+      - src/features/perps/screens/ClosePositionBottomSheet.tsx#ClosePositionBottomSheet
+      - src/features/perps/screens/ClosePositionBottomSheet.tsx#PanelContent.closePosition
+    certainty: sure
+  perps.closed_position:
+    fires_in: src/features/perps/screens/ClosePositionBottomSheet.tsx#PanelContent
+    trigger: The person confirms closing all or part of a perp position and the exchange accepts the close
+    moment: after success
+    conditions:
+      - A position exists
+      - hyperliquidAccountActions.closePosition resolved without throwing
+    path:
+      - src/features/perps/screens/ClosePositionBottomSheet.tsx#ClosePositionBottomSheet
+      - src/features/perps/screens/ClosePositionBottomSheet.tsx#PanelContent.closePosition
+    certainty: sure
+  perps.open_position.canceled:
+    fires_in:
+      - src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNewPositionScreenFooter
+      - src/features/perps/screens/perps-add-to-position-sheet/PerpsAddToPositionSheet.tsx#submitAddToPositionOrder
+    trigger: A new-position or add-to-position order returns no position (the person cancelled)
+    moment: after failure
+    conditions:
+      - createIsolatedMarginPosition returned nothing
+      - "For the new-position footer: a market and a leverage are set"
+    path:
+      - src/features/perps/screens/PerpsNavigator.tsx#PerpsNavigator
+      - src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNavigatorFooter
+      - src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNewPositionScreenFooter.submitNewPosition
+    certainty: sure
+  perps.open_position.failed:
+    fires_in: src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNewPositionScreenFooter
+    trigger: Submitting a new perps position throws
+    moment: after failure
+    conditions:
+      - A market and a leverage are set
+      - Something in the submit threw
+    path:
+      - src/features/perps/screens/PerpsNavigator.tsx#PerpsNavigator
+      - src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNavigatorFooter
+      - src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNewPositionScreenFooter.submitNewPosition
+    certainty: sure
+  perps.opened_position:
+    fires_in: src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNewPositionScreenFooter
+    trigger: The person submits a new perps position and the order is accepted
+    moment: after success
+    conditions:
+      - A market and a leverage are set
+      - createIsolatedMarginPosition returned a position
+    path:
+      - src/features/perps/screens/PerpsNavigator.tsx#PerpsNavigator
+      - src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNavigatorFooter
+      - src/features/perps/components/PerpsNavigatorFooter.tsx#PerpsNewPositionScreenFooter.submitNewPosition
+    certainty: sure
+  perps.trade_details.share_pressed:
+    fires_in: src/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet.tsx#PerpsTradeDetailsSheetContent
+    trigger: The person presses Share on trade details and the native share dialog closes
+    moment: after success
+    conditions:
+      - The PnL image was captured
+      - RNShare.open resolved without throwing
+    path:
+      - src/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet.tsx#PerpsTradeDetailsSheet
+      - src/features/perps/screens/perps-trade-details-sheet/PerpsTradeDetailsSheet.tsx#PerpsTradeDetailsSheetContent.handleShare
+    certainty: sure
+  perps.trigger_order_cancel.failed:
+    fires_in: src/features/perps/screens/perp-detail-screen/TriggerOrdersSection.tsx#ExistingTriggerOrderCard
+    trigger: The person taps delete on a take-profit or stop-loss card on a perp position and Hyperliquid's cancelOrder throws.
+    moment: after failure
+    conditions:
+      - the position is loaded
+      - cancelOrder threw
+    path:
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreen
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreenContent
+      - src/features/perps/screens/perp-detail-screen/TriggerOrdersSection.tsx#TriggerOrdersSection
+      - src/features/perps/screens/perp-detail-screen/TriggerOrdersSection.tsx#ExistingTriggerOrderCard.onPressDelete
+    certainty: sure
+  perps.trigger_order_canceled:
+    fires_in: src/features/perps/screens/perp-detail-screen/TriggerOrdersSection.tsx#ExistingTriggerOrderCard
+    trigger: The person taps delete on a take-profit or stop-loss card on a perp position and Hyperliquid accepts the cancel.
+    moment: after success
+    conditions:
+      - the position is loaded
+      - cancelOrder resolved without throwing
+    path:
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreen
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreenContent
+      - src/features/perps/screens/perp-detail-screen/TriggerOrdersSection.tsx#TriggerOrdersSection
+      - src/features/perps/screens/perp-detail-screen/TriggerOrdersSection.tsx#ExistingTriggerOrderCard.onPressDelete
+    certainty: sure
+  perps.trigger_order_created:
+    fires_in: src/features/perps/screens/CreateTriggerOrderBottomSheet.tsx#PanelContent
+    trigger: The person taps Add to create a take-profit or stop-loss order on an existing perp position
+    moment: after success
+    conditions:
+      - The target price is valid and non-empty
+      - The sheet is for an existing position, not a new one
+      - A position exists
+      - createTriggerOrder resolved without throwing
+    path:
+      - src/features/perps/screens/CreateTriggerOrderBottomSheet.tsx#CreateTriggerOrderBottomSheet
+      - src/features/perps/screens/CreateTriggerOrderBottomSheet.tsx#PanelContent.addTriggerOrder
+    certainty: sure
+  perps.trigger_order.failed:
+    fires_in: src/features/perps/screens/CreateTriggerOrderBottomSheet.tsx#PanelContent
+    trigger: The person confirms a take-profit or stop-loss trigger order on an existing perp position and the order request throws.
+    moment: after failure
+    conditions:
+      - the target price is valid and the input is not empty
+      - the order is for an existing position, not a locally staged new one
+      - the position exists
+    path:
+      - src/features/perps/screens/CreateTriggerOrderBottomSheet.tsx#CreateTriggerOrderBottomSheet
+      - src/features/perps/screens/CreateTriggerOrderBottomSheet.tsx#PanelContent.addTriggerOrder
+    certainty: sure
+  perps.withdraw.failed:
+    fires_in: src/features/perps/withdrawalConfig.ts#executePerpsWithdrawal
+    trigger: The person confirms a perps withdrawal and Hyperliquid's withdraw call throws.
+    moment: after failure
+    conditions:
+      - withdraw(amount) threw
+    path:
+      - src/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen.tsx#PerpsWithdrawalScreen
+      - src/features/perps/withdrawalConfig.ts#PERPS_WITHDRAWAL_CONFIG
+      - src/features/perps/withdrawalConfig.ts#executePerpsWithdrawal
+    certainty: sure
+  perps.withdrew:
+    fires_in: src/features/perps/withdrawalConfig.ts#executePerpsWithdrawal
+    trigger: The person confirms a perps withdrawal and Hyperliquid accepts the request.
+    moment: after success
+    conditions:
+      - withdraw(amount) resolved without throwing
+    path:
+      - src/features/perps/screens/perps-deposit-withdraw-screen/PerpsWithdrawalScreen.tsx#PerpsWithdrawalScreen
+      - src/features/perps/withdrawalConfig.ts#PERPS_WITHDRAWAL_CONFIG
+      - src/features/perps/withdrawalConfig.ts#executePerpsWithdrawal
+    certainty: sure
+  positions.error:
+    fires_in: src/features/positions/stores/trackPositionsResponseErrors.ts#trackPositionsResponseErrors
+    trigger: The system fetches positions and the response contains error strings
+    moment: after success
+    conditions:
+      - The ListPositions response is well-formed
+      - data.errors is non-empty
+      - One event per distinct parsed error in a response
+    path:
+      - src/screens/change-wallet/ChangeWalletSheet.tsx#ChangeWalletSheet
+      - src/hooks/useLiveWalletBalance.ts#useLiveWalletBalance
+      - src/features/positions/stores/positionsStore.ts#usePositionsStore
+      - src/features/positions/stores/fetcher.ts#fetchPositions
+      - src/features/positions/stores/trackPositionsResponseErrors.ts#trackPositionsResponseErrors
+    certainty: sure
+  predictions.deposit:
+    fires_in: src/features/polymarket/depositConfig.ts#POLYMARKET_DEPOSIT_CONFIG
+    trigger: The person confirms a Polymarket deposit and the deposit executes successfully (swap, crosschain, transfer or custom).
+    moment: after success
+    conditions:
+      - amount is set and non-zero
+      - asset has a valid chain id
+      - recipient and wallet are present where required
+      - execution result was success
+      - the wallet is not read-only
+    path:
+      - src/features/polymarket/funding/screens/PolymarketDepositScreen.tsx#PolymarketDepositScreen
+      - src/features/polymarket/depositConfig.ts#POLYMARKET_DEPOSIT_CONFIG.trackFailure
+    certainty: sure
+  predictions.deposit.failed:
+    fires_in: src/features/polymarket/depositConfig.ts#POLYMARKET_DEPOSIT_CONFIG
+    trigger: The person confirms a Polymarket deposit and it fails validation, a prerequisite, or execution (a failed result or a throw).
+    moment: after failure
+    conditions:
+      - amount is set and non-zero and the asset is chosen
+      - the failure is a missing recipient, no wallet, a crosschain quote not targeting the recipient, a failed result, or a throw
+    path:
+      - src/features/polymarket/funding/screens/PolymarketDepositScreen.tsx#PolymarketDepositScreen
+      - src/features/polymarket/depositConfig.ts#POLYMARKET_DEPOSIT_CONFIG.trackFailure
+    certainty: sure
+  predictions.order_match.failed:
+    fires_in:
+      - src/features/polymarket/utils/executePolymarketOrder.ts#trackMatchedOrderAnalytics
+      - src/features/polymarket/utils/executePolymarketOrder.ts#trackOrderMatchFailedAnalytics
+    trigger: A Polymarket order was accepted and then its follow-up polling shows a settlement failure, a terminal failure status, a timeout, or
+      an error.
+    moment: after failure
+    conditions:
+      - the order was accepted
+      - it was not matched and settled immediately
+      - the poll hit a failed settlement, terminal failure status, timeout or throw
+    path:
+      - src/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet.tsx#PolymarketSellPositionSheet
+      - src/features/polymarket/utils/executePolymarketOrder.ts#executePolymarketSellPosition
+      - src/features/polymarket/utils/executePolymarketOrder.ts#startMatchedOrderFeeCollection
+      - src/features/polymarket/utils/executePolymarketOrder.ts#recordMatchedOrderAndCollectFee
+      - src/features/polymarket/utils/executePolymarketOrder.ts#trackMatchedOrderAnalytics
+    certainty: sure
+  predictions.place_order:
+    fires_in:
+      - src/features/polymarket/utils/executePolymarketOrder.ts#trackMatchedOrderAnalytics
+      - src/features/polymarket/utils/executePolymarketOrder.ts#trackOrderMatchFailedAnalytics
+    trigger: A Polymarket buy or cash-out order is confirmed as matched with settlement hashes known, either straight from the accepted response
+      or after polling.
+    moment: after success
+    conditions:
+      - the order was accepted
+      - matched amounts are known
+      - settlement transaction hashes are resolved
+    path:
+      - src/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet.tsx#PolymarketSellPositionSheet
+      - src/features/polymarket/utils/executePolymarketOrder.ts#executePolymarketSellPosition
+      - src/features/polymarket/utils/executePolymarketOrder.ts#startMatchedOrderFeeCollection
+      - src/features/polymarket/utils/executePolymarketOrder.ts#recordMatchedOrderAndCollectFee
+      - src/features/polymarket/utils/executePolymarketOrder.ts#trackMatchedOrderAnalytics
+    certainty: sure
+  predictions.place_order.failed:
+    fires_in:
+      - src/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet.tsx#NewPositionForm
+      - src/features/polymarket/screens/polymarket-sell-position-sheet/PolymarketSellPositionSheet.tsx#PolymarketSellPositionSheet
+    trigger: The person taps Buy or Cash out on a Polymarket position and executing the order, or waiting for the position size to update, throws.
+    moment: after failure
+    conditions:
+      - the form can be submitted
+      - the wallet is not read-only
+      - execution or waitForPositionSizeUpdate threw
+    path:
+      - src/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet.tsx#PolymarketNewPositionSheet
+      - src/features/polymarket/screens/polymarket-new-position-sheet/PolymarketNewPositionSheet.tsx#NewPositionForm.handleMarketBuyPosition
+    certainty: sure
+  predictions.redeem_position:
+    fires_in:
+      - src/features/polymarket/utils/redeemPosition.ts#trackRedeemPosition
+      - src/features/polymarket/utils/redeemPosition.ts#trackRedeemPositionFailed
+    trigger: The person redeems a resolved Polymarket position and the relayer transaction comes back.
+    moment: after success
+    conditions:
+      - the relayer transaction was submitted and waitForRelayerTransaction returned
+    path:
+      - src/features/polymarket/screens/polymarket-redeem-position-sheet/PolymarketRedeemPositionSheet.tsx#PolymarketRedeemPositionSheet
+      - src/features/polymarket/utils/redeemPosition.ts#redeemPosition
+      - src/features/polymarket/utils/redeemPosition.ts#trackRedeemPosition
+    certainty: sure
+  predictions.redeem_position.failed:
+    fires_in:
+      - src/features/polymarket/utils/redeemPosition.ts#trackRedeemPosition
+      - src/features/polymarket/utils/redeemPosition.ts#trackRedeemPositionFailed
+    trigger: The person redeems a resolved Polymarket position and building, submitting, or waiting for the transaction throws.
+    moment: after failure
+    conditions:
+      - a step in redeemPosition threw
+    path:
+      - src/features/polymarket/screens/polymarket-redeem-position-sheet/PolymarketRedeemPositionSheet.tsx#PolymarketRedeemPositionSheet
+      - src/features/polymarket/utils/redeemPosition.ts#redeemPosition
+      - src/features/polymarket/utils/redeemPosition.ts#trackRedeemPosition
+    certainty: sure
+  predictions.withdrawal:
+    fires_in: src/features/polymarket/withdrawalConfig.ts#POLYMARKET_WITHDRAWAL_CONFIG
+    trigger: The person confirms a Polymarket withdrawal and the executor returns success.
+    moment: after success
+    conditions:
+      - wallet connected and route config present
+      - balance is enough and a valid quote exists
+      - executor returned success
+    path:
+      - src/features/polymarket/funding/screens/PolymarketWithdrawalScreen.tsx#PolymarketWithdrawalScreen
+      - src/features/polymarket/withdrawalConfig.ts#POLYMARKET_WITHDRAWAL_CONFIG.trackFailure
+    certainty: sure
+  predictions.withdrawal.failed:
+    fires_in: src/features/polymarket/withdrawalConfig.ts#POLYMARKET_WITHDRAWAL_CONFIG
+    trigger: The person confirms a Polymarket withdrawal and it fails validation, prerequisite, or execution.
+    moment: after failure
+    conditions:
+      - no wallet, missing config, low balance, no quote, executor returned failure, or a throw
+    path:
+      - src/features/polymarket/funding/screens/PolymarketWithdrawalScreen.tsx#PolymarketWithdrawalScreen
+      - src/features/polymarket/withdrawalConfig.ts#POLYMARKET_WITHDRAWAL_CONFIG.trackFailure
+    certainty: sure
+  Rap completed:
+    fires_in:
+      - src/features/ens/raps/actions.ts#ensAction
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#executeENSRap
+    trigger: The ENS rap run finishes, whether its actions succeeded or failed.
+    conditions:
+      - executeENSRap reaches its end without throwing
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/features/ens/hooks/useENSRegistrationActionHandler.ts#useENSRegistrationActionHandler
+      - src/features/ens/raps/actions.ts#executeENSRap
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#findENSActionByType
+      - src/features/ens/raps/actions.ts#commitENS
+      - src/features/ens/raps/actions.ts#ensAction
+    certainty: sure
+  Rap failed:
+    fires_in:
+      - src/features/ens/raps/actions.ts#ensAction
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#executeENSRap
+    trigger: One action of an ENS rap throws.
+    moment: after failure
+    conditions:
+      - fires once per failing action, so it can fire several times in one rap
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/features/ens/hooks/useENSRegistrationActionHandler.ts#useENSRegistrationActionHandler
+      - src/features/ens/raps/actions.ts#executeENSRap
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#findENSActionByType
+      - src/features/ens/raps/actions.ts#commitENS
+      - src/features/ens/raps/actions.ts#ensAction
+    certainty: sure
+  Rap started:
+    fires_in:
+      - src/features/ens/raps/actions.ts#ensAction
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#executeENSRap
+    trigger: An ENS rap has been built and is about to run its first action.
+    moment: before the request
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/features/ens/hooks/useENSRegistrationActionHandler.ts#useENSRegistrationActionHandler
+      - src/features/ens/raps/actions.ts#executeENSRap
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#findENSActionByType
+      - src/features/ens/raps/actions.ts#commitENS
+      - src/features/ens/raps/actions.ts#ensAction
+    certainty: sure
+  Rejected new WalletConnect session:
+    fires_in:
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#onSessionProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#rejectProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#trackTopicHandler
+    trigger: The app rejects a session proposal, because the person pressed reject or because the approved namespaces are invalid
+    moment: after success
+    conditions:
+      - client.rejectSession resolved without throwing
+    path:
+      - src/features/wallet-connect/handlers/listeners.ts#initListeners
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#onSessionProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#trackTopicHandler
+    certainty: unsure
+  request.approved:
+    fires_in: src/features/dapp-request/screens/SignTransactionSheet.tsx#SignTransactionSheet
+    trigger: The person approves a dapp request and the transaction is sent or signed, or the message is signed
+    moment: after success
+    conditions:
+      - Signing or sending returned a result
+      - The wallet could be loaded
+    path:
+      - src/features/dapp-request/screens/SignTransactionSheet.tsx#SignTransactionSheet.onCancel
+    certainty: sure
+  request.rejected:
+    fires_in: src/features/dapp-request/screens/SignTransactionSheet.tsx#SignTransactionSheet
+    trigger: The person rejects a dapp request, or signing or sending fails and the sheet is cancelled
+    moment: after failure
+    conditions:
+      - Fires 300 ms after onCancel is called
+      - On a failed transaction it doesn't fire for hardware wallets, because onCancel isn't called
+    path:
+      - src/features/dapp-request/screens/SignTransactionSheet.tsx#SignTransactionSheet.onCancel
+    certainty: sure
+  request.sheet.show:
+    fires_in: src/features/dapp-request/hooks/useTransactionSetup.ts#useTransactionSetup
+    trigger: The dapp request sheet is shown, for transaction and message requests
+    moment: on mount
+    conditions:
+      - chainId is set
+      - After interactions settle
+    path:
+      - src/features/dapp-request/screens/SignTransactionSheet.tsx#SignTransactionSheet
+      - src/features/dapp-request/hooks/useTransactionSetup.ts#useTransactionSetup
+    certainty: sure
+  Reset Asset Selection Send:
+    fires_in: src/features/transfer/screens/SendSheet.tsx#SendSheet
+    trigger: The person taps the control to clear the asset they picked in the Send flow.
+    moment: before the request
+    path:
+      - src/features/transfer/screens/SendSheet.tsx#SendSheet.onChangeNativeAmount
+    certainty: sure
+  rnbw_airdrop.claim:
+    fires_in:
+      - src/features/rnbw-rewards/utils/claimAirdrop.ts#prepareAirdropClaim
+      - src/features/rnbw-rewards/utils/claimAirdrop.ts#submitAirdropClaim
+    trigger: The person claims the RNBW airdrop and the claim is accepted, polled to a non-failed status, and the airdrop balance refreshed.
+    moment: after success
+    conditions:
+      - ClaimAirdrop returned a claimId
+      - status polling ended without a failed status
+      - the airdrop balance refresh did not throw
+    path:
+      - src/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen.tsx#RnbwAirdropScreen
+      - src/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen.tsx#RnbwAirdropSceneRouter
+      - src/features/rnbw-airdrop/screens/rnbw-airdrop-screen/scenes/AirdropClaimPromptScene.tsx#AirdropClaimPromptScene
+      - src/features/rnbw-rewards/utils/claimAirdrop.ts#prepareAirdropClaim
+    certainty: sure
+  rnbw_airdrop.claim.failed:
+    fires_in:
+      - src/features/rnbw-rewards/utils/claimAirdrop.ts#prepareAirdropClaim
+      - src/features/rnbw-rewards/utils/claimAirdrop.ts#submitAirdropClaim
+    trigger: "An airdrop claim fails: signing the claim message fails or the address or message is missing, or the ClaimAirdrop request, the
+      status polling or a balance refresh fails. A person cancelling the signature also lands here."
+    moment: after failure
+    conditions:
+      - The code is in a catch block of prepareAirdropClaim or submitAirdropClaim
+    path:
+      - src/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen.tsx#RnbwAirdropScreen
+      - src/features/rnbw-airdrop/screens/rnbw-airdrop-screen/RnbwAirdropScreen.tsx#RnbwAirdropSceneRouter
+      - src/features/rnbw-airdrop/screens/rnbw-airdrop-screen/scenes/AirdropClaimPromptScene.tsx#AirdropClaimPromptScene
+      - src/features/rnbw-rewards/utils/claimAirdrop.ts#prepareAirdropClaim
+    certainty: sure
+  rnbw_rewards.claim:
+    fires_in:
+      - src/features/rnbw-rewards/utils/claimRewards.ts#prepareRewardsClaim
+      - src/features/rnbw-rewards/utils/claimRewards.ts#submitRewardsClaim
+    trigger: The person claims RNBW rewards, to the wallet or into staking, and the claim finishes with a non-failed status.
+    moment: after success
+    conditions:
+      - The claim request was accepted and returned a claimId
+      - Status polling finished without throwing
+    path:
+      - src/features/rnbw-rewards/screens/rnbw-rewards-claim-sheet/RnbwRewardsClaimSheet.tsx#RnbwRewardsClaimSheet
+      - src/features/rnbw-rewards/utils/claimRewards.ts#prepareRewardsClaim
+    certainty: sure
+  rnbw_rewards.claim.failed:
+    fires_in:
+      - src/features/rnbw-rewards/utils/claimRewards.ts#prepareRewardsClaim
+      - src/features/rnbw-rewards/utils/claimRewards.ts#submitRewardsClaim
+    trigger: "Claiming RNBW rewards fails: the claim intent can't be fetched or signed, the claim request fails, or status polling fails."
+    moment: after failure
+    conditions:
+      - The code is in a catch block of prepareRewardsClaim or submitRewardsClaim
+    path:
+      - src/features/rnbw-rewards/screens/rnbw-rewards-claim-sheet/RnbwRewardsClaimSheet.tsx#RnbwRewardsClaimSheet
+      - src/features/rnbw-rewards/utils/claimRewards.ts#prepareRewardsClaim
+    certainty: sure
+  rnbw_staking.stake:
+    fires_in:
+      - src/features/rnbw-staking/utils/stakeRnbw.ts#trackStakeFailure
+      - src/features/rnbw-staking/utils/stakeRnbw.ts#trackStakeSuccess
+    trigger: A stake of RNBW is confirmed. Either the claim alone covers the stake and the position updates, or the stake transaction is
+      confirmed and the pool shares update.
+    moment: after success
+    conditions:
+      - With a claim-only stake, the position poll finished
+      - Otherwise the stake transaction was confirmed and the pool shares changed
+    path:
+      - src/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen.tsx#RnbwStakingScreen
+      - src/features/rnbw-staking/depositConfig.ts#createRnbwStakingDepositConfig
+      - src/features/rnbw-staking/utils/stakeRnbw.ts#stakeRnbw
+      - src/features/rnbw-staking/utils/stakeRnbw.ts#trackStakeSuccess
+    certainty: sure
+  rnbw_staking.stake.failed:
+    fires_in:
+      - src/features/rnbw-staking/utils/stakeRnbw.ts#trackStakeFailure
+      - src/features/rnbw-staking/utils/stakeRnbw.ts#trackStakeSuccess
+    trigger: A stake attempt fails before submit or while waiting for the stake to confirm.
+    moment: after failure
+    conditions:
+      - The code is in the catch of stakeRnbw or the catch of finalizeSubmittedStakeRnbw
+    path:
+      - src/features/rnbw-staking/screens/rnbw-staking-screen/RnbwStakingScreen.tsx#RnbwStakingScreen
+      - src/features/rnbw-staking/depositConfig.ts#createRnbwStakingDepositConfig
+      - src/features/rnbw-staking/utils/stakeRnbw.ts#stakeRnbw
+      - src/features/rnbw-staking/utils/stakeRnbw.ts#trackStakeSuccess
+    certainty: sure
+  rnbw_staking.unstake:
+    fires_in:
+      - src/features/rnbw-staking/utils/unstakeRnbw.ts#finalizeSubmittedUnstake
+      - src/features/rnbw-staking/utils/unstakeRnbw.ts#unstakeRnbw
+    trigger: An unstake of RNBW is confirmed and the position shares have changed.
+    moment: after success
+    conditions:
+      - The confirmation wait and the staking position poll both finished without throwing
+    path:
+      - src/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet.tsx#RnbwUnstakeSheet
+      - src/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet.tsx#UnstakeContent
+      - src/features/rnbw-staking/utils/unstakeRnbw.ts#unstakeRnbw
+    certainty: sure
+  rnbw_staking.unstake.failed:
+    fires_in:
+      - src/features/rnbw-staking/utils/unstakeRnbw.ts#finalizeSubmittedUnstake
+      - src/features/rnbw-staking/utils/unstakeRnbw.ts#unstakeRnbw
+    trigger: "An unstake fails after the position was validated: the wallet can't load, the send fails, or confirmation or the position poll fails."
+    moment: after failure
+    conditions:
+      - The code is in the catch of unstakeRnbw or the catch of finalizeSubmittedUnstake
+    path:
+      - src/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet.tsx#RnbwUnstakeSheet
+      - src/features/rnbw-staking/screens/rnbw-unstake-sheet/RnbwUnstakeSheet.tsx#UnstakeContent
+      - src/features/rnbw-staking/utils/unstakeRnbw.ts#unstakeRnbw
+    certainty: sure
+  Saved backup password on iCloud:
+    fires_in:
+      - src/features/backup/backup.ts#backupAllWalletsToCloud
+      - src/features/backup/backup.ts#saveBackupPassword
+    trigger: The backup password is written to the iCloud keychain after a local backup password is saved
+    moment: after success
+    conditions:
+      - the platform is not Android
+      - kc.setSharedWebCredentials resolved without throwing
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+      - src/features/backup/backup.ts#backupAllWalletsToCloud
+    certainty: sure
+  Sent transaction:
+    fires_in: src/features/transfer/utils/trackSentTransaction.ts#trackSentTransaction
+    trigger: The person submits a send, and the submit finishes, whether it worked or not.
+    moment: after success
+    conditions:
+      - The amount is greater than 0
+      - Building the properties didn't throw
+    path:
+      - src/features/transfer/screens/SendSheet.tsx#SendSheet
+      - src/features/transfer/hooks/useSendSubmit.ts#useSendSubmit
+      - src/features/transfer/utils/trackSentTransaction.ts#trackSentTransaction
+    certainty: sure
+  Set App Icon:
+    fires_in: src/features/app-icon/components/AppIconSettingsSection.tsx#AppIconSettingsSection
+    trigger: The person taps an app icon in the App Icon settings list
+    moment: before the request
+    path:
+      - src/features/app-icon/screens/AppIconUnlockSheet.tsx#AppIconUnlockSheet
+      - src/screens/SettingsSheet/SettingsPages.ts#SettingsPages
+      - src/features/app-icon/components/AppIconSettingsSection.tsx#AppIconSettingsSection.onSelectIcon
+    certainty: sure
+  Showing Walletconnect signing request:
+    fires_in: src/features/wallet-connect/handlers/onSessionRequest.ts#onSessionRequest
+    trigger: A dapp sends a supported signing or transaction request and the app opens the confirm sheet
+    moment: on view
+    conditions:
+      - The RPC method is supported
+      - The wallet is not read-only (for signing methods)
+      - The session topic is found
+      - The request was not already queued
+    path:
+      - src/features/wallet-connect/handlers/listeners.ts#initListeners
+      - src/features/wallet-connect/handlers/onSessionRequest.ts#onSessionRequest
+    certainty: unsure
+  spot_pnl.sheet.viewed:
+    fires_in: src/features/spot-pnl/ui/SpotPnlSheet.tsx#SpotPnlSection
+    trigger: The person opens the Spot PnL sheet for a token.
+    moment: on view
+    conditions:
+      - The token name is known
+      - viewSummary exists
+      - Not already tracked for this mount of the sheet
+    path:
+      - src/features/spot-pnl/ui/SpotPnlSheet.tsx#SpotPnlSheet
+      - src/features/spot-pnl/ui/SpotPnlSheet.tsx#SpotPnlSheetContent
+      - src/features/spot-pnl/ui/SpotPnlSheet.tsx#SpotPnlSection
+    certainty: sure
+  surface.interaction:
+    fires_in:
+      - src/features/placements/engagement/trackInteraction.ts#trackPlacementInteraction
+      - src/features/placements/engagement/trackInteraction.ts#trackSurfaceInteraction
+    trigger: The person selects a section chip in the Discover header (via trackSurfaceInteraction).
+    moment: before the request
+    conditions:
+      - a Discover surface is loaded (the header caller sits under the surface check)
+    path:
+      - src/features/discover/components/DiscoverSection.tsx#DiscoverSection
+      - src/features/discover/components/PredictionsSection.tsx#PredictionsSection
+      - src/features/discover/components/PredictionEventsSection.tsx#PredictionEventsSection
+      - src/features/discover/utils/trackDiscoverCardPress.ts#trackDiscoverCardPress
+      - src/features/placements/engagement/trackInteraction.ts#trackPlacementInteraction
+    certainty: sure
+  Tapped "Confirm Backup":
+    fires_in: src/features/backup/hooks/useCreateBackup.ts#useCreateBackup
+    trigger: The person confirms the cloud backup
+    moment: before the request
+    path:
+      - src/screens/SettingsSheet/components/Backups/ViewWalletBackup.tsx#ViewWalletBackup
+      - src/features/backup/hooks/useCreateBackup.ts#useCreateBackup.onSuccess
+    certainty: sure
+  Transferred ENS control:
+    fires_in:
+      - src/features/ens/raps/actions.ts#ensAction
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#executeENSRap
+    trigger: The reclaim transaction that transfers control of an ENS name has been sent.
+    moment: after success
+    conditions:
+      - the step is RECLAIM
+      - executeReclaim did not throw
+    path:
+      - src/features/ens/screens/ENSConfirmRegisterSheet.tsx#ENSConfirmRegisterSheet
+      - src/features/ens/hooks/useENSRegistrationActionHandler.ts#useENSRegistrationActionHandler
+      - src/features/ens/raps/actions.ts#executeENSRap
+      - src/features/ens/raps/actions.ts#executeAction
+      - src/features/ens/raps/actions.ts#findENSActionByType
+      - src/features/ens/raps/actions.ts#commitENS
+      - src/features/ens/raps/actions.ts#ensAction
+    certainty: sure
+  Updated Gas Price:
+    fires_in: src/features/gas/redux/gas.ts#gasUpdateGasFeeOption
+    trigger: The selected gas fee option changes, from the person picking a speed or from a screen auto-selecting one.
+    moment: after success
+    conditions:
+      - the new option differs from the current one
+      - gas fee params have loaded
+    path:
+      - src/screens/SpeedUpAndCancelSheet.tsx#SpeedUpAndCancelSheet
+      - src/features/gas/redux/gas.ts#gasUpdateGasFeeOption
+    certainty: sure
+  Viewed external dapp:
+    fires_in: src/features/positions/screens/PositionSheet.tsx#PositionSheet
+    trigger: The person taps to open a position's dapp website from the position sheet.
+    moment: before the request
+    path:
+      - src/features/positions/screens/PositionSheet.tsx#PositionSheet.openDapp
+    certainty: sure
+  wc.failed_request:
+    fires_in:
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#onSessionProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#rejectProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#trackTopicHandler
+      - src/features/wallet-connect/handlers/onSessionRequest.ts#onSessionRequest
+      - src/screens/NoNeedWCSheet.tsx#WalletConnectRedirectSheet
+    trigger: "The app refuses or fails a WalletConnect proposal or request: invalid namespaces, missing params, read-only or unknown wallet,
+      unknown session, unsupported method, or the dapp-browser notice sheet opening"
+    moment: after failure
+    conditions:
+      - Fires per failure site; the dapp-browser site fires when the sheet mounts
+      - Not sent when approveSession throws
+      - Not sent when the person rejects a proposal
+    path:
+      - src/features/wallet-connect/handlers/listeners.ts#initListeners
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#onSessionProposal
+      - src/features/wallet-connect/handlers/onSessionProposal.ts#trackTopicHandler
+    certainty: unsure

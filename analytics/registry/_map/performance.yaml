@@ -1,0 +1,34 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: performance
+surfaces: []
+events:
+  Performance Wallet Initialize Time:
+    fires_in: src/performance/tracking/index.ts#PerformanceTracker.trackMetric
+    trigger: The app finishes setting up a wallet (on launch, on creating or importing a wallet, or on switching wallets).
+    moment: after success
+    conditions:
+      - initializeWallet reaches the end without throwing
+      - shouldCancel() never returned true
+      - the wallet address is not nil
+      - the start timer still exists
+      - IS_PROD is true (analyticsTrackingEnabled)
+    path:
+      - src/screens/WelcomeScreen/WelcomeScreen.tsx#WelcomeScreen
+      - src/state/wallets/initializeWallet.ts#initializeWallet
+      - src/performance/tracking/index.ts#PerformanceTracker.finishMeasuring
+      - src/performance/tracking/index.ts#PerformanceTracker.trackMetric
+    certainty: sure
+  performance.report:
+    fires_in: src/performance/tracking/index.ts#PerformanceTracker.trackMetric
+    trigger: The app's first screen becomes interactive after launch, which ends the app startup report.
+    moment: on view
+    conditions:
+      - the app_startup report was started and is still in the reports map
+      - IS_PROD is true (analyticsTrackingEnabled)
+    path:
+      - src/screens/WelcomeScreen/WelcomeScreen.tsx#WelcomeScreen
+      - src/state/wallets/initializeWallet.ts#initializeWallet
+      - src/performance/tracking/index.ts#PerformanceTracker.finishMeasuring
+      - src/performance/tracking/index.ts#PerformanceTracker.trackMetric
+    certainty: sure

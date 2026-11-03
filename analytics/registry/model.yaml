@@ -1,0 +1,66 @@
+events:
+  - name: wallet_create.failed
+    section: Wallet
+    description: "Fires on the client, inside createWallet in src/model/wallet.ts, when creating or importing a wallet
+      doesn't finish. It has four paths. (1) The derived wallet or address is missing: error = wallet_or_address_missing,
+      and createWallet returns null. (2) The wallet is already imported and visible and this isn't a restore: error =
+      wallet_already_exists, and createWallet throws WalletAlreadyExistsError. (3) The wallet is already imported and
+      visible during a restore: error = wallet_already_exists_restoring, and createWallet returns null. (4) Any other
+      exception in the try block, such as keychain or derivation errors: error is the raw exception message. The thrown
+      WalletAlreadyExistsError is not tracked a second time in the catch. It does not fire when the wallet is saved
+      successfully (see wallet_create.succeeded). Nothing is sent if analyticsParams is not set yet, which happens when an
+      exception is thrown before the account is derived."
+    question: How many wallet creations and imports fail, and for which reasons and wallet types?
+    track_via: client
+    properties:
+      - name: error
+        type: string
+        example: wallet_or_address_missing | wallet_already_exists | wallet_already_exists_restoring | <raw exception message>
+        description: Failure reason. Three fixed codes, plus the raw Error.message when an exception is caught.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the wallet address. analytics.track adds it from the stored wallet context, not createWallet. It
+          can be undefined when the wallet is brand new.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Wallet context type. analytics.track adds it from the stored wallet context. It can be undefined right
+          after the first wallet is created.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving
+  - name: wallet_create.succeeded
+    section: Wallet
+    description: Fires on the client, at the end of createWallet in src/model/wallet.ts, after the wallet has been saved.
+      That means the seed phrase, address, private key and the full wallet list are written, the selected wallet is set
+      (unless silent), and the wallet is marked not damaged. It fires once per successful create or import, including
+      restores and watch-only imports. It does not fire for any failure path (see wallet_create.failed). The call passes
+      analyticsParams, which has no error key.
+    question: How many wallets do users create or import, split by wallet type?
+    track_via: client
+    properties:
+      - name: error
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: The draft lists it, but the success call never sends it. It is only on wallet_create.failed.
+      - name: walletAddressHash
+        type: string
+        example: UNCONFIRMED
+        required: false
+        description: Hash of the wallet address. analytics.track adds it from the stored wallet context, not createWallet. It
+          can be undefined for a brand-new wallet, because the context is set after creation.
+      - name: walletType
+        type: string
+        example: owned | hardware | watched
+        required: false
+        description: Wallet context type. analytics.track adds it from the stored wallet context. It can be undefined right
+          after the first wallet is created.
+    changelog:
+      - date: 2026-10-31
+        ref: install-audit
+        change: Drafted from code; nothing arriving

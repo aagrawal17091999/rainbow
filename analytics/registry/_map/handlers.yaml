@@ -1,0 +1,23 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: handlers
+surfaces: []
+events:
+  f2c.provider.flow_completed:
+    fires_in: src/handlers/deeplinks.ts#handleDeeplink
+    trigger: The person returns to the app through the /f2c deeplink that a fiat on-ramp provider redirects to after its flow in an external
+      browser.
+    moment: on view
+    conditions:
+      - The wallet is ready (the handler waits for it).
+      - The link uses the https or rainbow protocol and its action is f2c.
+      - Both provider and sessionId are in the link query. Otherwise a warning is logged and nothing is sent.
+      - When the provider is Ramp, success is sent as true. For other providers success is left out (unknown).
+    path:
+      - src/App.tsx#RootWithSentry
+      - src/App.tsx#Root
+      - src/App.tsx#App
+      - src/App.tsx#AppComponent
+      - src/app/navigation/DeeplinkHandler.tsx#DeeplinkHandler
+      - src/handlers/deeplinks.ts#handleDeeplink
+    certainty: sure

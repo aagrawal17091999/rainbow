@@ -1,0 +1,35 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: value_chart
+surfaces: []
+events:
+  Changed Candle Resolution:
+    fires_in: src/components/value-chart/Chart.tsx#ChartsTelemetry
+    trigger: The person picks a different candle resolution on the chart, or any code changes the stored resolution.
+    moment: after success
+    conditions:
+      - The stored candleResolution is now a different value from before.
+      - The chart screen is mounted, so the telemetry listener is running.
+      - Pressing the already-selected resolution does not fire it.
+    path:
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreen
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreenContent
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#ChartSection
+      - src/components/value-chart/Chart.tsx#Chart
+      - src/components/value-chart/Chart.tsx#ChartsTelemetry
+    certainty: sure
+  Changed Chart Type:
+    fires_in: src/components/value-chart/Chart.tsx#ChartsTelemetry
+    trigger: The person switches the chart between candlestick and line, or any code changes the stored chart type.
+    moment: after success
+    conditions:
+      - The stored chartType is now a different value from before.
+      - The chart screen is mounted, so the telemetry listener is running.
+      - The forced candlestick view for Hyperliquid tokens does not change the store, so it does not fire.
+    path:
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreen
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#PerpsDetailScreenContent
+      - src/features/perps/screens/perp-detail-screen/PerpDetailScreen.tsx#ChartSection
+      - src/components/value-chart/Chart.tsx#Chart
+      - src/components/value-chart/Chart.tsx#ChartsTelemetry
+    certainty: sure

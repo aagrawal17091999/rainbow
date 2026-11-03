@@ -1,0 +1,899 @@
+# Shared event-property vocabulary. A property used on any event must exist here.
+# Adding a name is a deliberate vocabulary change, visible in the PR diff. Prefer reusing one.
+synonyms:
+  placement: entry_point
+  came_from: entry_point
+  character_count: char_count
+  file_format: file_type
+properties:
+  action:
+    type: string
+    example: Navigates from WalletScreen to DiscoverHome | Navigates from WalletList to AddWalletSheet
+    used_by: 11
+  address:
+    type: string
+    example: UNCONFIRMED
+    used_by: 13
+  addressOrEnsName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 7
+  amount:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 9
+  appIcon:
+    type: string
+    example: optimism | smol | zora | golddoge | raindoge | pooly | finiliar | zorb | poolboy | adworld | farcaster |
+      redacted (UNCONFIRMED)
+    used_by: 3
+  asset:
+    type: object
+    example: UNCONFIRMED
+    used_by: 3
+  assetAddress:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  assetAmount:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 1
+  assetCurrency:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  assetName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  assets:
+    type: array
+    example: '[{symbol: "RNBW", address: "0x…", amount: "12.5"}] (UNCONFIRMED values)'
+    used_by: 3
+  assetSymbol:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  assetValue:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  available_data:
+    type: object
+    example: '{"description": true, "image_url": true}'
+    used_by: 1
+  averagePriceUsd:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  bestPriceUsd:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  brand:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  buttonName:
+    type: string
+    example: DiscoverMoreButton | AddAnotherWalletButton
+    used_by: 8
+  campaign:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  candleResolution:
+    type: string
+    example: RESOLUTION_1_MIN | RESOLUTION_5_MIN | RESOLUTION_15_MIN | RESOLUTION_60_MIN | RESOLUTION_4_HR |
+      RESOLUTION_12_HR | RESOLUTION_1_DAY | RESOLUTION_7_DAY
+    used_by: 2
+  cardId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  cardName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  cardType:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  category:
+    type: string
+    example: home screen
+    used_by: 32
+  chainId:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 21
+  chainName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  chartType:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  claimableId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  claimableType:
+    type: string
+    example: transaction | multi_transaction | sponsored | rainbowCoin
+    used_by: 3
+  claimedRnbw:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  claimedValueInCurrency:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  claimFulfillsStake:
+    type: boolean
+    example: true | false
+    used_by: 2
+  claimId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  claimToDestination:
+    type: string
+    example: staking | wallet
+    used_by: 2
+  closePercentage:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  collectionContractAddress:
+    type: string
+    example: 0x-prefixed contract address
+    used_by: 1
+  collectionName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  completedAt:
+    type: numeric
+    example: "1761900000000"
+    used_by: 2
+  component:
+    type: string
+    example: ReceiveAssetsCard
+    used_by: 1
+  componentName:
+    type: string
+    example: EthCard | BuyActionButton
+    used_by: 2
+  componentStack:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  connector:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  cryptoAmount:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  currency:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  dapp:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  dappName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 10
+  dappUrl:
+    type: string
+    example: UNCONFIRMED
+    used_by: 10
+  decimals:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 4
+  degenMode:
+    type: boolean
+    example: true | false
+    used_by: 3
+  destination:
+    type: array
+    example: UNCONFIRMED
+    used_by: 2
+  direction:
+    type: string
+    example: long | short
+    used_by: 1
+  display:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  displayType:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  duration:
+    type: numeric
+    example: "1450.5"
+    used_by: 1
+  durationInMs:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  durationMs:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 4
+  durationSeconds:
+    type: numeric
+    example: "12.4"
+    used_by: 2
+  elapsedTime:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  enabled:
+    type: boolean
+    example: true | false
+    used_by: 1
+  endTime:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  ens:
+    type: string
+    example: UNCONFIRMED
+    used_by: 9
+  entryMode:
+    type: string
+    example: preset | keypad
+    used_by: 2
+  entryPoint:
+    type: string
+    example: pill | topHoldersHolding | topHoldersUnrealized | topHoldersRealized
+    used_by: 1
+  entryPrice:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 5
+  error:
+    type: string
+    example: UNCONFIRMED
+    used_by: 22
+  errorCode:
+    type: string
+    example: PAYMENT_REJECTED | GENERIC
+    used_by: 3
+  errorMessage:
+    type: string
+    example: UNCONFIRMED
+    used_by: 31
+  eventId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  eventSentAfterMs:
+    type: numeric
+    example: "5000"
+    used_by: 1
+  eventSlug:
+    type: string
+    example: UNCONFIRMED
+    used_by: 5
+  executionId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  executionMode:
+    type: string
+    example: sponsored | manual | claim_only
+    used_by: 4
+  exitPrice:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  failed_action:
+    type: string
+    example: UNCONFIRMED
+    used_by: 8
+  failureReason:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  failureStep:
+    type: string
+    example: claim | swap | unknown
+    used_by: 2
+  feeAmountUsd:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  fiatAmount:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  fiatCurrency:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  from:
+    type: string
+    example: Transaction list
+    used_by: 1
+  fromRoute:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  gasPriceOption:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  hasClickedBefore:
+    type: boolean
+    example: UNCONFIRMED
+    used_by: 2
+  hasEnsName:
+    type: boolean
+    example: true | false
+    used_by: 1
+  id:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  image:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  index:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  input:
+    type: string
+    example: UNCONFIRMED
+    used_by: 7
+  inputAmount:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 1
+  inputAsset:
+    type: object
+    example: UNCONFIRMED
+    used_by: 2
+  inputAssetAddress:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  inputAssetAmount:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  inputAssetChainId:
+    type: numeric
+    example: 1 | 8453 | UNCONFIRMED
+    used_by: 3
+  inputAssetName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  inputAssetSymbol:
+    type: string
+    example: ETH | USDC | UNCONFIRMED
+    used_by: 3
+  inputAssetType:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  intent:
+    type: string
+    example: loadCards | resumeOrder
+    used_by: 1
+  intentId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  interactionType:
+    type: string
+    example: card_press | carousel_scroll
+    used_by: 1
+  isBridge:
+    type: boolean
+    example: true | false
+    used_by: 3
+  isFirstWallet:
+    type: boolean
+    example: true | false
+    used_by: 4
+  isHardwareWallet:
+    type: boolean
+    example: true | false
+    used_by: 6
+  isHidden:
+    type: boolean
+    example: true | false
+    used_by: 1
+  isModerated:
+    type: boolean
+    example: true | false
+    used_by: 1
+  isOwnWallet:
+    type: boolean
+    example: true | false
+    used_by: 1
+  isRecepientENS:
+    type: boolean
+    example: true | false
+    used_by: 1
+  isSponsored:
+    type: boolean
+    example: true | false
+    used_by: 1
+  isSwapping:
+    type: boolean
+    example: true | false
+    used_by: 2
+  isSwappingToPopularAsset:
+    type: boolean
+    example: true | false
+    used_by: 3
+  itemId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  itemOrder:
+    type: numeric
+    example: 0 | 1 | 2
+    used_by: 2
+  label:
+    type: string
+    example: iCloud | Google Drive
+    used_by: 21
+  language:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  length:
+    type: numeric
+    example: "5"
+    used_by: 1
+  leverage:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 11
+  mainnetAddress:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  market:
+    type: string
+    example: UNCONFIRMED
+    used_by: 12
+  marketId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  marketName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  marketSlug:
+    type: string
+    example: UNCONFIRMED
+    used_by: 7
+  marketSymbol:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  marketType:
+    type: string
+    example: prediction | token
+    used_by: 1
+  message:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  metadata:
+    type: object
+    example: UNCONFIRMED
+    used_by: 2
+  method:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  mode:
+    type: string
+    example: not sent
+    used_by: 11
+  name:
+    type: string
+    example: UNCONFIRMED
+    used_by: 8
+  nativeAssetSymbol:
+    type: string
+    example: ETH | UNCONFIRMED
+    used_by: 1
+  netPnl:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  network:
+    type: string
+    example: UNCONFIRMED
+    used_by: 6
+  no_icon:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  no_price:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  operation:
+    type: string
+    example: UNCONFIRMED
+    used_by: 5
+  orderAmountUsd:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  orderId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 5
+  orderPriceUsd:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  otherAsset:
+    type: object
+    example: UNCONFIRMED
+    used_by: 3
+  outcome:
+    type: string
+    example: not sent
+    used_by: 10
+  outputAsset:
+    type: object
+    example: '{"symbol":"ETH","address":"0x…"}'
+    used_by: 3
+  outputAssetAddress:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  outputAssetAmount:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  outputAssetChainId:
+    type: numeric
+    example: 1 | 8453 | UNCONFIRMED
+    used_by: 3
+  outputAssetName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  outputAssetSymbol:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  outputAssetType:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  outputChainId:
+    type: numeric
+    example: "1"
+    used_by: 2
+  parameters:
+    type: object
+    example: UNCONFIRMED
+    used_by: 3
+  performanceTrackingVersion:
+    type: numeric
+    example: "3"
+    used_by: 2
+  perpsBalance:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 11
+  placementId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  placementSource:
+    type: string
+    example: polymarket | rainbow
+    used_by: 1
+  placementTitle:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  platformRequestIds:
+    type: object
+    example: "{claim, status}"
+    used_by: 4
+  pnl:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  pnlPercentage:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 1
+  pollAttempts:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 4
+  positionsCurrency:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  positionSize:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 7
+  positionsValue:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  positionValue:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 11
+  previousInputAsset:
+    type: object
+    example: UNCONFIRMED
+    used_by: 1
+  previousOutputAsset:
+    type: object
+    example: UNCONFIRMED
+    used_by: 1
+  probe:
+    type: string
+    example: installSource | currency
+    used_by: 2
+  promptCount:
+    type: numeric
+    example: 1 | 2 | 3
+    used_by: 1
+  protocol:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  provider:
+    type: string
+    example: ramp | coinbase | moonpay | stripe
+    used_by: 2
+  qrCodeData:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  query:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  quote:
+    type: object
+    example: UNCONFIRMED
+    used_by: 1
+  reason:
+    type: string
+    example: UNCONFIRMED
+    used_by: 31
+  requestType:
+    type: string
+    example: transaction | signature
+    used_by: 2
+  resultWasNullish:
+    type: boolean
+    example: UNCONFIRMED
+    used_by: 2
+  routeName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  screen:
+    type: string
+    example: send
+    used_by: 6
+  sectionId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  sectionTitle:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  sessionId:
+    type: string
+    example: nanoid string, e.g. V1StGXR8_Z5jdHi6B-myT (UNCONFIRMED exact length)
+    used_by: 2
+  shared:
+    type: boolean
+    example: true | false
+    used_by: 1
+  side:
+    type: string
+    example: LONG | SHORT
+    used_by: 14
+  source:
+    type: string
+    example: not sent
+    used_by: 14
+  spread:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  stakedAmount:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  startTime:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  status:
+    type: string
+    example: failed | canceled | expired | rejected (UNCONFIRMED for the timeout and error cases)
+    used_by: 6
+    description: Outcome of the action. Add cancelled where the user stopped it.
+  step:
+    type: string
+    example: PairHardwareWalletIntroSheet | PairHardwareWalletSearchSheet | PairHardwareWalletSigningSheet
+    used_by: 5
+  submitSuccessful:
+    type: boolean
+    example: true | false
+    used_by: 1
+  success:
+    type: boolean
+    example: true | false
+    used_by: 2
+  surfaceId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  symbol:
+    type: string
+    example: DAI | WETH | USDC
+    used_by: 1
+  tenderlyUrl:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  timeToCompletion:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  timeToResolve:
+    type: numeric
+    example: "12000"
+    used_by: 3
+  timeToUsdcMs:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  tokenAddress:
+    type: string
+    example: UNCONFIRMED
+    used_by: 3
+  tokenAmount:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  tokenId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 5
+  tokenName:
+    type: string
+    example: UNCONFIRMED
+    used_by: 1
+  topic:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  total_tokens:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  totalElapsedTime:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  tradeAmountUSD:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 3
+  transactionHash:
+    type: string
+    example: UNCONFIRMED
+    used_by: 5
+  transactionId:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  transactionState:
+    type: string
+    example: UNCONFIRMED
+    used_by: 2
+  trigger:
+    type: string
+    example: cardLink | addCash | signInScreen | existingAccountPrompt | passkeyOnDevicePrompt | developerSettings
+    used_by: 4
+  triggerOrders:
+    type: array
+    example: UNCONFIRMED
+    used_by: 5
+  triggerOrderType:
+    type: string
+    example: sl | tp
+    used_by: 4
+  triggerPrice:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 4
+  txHash:
+    type: string
+    example: UNCONFIRMED
+    used_by: 6
+  type:
+    type: string
+    example: UNCONFIRMED
+    used_by: 30
+  url:
+    type: string
+    example: UNCONFIRMED
+    used_by: 10
+  usdValue:
+    type: string
+    example: UNCONFIRMED
+    used_by: 4
+  value:
+    type: string
+    example: dev | store | internal | UNCONFIRMED
+    used_by: 2
+  valueUsd:
+    type: numeric
+    example: UNCONFIRMED
+    used_by: 2
+  variant:
+    type: string
+    example: unrealized | partiallyRealized | fullyRealized
+    used_by: 1
+  version:
+    type: numeric
+    example: "1"
+    used_by: 1
+  waitingTime:
+    type: numeric
+    example: 1.8 | Error calculating waiting time.
+    used_by: 2
+  wallet_label:
+    type: string
+    example: UNCONFIRMED
+    used_by: 8
+  walletAddressHash:
+    type: string
+    example: UNCONFIRMED (hash of the wallet address)
+    used_by: 222
+  walletStatus:
+    type: string
+    example: unknown | new | imported | old
+    used_by: 1
+  walletType:
+    type: string
+    example: owned | hardware | watched
+    used_by: 222
+  wasActive:
+    type: boolean
+    example: true | false
+    used_by: 1

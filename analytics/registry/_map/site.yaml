@@ -1,0 +1,34 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: site
+surfaces: []
+events:
+  debug.identify_probe:
+    fires_in:
+      - src/App.tsx#initializeApplication
+      - src/redux/settings.ts#settingsLoadState
+    trigger: The app starts up and sets the install-source user property, and again whenever the saved currency and testnet settings load and
+      set the currency user properties.
+    moment: after success
+    conditions:
+      - "Startup call: fires right after identify({ installSource }), with no other condition"
+      - "Settings call: fires only if loading the native currency, testnet and app icon settings did not throw"
+      - Does not fire when analytics is disabled
+    path:
+      - src/App.tsx#RootWithSentry
+      - src/App.tsx#Root
+      - src/App.tsx#initializeApplication
+    certainty: sure
+  First App Open:
+    fires_in: src/App.tsx#initializeApplication
+    trigger: The person opens the app for the first time on this device, and a new device ID is created on that launch.
+    moment: after success
+    conditions:
+      - A device ID was just created in this launch
+      - The local isReturningUser flag is not set
+      - Fires after the startup migrations and settings load finish
+    path:
+      - src/App.tsx#RootWithSentry
+      - src/App.tsx#Root
+      - src/App.tsx#initializeApplication
+    certainty: sure

@@ -1,0 +1,13 @@
+# Written by the Datalyze Tracking Agent's first audit; changed only in reviewed pull requests.
+# Anchors are path#Symbol (never line numbers). The registry is the source of truth.
+area: share
+surfaces:
+  - id: share-view-controller
+    kind: screen
+    anchor: ios/ShareWithRainbow/ShareViewController.swift#ShareViewController
+    path: ShareViewController
+    actions:
+      - name: Share a URL or text from another iOS app into Rainbow's dapp browser
+        importance: secondary
+        events: []
+events: {}
